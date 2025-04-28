@@ -42,6 +42,7 @@ class ConfigArgs(Valid):
     EMAIL = 'email'
     SRC_REPO = 'src_repo'
     REBUILD_REPO = 'rebuild_repo'
+    REBUILD_CHECKOUT_DIR = 'rebuild_checkout_dir'
     TEMPLATE = 'template'
     PROJECT_NAME = 'project_name'
     PROJECT_DESC = 'project_desc'
@@ -247,7 +248,7 @@ class InfoData(Valid):
 
     @classmethod
     def init_pattern(cls) -> re.Pattern:
-        pattern = re.compile(cls.INIT_HASH.vallue)
+        pattern = re.compile(cls.INIT_HASH.value)
         return pattern
 
     @classmethod

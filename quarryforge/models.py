@@ -34,12 +34,12 @@ class Commit:
         object.__setattr__(self, TimelineData.BRANCH.value, branch)
         if tags:
             object.__setattr__(self, TimelineData.TAGS.value, tags)
-        elif tags is None:
+        if tags is None:
             object.__setattr__(self, TimelineData.TAGS.value, [])
         object.__setattr__(self, TimelineData.PHASE.value, phase)
         if changes:
             object.__setattr__(self,TimelineData.CHANGES.value,changes)
-        elif changes is None:
+        if changes is None:
             object.__setattr__(self, TimelineData.CHANGES.value, [])
 
     def __setattr__(self, name, value):
@@ -84,7 +84,7 @@ class Commit:
         match_parent = commit_parent.match(raw_parent_hash)
         if match_parent:
             return match_parent.group(TimelineData.HASH.value)
-        elif match_init:
+        if match_init:
             return None
         else:
             raise Exception('unexpected error')

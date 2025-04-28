@@ -43,6 +43,7 @@ def init_rebuild_repo(args: RepoConfig) -> List:
     Returns:
         cmd (List): A list of the command and arguments to use with the
             subprocess.run method.
+    #todo handle case where template is none
     """
     cmd = [Command.FOSSIL.value, Command.NEW.value, Command.TEMPLATE.value,
            args.template, Command.ADMIN_USER.value, args.user,
