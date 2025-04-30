@@ -18,8 +18,39 @@ class RepoConfigError(ModelException):
 
     Base exception for the RepoConfig class.
     """
-    def __init__(self, message=None):
-        super().__init__(message)
+    pass
+
+
+class InfoArgsError(ModelException):
+    """InfoArgs Error
+
+    Base exception for the InfoArgs class.
+    """
+    pass
+
+
+class DiffArgsError(ModelException):
+    """DiffArgs Error
+
+    Base exception for the DiffArgs class.
+    """
+    pass
+
+
+class CatArgsError(ModelException):
+    """CatArgs Error
+
+    Base exception for the CatArgs class.
+    """
+    pass
+
+
+class GetTimelineError(ModelException):
+    """GetTimeline Error
+
+    Base exception for the GetTimelineArg class.
+    """
+    pass
 
 
 class TimelineError(ModelsException):
