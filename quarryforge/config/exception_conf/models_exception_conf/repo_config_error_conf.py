@@ -48,29 +48,29 @@ def empty_project_desc() -> str:
     return Required.field_empty(Arg.PROJECT_DESC)
 
 
-def missing_user() -> str:
-    """The user field is missing message."""
-    return Required.field_missing(Arg.USER)
+def invalid_user() -> str:
+    """The user field is invalid message."""
+    return Required.field_type(Arg.USER)
 
 
-def missing_email() -> str:
-    """The email field is missing message."""
-    return Required.field_missing(Arg.EMAIL)
+def invalid_email() -> str:
+    """The email field is invalid message."""
+    return Required.field_type(Arg.EMAIL)
 
 
-def missing_src() -> str:
-    """The src_repo field is missing message."""
-    return Required.field_missing(Arg.SRC_REPO)
+def invalid_src() -> str:
+    """The src_repo field is invalid message."""
+    return Required.field_type(Arg.SRC_REPO)
 
 
-def missing_update() -> str:
-    """The update_repo field is missing message."""
-    return Required.field_missing(Arg.UPDATE_REPO)
+def invalid_update() -> str:
+    """The update_repo field is invalid message."""
+    return Required.field_type(Arg.UPDATE_REPO)
 
 
-def missing_update_dir() -> str:
-    """The update_dir field is missing message."""
-    return Required.field_missing(Arg.UPDATE_DIR)
+def invalid_update_dir() -> str:
+    """The update_dir field is invalid message."""
+    return Required.field_type(Arg.UPDATE_DIR)
 
 
 def immutable_config() -> str:
