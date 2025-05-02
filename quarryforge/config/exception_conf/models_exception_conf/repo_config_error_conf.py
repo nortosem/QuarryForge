@@ -2,8 +2,9 @@
 
 
 """
-from quarryforge.config.exception_conf.fault_builder import Required
 from quarryforge.config.exception_conf.fault_builder import Immutable
+from quarryforge.config.exception_conf.fault_builder import PathMessage
+from quarryforge.config.exception_conf.fault_builder import Required
 from quarryforge.config.models_conf import ConfigArgs as Arg
 from quarryforge.config.root import ModelNames as Model
 
@@ -60,12 +61,15 @@ def invalid_email() -> str:
 
 def invalid_src() -> str:
     """The src_repo field is invalid message."""
-    return Required.field_type(Arg.SRC_REPO)
-
+    return ' '.join(
+        Required.field_type(Arg.SRC_REPO),
+        PathMessage.not_a_path(path))
 
 def invalid_update() -> str:
     """The update_repo field is invalid message."""
-    return Required.field_type(Arg.UPDATE_REPO)
+    return ' '.join(
+        Required.field_type(Arg.UPDATE_REPO),
+        PathMessage.not_a_path(path))
 
 
 def invalid_update_dir() -> str:

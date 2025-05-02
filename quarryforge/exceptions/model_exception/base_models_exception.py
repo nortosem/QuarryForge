@@ -53,6 +53,14 @@ class GetTimelineError(ModelException):
     pass
 
 
+class CommitError(ModelException):
+    """Commit Error
+
+    Base exception for the Commit class.
+    """
+    pass
+
+
 class TimelineError(ModelsException):
     """Timeline Parsing Error
 

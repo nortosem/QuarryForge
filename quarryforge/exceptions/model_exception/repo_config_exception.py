@@ -91,7 +91,7 @@ class ProjectDescValueError(RepoConfigError, ValueError):
             message or repo_config_error_conf.empty_project_desc())
 
 
-class ImmutableRepoConfigError(RepoConfigError):
+class ImmutableRepoConfigError(RepoConfigError, TypeError):
     """Raise for any attempt to add or set attributes on RepoConfig."""
     def __init__(self, message=None):
         super().__init__(
