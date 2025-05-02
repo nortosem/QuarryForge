@@ -2,36 +2,7 @@
 
 #todo
 """
-from collections import namedtuple
-
-from quarryforge.config import CatConfig
-from quarryforge.config import ConfigArgs
-from quarryforge.config import Command
-from quarryforge.config import DiffConfig
-from quarryforge.config import InfoConfig
-from quarryforge.config import TimelineConfig
-
 from typing import List
-
-
-RepoConfig = namedtuple(ConfigArgs.type_name(), ConfigArgs.slots())
-RepoConfig.__doc__ = ConfigArgs.docs()
-
-
-TimelineArg = namedtuple(TimelineConfig.type_name(), TimelineConfig.slots())
-TimelineArg.__doc__ = TimelineConfig.docs()
-
-
-InfoArgs = namedtuple(InfoConfig.type_name(), InfoConfig.slots())
-InfoArgs.__doc__ = InfoConfig.docs()
-
-
-DiffArgs = namedtuple(DiffConfig.type_name(), DiffConfig.slots())
-DiffArgs.__doc__ = DiffConfig.docs()
-
-
-CatArgs = namedtuple(CatConfig.type_name(), CatConfig.slots())
-CatArgs.__doc__ = CatConfig.docs()
 
 
 def init_rebuild_repo(args: RepoConfig) -> List:
