@@ -21,6 +21,10 @@ class ModelNames(Valid):
 
 
     """
-    REPO_CONFIG = 'RepoConfig'
     COMMIT = 'Commit'
+    CAT_ARGS = 'CatArgs'
+    GET_TIMELINE_ARG = 'GetTimelineArg'
+    INFO_ARGS = 'InfoArg'
+    DIFF_ARGS = 'DiffArg'
+    REPO_CONFIG = 'RepoConfig'
     TIMELINE = 'Timeline'
