@@ -12,15 +12,15 @@ class Required(Valid):
     """
     THE = 'The '
     EMPTY = ' field cannot be empty'
-    REQUIRED = ' field is required'
+    REQUIRE = ' field requires a '
 
     @classmethod
-    def field_missing(cls, field: Valid):
-        return cls.THE.value + field.value+cls.REQUIRED.value
+    def field_type(cls, field: Valid, kind: Type):
+        return cls.THE.valuefield.value+cls.REQUIRE.value+str(kind)
 
     @classmethod
-    def field_empty(cls, field: Valid):
-        return cls.The.value + field.value+cls.EMPTY.value
+    def field_empty(cls, field: Valid, kind: Type):
+        return cls.The.value+str(kind)+field.value+cls.EMPTY.value
 
 
 class Immutable(Valid):
@@ -40,11 +40,21 @@ class PathMessage(Valid):
 
 
     """
+    NAP = ' is not a path.'
     DNE = ' does not exit.'
     NAF = ' is not a file.'
     NAD = ' is not a directory.'
     READ = ' is not readable.'
     WRITE = ' is not writable.'
+    NO_DIR = ' cannot write output to a directory.'
+
+    @classmethod
+    def dir_not_allowed(cls, path: str):
+        return path + cls.NO_DIR.value
+
+    @classmethod
+    def not_a_path(cls, path: str) -> str:
+        return path + cls.NAP.value
 
     @classmethod
     def does_not_exist(cls, path: str) -> str:
