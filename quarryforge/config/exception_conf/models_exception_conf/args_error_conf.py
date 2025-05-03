@@ -90,7 +90,7 @@ def invalid_cat_outfile():
 
 def outfile_cat_dir_error():
     """CatArgs outfile filename cannot be a directory"""
-    return PathMessage.dir_not_allowed(Config.OUTFILE.value)
+    return PathMessage.dir_not_allowed(ConfigCat.OUTFILE.value)
 
 
 def empty_cat_outfile():
