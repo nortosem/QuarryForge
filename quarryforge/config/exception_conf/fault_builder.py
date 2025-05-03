@@ -1,4 +1,4 @@
-"""
+"""Fault Builder
 
 
 """
@@ -15,12 +15,12 @@ class Required(Valid):
     REQUIRE = ' field requires a '
 
     @classmethod
-    def field_type(cls, field: Valid, kind: Type):
-        return cls.THE.valuefield.value+cls.REQUIRE.value+str(kind)
+    def field_type(cls, field: Valid, kind: type):
+        return cls.THE.value + field.value + cls.REQUIRE.value + str(kind)
 
     @classmethod
-    def field_empty(cls, field: Valid, kind: Type):
-        return cls.The.value+str(kind)+field.value+cls.EMPTY.value
+    def field_empty(cls, field: Valid, kind: type):
+        return cls.The.value + str(kind) + field.value + cls.EMPTY.value
 
 
 class Immutable(Valid):
