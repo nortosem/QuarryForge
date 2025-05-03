@@ -4,9 +4,10 @@ This module defines the custom exception hierarchy for the quarryforge package.
 It includes a base exception class and specific exceptions for different
 modules within the package.
 """
+import datetime
 
 
-class QuarryForgeException(Exception):
+class QuarryForgeError(Exception):
     """Base Exception Class for quarryforge
 
     Provides all common attributes and methods for QuarryForge exceptions.
@@ -73,9 +74,6 @@ class ArgumentError(QuarryForgeError):
         self.message = message
 
 
-
-
-
 class FossilCommandError(QuarryForgeError):
     """Fossil Command Error
 
@@ -104,11 +102,7 @@ class ConfigError(ArgumentError):
     package, such as a missing or invalid configuration file, or missing
     required configuration values.
     """
-    def __init__(self, message: str = 'Error with the Configuration file'):
-        super().__init__(message)
-
-
-
+    pass
 
 
 class RepositoryOperationError(QuarryForgeError):
@@ -118,8 +112,7 @@ class RepositoryOperationError(QuarryForgeError):
     new repository, setting user configurations, or any other repository-level
     operation.
     """
-    def __init__(self, message: str = 'Repository operation failed'):
-        super().__init__(message)
+    pass
 
 
 class FileOperationError(QuarryForgeError):
@@ -128,5 +121,4 @@ class FileOperationError(QuarryForgeError):
     Raised when an operation involving files fails, such as reading file
     content or determining file changes.
     """
-    def __init__(self, message: str = 'File operation error'):
-        super().__init__(message)
+    pass
