@@ -2,7 +2,8 @@
 
 #TODO
 """
-import quarryforge.config.exception_conf.models_exception.repo_config_error_conf
+from quarryforge.config.exception_conf.models_exception \
+    import repo_config_error_conf
 from quarryforge.exceptions.model_exception.base_models_exception \
     import RepoConfigError
 
