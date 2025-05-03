@@ -6,6 +6,9 @@ import argparse
 import logging
 from pathlib import Path
 from quarryforge import fossil
+from quarryforge.exceptions.main_exception.base_main_exception \
+    import ArgumentError
+from quarryforge.exceptions.main_exception.base_main_exception import MainError
 import sys
 import tomllib
 from typing import Dict
@@ -55,7 +58,7 @@ def load_toml(config_path: Path) -> Dict:
             logging.info('Loaded configuration from %s', config_path)
 
             return config_data
-    except Exception as e:
+    except ArgumentError as e:
         logging.error('Error loading config file %s: %s', config_path, e)
         return {}
 
@@ -115,11 +118,7 @@ def valid_config_data(config_data: dict) -> bool:
         logging.error('TOML config missing required keys: %s,',
                       ', '.join(sorted(missing_keys)))
         return False
-    # For example:
-    # if not pathlib.Path(config_data['source_repo']).is_file():
-    #     logging.error(f'Source repository not found:
-    # {config_data['source_repo']}')
-    #     return False
+
     logging.debug('Valid Configuration data found.')
     return True
 
@@ -149,7 +148,7 @@ def reforge_process(argv=None):
             rebuilt_checkout_dir=args.rebuilt_project_dir,
         )
         logging.info('Rebuild process completed successfully.')
-    except Exception as e:
+    except MainError as e:
         logging.exception('An error occurred during the rebuild process: %s', e)
         sys.exit(1)
 
