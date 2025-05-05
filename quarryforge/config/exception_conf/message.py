@@ -5,22 +5,30 @@
 from quarryforge.config.root import Valid
 
 
-class Required(Valid):
-    """Field Missing Message
+class Argument(Valid):
+    """Argument Messages
 
 
     """
-    THE = 'The '
-    EMPTY = ' field cannot be empty'
-    REQUIRE = ' field requires a '
+    ARG = ' argument'
+    INVALID = 'Invalid '
+    MISSING = 'Missing '
 
     @classmethod
-    def field_type(cls, field: Valid, kind: type):
-        return cls.THE.value + field.value + cls.REQUIRE.value + str(kind)
+    def invalid(cls, name: Valid):
+        return cls.INVALID.value + name.value + cls.ARG.value
 
     @classmethod
-    def field_empty(cls, field: Valid, kind: type):
-        return cls.The.value + str(kind) + field.value + cls.EMPTY.value
+    def missing(cls, name: Valid):
+        return cls.MISSING.value + name.value + cls.ARG.value
+
+
+class Default(Valid):
+    """Default Messages
+
+
+    """
+    ERROR = '_ERROR'
 
 
 class Immutable(Valid):
@@ -75,3 +83,21 @@ class PathMessage(Valid):
     @classmethod
     def no_write_permission(cls, path: str) -> str:
         return path + cls.WRITE.value
+
+
+class Required(Valid):
+    """Field Missing Message
+
+
+    """
+    THE = 'The '
+    EMPTY = ' field cannot be empty'
+    REQUIRE = ' field requires a '
+
+    @classmethod
+    def field_type(cls, field: Valid, kind: type):
+        return cls.THE.value + field.value + cls.REQUIRE.value + str(kind)
+
+    @classmethod
+    def field_empty(cls, field: Valid, kind: type):
+        return cls.The.value + str(kind) + field.value + cls.EMPTY.value
