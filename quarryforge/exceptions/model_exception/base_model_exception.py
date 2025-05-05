@@ -8,7 +8,7 @@ from quarryforge.exceptions.base_exception import QuarryForgeException
 class ModelError(QuarryForgeException):
     """Models Error
 
-    Base exception class for all exceptions in the models module.
+    Base exception class for all exceptions in the models subpackage.
     """
     pass
 
