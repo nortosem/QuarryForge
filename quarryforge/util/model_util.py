@@ -1,90 +1,102 @@
-"""Model Utility MOdule
+"""Model Utility Module
+
+This module provides utility functions for validating different types of
+arguments used within the data models. It includes functions to check for
+valid string types, non-empty strings, valid and existing paths (files and
+directories), and readable/writable paths. It also includes functions for
+validating list types and the content of lists based on specific error
+conditions.
 
 #TODO
 # fossil file validation TODO
 """
 import os
 from pathlib import Path
-from typing import List
+from typing import List, TypeVar
 
 from quarryforge.config.exception_conf import PathMessage
-from quarryforge.exceptions.model_exception.base_models_exception \
-    import ModelError
+from quarryforge.exceptions import base_exception
 from quarryforge.exceptions.model_exception import commit_exception
 
+_ModelError = TypeVar('_ModelError', bound=base_exception.ModelError)
 
-def is_valid_str_type(arg: str, exception: type[ModelError]) -> str:
-    """Validate String Arg
 
-    Returns a valid string argument type or raises an error.
+def is_valid_str_type(arg: str, exception: type[_ModelError]) -> str:
+    """Validates if the given argument is a string.
 
     Args:
-        arg (str): The string argument to check.
-        exception (Exception): The specific type of exception to raise.
+        arg: The string argument to check.
+        exception: The specific type of exception to raise.
 
     Returns:
-        attribute (str): Returns a valid string attribute.
+        The validated string argument.
+
+    Raises:
+        exception: If the argument is not a string.
     """
-    attribute = arg
-    if not isinstance(attribute, str):
+    if not isinstance(arg, str):
         raise exception()
-    return attribute
+    return arg
 
 
-def is_not_empty(arg: str, exception: type[ModelError]) -> str:
-    """Is Not Empty String
+def is_not_empty(arg: str, exception: type[_ModelError]) -> str:
+    """Validates if the given string argument is not empty.
 
-    Validate the given argument is not an empty string.
+    This function checks if the string is not empty after stripping leading
+    and trailing whitespace.
 
     Args:
-        arg (str): The string argument to check.
+        arg: The string argument to check.
+        exception: The specific type of exception to raise.
 
     Returns:
-        attribute (str): Returns a valid string attribute.
+        The validated string argument.
+
+    Raises:
+        exception: If the argument is empty after stripping whitespace.
     """
-    attribute = arg
-    if not attribute.strip():
+    if not arg.strip():
         raise exception()
-    return attribute
+    return arg
 
 
-def is_valid_path_type(arg: Path, exception: type[ModelError]) -> Path:
-    """Valid Path Type
-
-    Returns a valid path argument type or raises an error.
+def is_valid_path_type(arg: Path, exception: type[_ModelError]) -> Path:
+    """Validates if the given argument is a pathlib.Path object.
 
     Args:
-        arg (Path): The repo path argument to check.
-        exception (Exception): The specific type of exception to raise.
+        arg: The path argument to check.
+        exception: The specific type of exception to raise.
 
     Returns:
-        path (Path): Returns a valid path path attribute.
+        The validated Path object.
+
+    Raises:
+        exception: If the argument is not a Path object.
     """
-    path = arg
-    if not isinstance(path, Path):
+    if not isinstance(arg, Path):
         raise exception()
-    return path
+    return arg
 
 
-def exists(arg: Path, exception: type[ModelError]) -> Path:
-    """Verify the path exists
-
-    Assumes Path already is a pathlib.Path.
+def exists(arg: Path, exception: type[_ModelError]) -> Path:
+    """Validates if the path specified by the pathlib.Path object exists.
 
     Args:
-        arg (Path): The repo path argument to check.
-        exception (Exception): The specific type of exception to raise.
+        arg: The path argument to check.
+        exception: The specific type of exception to raise.
 
     Returns:
-        path (Path): Returns a valid path path attribute.
+        The validated Path object.
+
+    Raises:
+        exception: If the path does not exist.
     """
-    path = arg
-    if not path.exists():
-        raise exception(PathMessage.does_not_exist(path))
-    return path
+    if not arg.exists():
+        raise exception(PathMessage.does_not_exist(str(arg)))
+    return arg
 
 
-def is_file(arg: Path, exception: type[ModelError]) -> Path:
+def is_file(arg: Path, exception: type[_ModelError]) -> Path:
     """Verify the path is a file
 
     Assumes Path already is a pathlib.Path.
@@ -102,136 +114,154 @@ def is_file(arg: Path, exception: type[ModelError]) -> Path:
     return path
 
 
-def viable_infile(arg: Path, exception: type[ModelError]) -> Path:
-    """Viable Input Filename
+def is_dir(arg: Path, exception: type[_ModelError]) -> Path:
+    """Validates if the path specified by the pathlib.Path object is directory.
 
+    Args:
+        arg: The path argument to check.
+        exception: The specific type of exception to raise.
 
+    Returns:
+        The validated Path object.
+
+    Raises:
+        exception: If the path is not a directory.
     """
-    path = arg
-    path = exists(path, exception)
+    if not arg.is_dir():
+        raise exception(PathMessage.not_a_directory(str(arg)))
+    return arg
+
+
+def is_read_ok(arg: Path, exception: type[_ModelError]) -> Path:
+    """Validates if the path specified by the pathlib.Path object has read
+    permissions.
+
+    Args:
+        arg: The path argument to check.
+        exception: The specific type of exception to raise.
+
+    Returns:
+        The validated Path object.
+
+    Raises:
+        exception: If the path does not have read permissions.
+    """
+    if not os.access(arg, os.R_OK):
+        raise exception(PathMessage.no_read_permission(str(arg)))
+    return arg
+
+
+def is_write_ok(arg: Path, exception: type[_ModelError]) -> Path:
+    """Validates if the path specified by the pathlib.Path object has write
+    permissions.
+
+    Args:
+        arg: The path argument to check.
+        exception: The specific type of exception to raise.
+
+    Returns:
+        The validated Path object.
+
+    Raises:
+        exception: If the path does not have write permissions.
+    """
+    if not os.access(arg, os.W_OK):
+        raise exception(PathMessage.no_write_permission(str(arg)))
+    return arg
+
+
+def viable_infile(arg: Path, exception: type[_ModelError]) -> Path:
+    """Validates if the path is an existing, readable file.
+
+    Args:
+        arg: The path argument to check.
+        exception: The specific type of exception to raise.
+
+    Returns:
+        The validated Path object.
+
+    Raises:
+        exception: If the path does not exist, is not a file, or is not
+        readable.
+    """
+    path = exists(arg, exception)
     path = is_file(path, exception)
     path = is_read_ok(path, exception)
     return path
 
 
-def is_dir(arg: Path, exception: type[ModelError]) -> Path:
-    """Verify the path is a directory
+def viable_source(arg: Path, exception: type[_ModelError]) -> Path:
+    """Validates if the path is an existing, readable file.
 
-    Assumes Path already is a pathlib.Path.
-
-    Args:
-        arg (Path): The repo path argument to check.
-        exception (Exception): The specific type of exception to raise.
-
-    Returns:
-        path (Path): Returns a valid path path attribute.
-    """
-    path = arg
-    if not path.is_dir():
-        raise exception(PathMessage.not_a_directory(path))
-    return path
-
-
-def is_read_ok(arg: Path, exception: type[ModelError]) -> Path:
-    """Verify the path is ok to read
-
-    Assumes Path already is a pathlib.Path.
+    This is an alias for `viable_infile`.
 
     Args:
-        arg (Path): The repo path argument to check.
-        exception (Exception): The specific type of exception to raise.
+        arg: The path argument to check.
+        exception: The specific type of exception to raise.
 
     Returns:
-        path (Path): Returns a valid path path attribute.
+        The validated Path object.
+
+    Raises:
+        exception: If the path does not exist, is not a file, or is not
+        readable.
     """
-    path = arg
-    if not os.access(path, os.R_OK):
-        raise exception(PathMessage.no_read_permission(path))
-    return path
+    return viable_infile(arg, exception)
 
 
-def is_write_ok(arg: Path, exception: type[ModelError]) -> Path:
-    """Verify the path is ok to write
-
-    Assumes Path already is a pathlib.Path.
+def viable_output(arg: Path, exception: type[_ModelError]) -> Path:
+    """Validates if the path is an existing, writable file.
 
     Args:
-        arg (Path): The repo path argument to check.
-        exception (Exception): The specific type of exception to raise.
+        arg: The path argument to check.
+        exception: The specific type of exception to raise.
 
     Returns:
-        path (Path): Returns a valid path path attribute.
+        The validated Path object.
+
+    Raises:
+        exception: If the path does not exist, is not a file, or is not
+        writable.
     """
-    path = arg
-    if not os.acces(path, os.W_OK):
-        raise exception(PathMessage.no_write_permission(path))
-    return path
-
-
-def viable_source(arg: Path, exception: type[ModelError]) -> Path:
-    """Viable Source Check
-
-    Args:
-        arg (Path): The repo path argument to check.
-        exception (Exception): The specific type of exception to raise.
-
-    Returns:
-        path (Path): Returns a valid path path attribute.
-    """
-    path = arg
-    path = exists(path, exception)
-    path = is_file(path, exception)
-    path = is_read_ok(path, exception)
-    return path
-
-
-def viable_output(arg: Path, exception: type[ModelError]) -> Path:
-    """Viable Output Check
-
-    Args:
-        arg (Path): The repo path argument to check.
-        exception (Exception): The specific type of exception to raise.
-
-    Returns:
-        path (Path): Returns a valid path path attribute.
-    """
-    path = arg
-    path = exists(path, exception)
+    path = exists(arg, exception)
     path = is_file(path, exception)
     path = is_write_ok(path, exception)
     return path
 
 
-def viable_update_dir(arg: Path, exception: type[ModelError]) -> Path:
-    """Viable Project Update Directory Check
+def viable_update_dir(arg: Path, exception: type[_ModelError]) -> Path:
+    """Validates if the path is an existing, writable directory.
 
     Args:
-        arg (Path): The repo path argument to check.
-        exception (Exception): The specific type of exception to raise.
+        arg: The path argument to check.
+        exception: The specific type of exception to raise.
 
     Returns:
-        path (Path): Returns a valid path path attribute.
+        The validated Path object.
+
+    Raises:
+        exception: If the path does not exist, is not a directory, or is not
+        writable.
     """
-    path = arg
-    path = exists(path, exception)
+    path = exists(arg, exception)
     path = is_dir(path, exception)
     path = is_write_ok(path, exception)
     return path
 
-
-def check_list_type(arg: List, exception: type[ModelError]) -> List:
-    """Check list arguments for a Commit are valid
-
-    Returns a valid List argument type or raises an error.
+def check_list_type(arg: List, exception: type[_ModelError]) -> List:
+    """Validates if the given argument is a list.
 
     Args:
-        arg (List): The string argument to check.
-        exception (Exception): The specific type of exception to raise.
+        arg: The list argument to check.
+        exception: The specific type of exception to raise.
 
     Returns:
-        attribute (List): Returns a valid List attribute.
+        The validated list argument.  Returns an empty list if arg is None.
+
+    Raises:
+        exception: If the argument is not a list and not None.
     """
-    final_list = []
+    final_list: List = []
     if arg is not None:
         if not isinstance(arg, list):
             raise exception()
@@ -239,36 +269,75 @@ def check_list_type(arg: List, exception: type[ModelError]) -> List:
     return final_list
 
 
-def content_type_error(args: List, exception: type[ModelError]) -> str:
-    """content_type_error"""
-    items = args
-    for item in items:
-        if not isinstance(item, str):
-            raise exception()
-
-    return items
-
-
-def content_empty_error(args: List, exception: type[ModelError]) -> str:
-    """content_empty_error"""
-    items = args
-    for item in items:
-        if not item.strip():
-            raise exception()
-
-    return items
-
-
-def check_list_content(arg: List[str], exception: type[ModelError]) -> List:
-    """Check contents of list for valid elements
-    Returns a valid List argument type or raises an error.
+def content_type_error(
+    args: List[str],
+    exception: type[_ModelError]
+) -> List[str]:
+    """Validates if all elements within the given list are strings.
 
     Args:
-        arg (List): The string argument to check.
-        exception (Exception): The specific type of exception to raise.
+        args: The list of strings to check.
+        exception: The specific type of exception to raise.
 
     Returns:
-        attribute (List): Returns a valid List attribute.
+        The validated list of strings.
+
+    Raises:
+        exception: If any element in the list is not a string.
+    """
+    for item in args:
+        if not isinstance(item, str):
+            raise exception()
+    return args
+
+
+def content_empty_error(
+    args: List[str],
+    exception: type[_ModelError]
+) -> List[str]:
+    """Validates if all string elements within the given list are not empty.
+
+    This function checks if each string in the list is not empty after
+    stripping leading and trailing whitespace.
+
+    Args:
+        args: The list of strings to check.
+        exception: The specific type of exception to raise.
+
+    Returns:
+        The validated list of strings.
+
+    Raises:
+        exception: If any string in the list is empty after stripping
+        whitespace.
+    """
+    for item in args:
+        if not item.strip():
+            raise exception()
+    return args
+
+
+def check_list_content(
+    arg: List[str],
+    exception: type[_ModelError]
+) -> List[str]:
+    """Validates the content of a list of strings based on the exception type.
+
+    This function provides specific validation for lists of strings used in
+    different contexts (e.g., tags or changes in a commit).
+
+    Args:
+        arg: The list of strings to check.
+        exception: The specific type of exception to raise for content errors.
+
+    Returns:
+        The validated list of strings.
+
+    Raises:
+        commit_exception.TagTypeError: If any tag is not a string.
+        commit_exception.TagValueError: If any tag is empty or contains spaces.
+        commit_exception.ChangeTypeError: If any change is not a string.
+        commit_exception.ChangeValueError: If any change is empty.
     """
     items = arg
     if exception is commit_exception.TagsCommitError:
