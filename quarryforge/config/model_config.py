@@ -29,10 +29,10 @@ class ConfigFossilRepo(Valid):
     FILE = '_file'
 
 
-class ConfigArgs(Valid):
-    """Configuration Arguments
+class ConfigFossilRebuild(Valid):
+    """Fossil Rebuild Configuration
 
-    The slots for a Repo Config.
+    The slots for a FossilRebuild.
 
     Args:
         USER: username to use in update
