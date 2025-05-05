@@ -87,7 +87,7 @@ class ConfigGetTimelineArg(Valid):
     Attributes:
         SRC_REPO: slot for the source fossil repository to reconstruct
     """
-    SRC_REPO = ConfigArgs.SRC_REPO.value
+    SRC_REPO = ConfigFossilRebuild.SRC_REPO.value
 
 
 class ConfigInfo(Valid):
@@ -100,7 +100,7 @@ class ConfigInfo(Valid):
         SRC_REPO: slot for the source repository for a fossil info command
     """
     VERSION = 'version'
-    SRC_REPO = ConfigArgs.SRC_REPO.value
+    SRC_REPO = ConfigFossilRebuild.SRC_REPO.value
 
 
 class ConfigDiff(Valid):
@@ -115,7 +115,7 @@ class ConfigDiff(Valid):
     """
     PARENT = 'parent'
     CHILD = 'child'
-    SRC_REPO = ConfigArgs.SRC_REPO.value
+    SRC_REPO = ConfigFossilRebuild.SRC_REPO.value
 
 
 class ConfigCat(Valid):
@@ -132,7 +132,7 @@ class ConfigCat(Valid):
     FILENAME = 'filename'
     OUTFILE = 'outfile'
     VERSION = ConfigInfo.VERSION.value
-    SRC_REPO = ConfigArgs.SRC_REPO.value
+    SRC_REPO = ConfigFossilRebuild.SRC_REPO.value
 
 
 class ConfigTimeline(Valid):
