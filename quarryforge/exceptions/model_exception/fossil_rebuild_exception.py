@@ -2,98 +2,99 @@
 
 #TODO
 """
-from quarryforge.config.exception_conf.models_exception \
-    import repo_config_error_conf
-from quarryforge.exceptions.model_exception.base_models_exception \
-    import RepoConfigError
+from quarryforge.config.exception_conf.model_exception_conf import fossil_rebuild_conf
+from quarryforge.exceptions.model_exception import base_model_exception
 
 
-class UserTypeError(RepoConfigError, TypeError):
+class UserTypeError(base_model_exception.FossilRebuildError, TypeError):
     """Raise for invalid user type."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.invalid_user())
+            message or fossil_rebuild_conf.invalid_user())
 
 
-class EmailTypeError(RepoConfigError, TypeError):
+class EmailTypeError(base_model_exception.FossilRebuildError, TypeError):
     """Raise for invalid email type."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.invalid_email())
+            message or fossil_rebuild_conf.invalid_email())
 
 
-class SrcRepoTypeError(RepoConfigError, TypeError):
+class SrcRepoTypeError(base_model_exception.FossilRebuildError, TypeError):
     """Raise for invalid src_repo type."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.invalid_src())
+            message or fossil_rebuild_conf.invalid_src())
 
 
-class UpdateRepoTypeError(RepoConfigError, TypeError):
+class UpdateRepoTypeError(base_model_exception.FossilRebuildError, TypeError):
     """Raise for invalid update_repo type."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.invalid_update())
+            message or fossil_rebuild_conf.invalid_update())
 
 
-class UpdateDirTypeError(RepoConfigError, TypeError):
+class UpdateDirTypeError(base_model_exception.FossilRebuildError, TypeError):
     """Raise for invalid update_dir type."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.invalid_update_dir())
+            message or fossil_rebuild_conf.invalid_update_dir())
 
 
-class TemplateTypeError(RepoConfigError, TypeError):
+class TemplateTypeError(base_model_exception.FossilRebuildError, TypeError):
     """Raise for invalid template type."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.invalid_update_dir())
+            message or fossil_rebuild_conf.invalid_update_dir())
 
 
-class ProjectNameTypeError(RepoConfigError, TypeError):
+class ProjectNameTypeError(base_model_exception.FossilRebuildError, TypeError):
     """Raise for invalid project_name type."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.project_name_invalid())
+            message or fossil_rebuild_conf.project_name_invalid())
 
 
-class ProjectDescTypeError(RepoConfigError, TypeError):
+class ProjectDescTypeError(base_model_exception.FossilRebuildError, TypeError):
     """Raise for invalid project_desc type."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.project_desc_invalid())
+            message or fossil_rebuild_conf.project_desc_invalid())
 
 
-class UserValueError(RepoConfigError, ValueError):
+class UserValueError(base_model_exception.FossilRebuildError, ValueError):
     """Raise for an empty user value."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.empty_user())
+            message or fossil_rebuild_conf.empty_user())
 
 
-class EmailValueError(RepoConfigError, ValueError):
+class EmailValueError(base_model_exception.FossilRebuildError, ValueError):
     """Raise for an empty email value."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.empty_email())
+            message or fossil_rebuild_conf.empty_email())
 
 
-class ProjectNameValueError(RepoConfigError, ValueError):
+class ProjectNameValueError(
+        base_model_exception.FossilRebuildError, ValueError):
     """Raise for an empty user value."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.empty_project_name())
+            message or fossil_rebuild_conf.empty_project_name())
 
 
-class ProjectDescValueError(RepoConfigError, ValueError):
+class ProjectDescValueError(
+        base_model_exception.FossilRebuildError, ValueError):
     """Raise for an empty user value."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.empty_project_desc())
+            message or fossil_rebuild_conf.empty_project_desc())
 
 
-class ImmutableRepoConfigError(RepoConfigError, TypeError):
+class ImmutableRepoConfigError(
+        base_model_exception.FossilRebuildError, TypeError):
     """Raise for any attempt to add or set attributes on RepoConfig."""
     def __init__(self, message=None):
         super().__init__(
-            message or repo_config_error_conf.immutable_config())
+            message or fossil_rebuild_conf.immutable_config())
