@@ -33,6 +33,15 @@ class TopModules(Valid):
     PROTOCOL = 'protocol'
 
 
+class TopSubPackages(Valid):
+    """Top level subpackages
+
+    """
+    CONFIG = 'config'
+    EXCEPTIONS = 'exceptions'
+    UTIL = 'util'
+
+
 class ModelNames(Valid):
     """ModelNames
 
@@ -47,3 +56,12 @@ class ModelNames(Valid):
     INFO_ARGS = 'InfoArg'
     DIFF_ARGS = 'DiffArg'
     TIMELINE = 'Timeline'
+
+
+class UtilNames(Valid):
+    """Utility Names
+
+    """
+    FOSSIL_UTIL = 'fossil_util'
+    MAIN_UTIL = 'main_util'
+    MODEL_UTIL = 'model_util'

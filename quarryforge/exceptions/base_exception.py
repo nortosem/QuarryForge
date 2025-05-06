@@ -5,7 +5,10 @@ It includes a base exception class and specific exceptions for different
 modules within the package.
 """
 import datetime
+from typing import Dict, Optional
 
+from quarryforge.config import root
+from quarryforge.config.exception_conf import message as Message
 
 class QuarryForgeError(Exception):
     """Base Exception Class for quarryforge
@@ -27,10 +30,10 @@ class QuarryForgeError(Exception):
         __str__(): Returns a formatted string representation of the exception.
     """
     def __init__(self,
-                 message=None,
-                 code=None,
-                 details=None,
-                 user_message=None):
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
         super().__init__(message)
         self.code = code
         self.details = details or {}
@@ -64,61 +67,67 @@ class QuarryForgeError(Exception):
         return ' '.join(parts)
 
 
-class ArgumentError(QuarryForgeError):
-    """Argument Error exception for quarryforge
+class ModelError(QuarryForgeError):
+    """Models Error
 
-    Raised when invalid arguments or combinations escape argparse checks.
+    Base exception class for all exceptions in the model module.
     """
-    def __init__(self, message: str = 'A quarryforge argument error occurred'):
-        super().__init__(message)
-        self.message = message
+    DEFAULT_CODE = root.TopModules.MODEL.value + Message.Default.ERROR.value
+
+    def __init__(self,
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
+
+        effective_code = code if code is not None else self.DEFAULT_CODE
+
+        super().__init__(
+            message=message,
+            code=effective_code,
+            details=details,
+            user_message=user_message)
 
 
-class FossilCommandError(QuarryForgeError):
-    """Fossil Command Error
+class FossilError(QuarryForgeError):
+    """Fossil Error
 
-    Raised when a fossil command executed via subprocess returns a non-zero
-    exit code, indicating an error in the command's execution.  Wraps the
-    subprocess.CalledProcessError with a quarryforge specific exception.
+    Base exception class for all exceptions in the fossil module.
     """
-    def __init__(self, message: str, returncode: int, cmd: str,
-                 stdout: str = None, stderr: str = None):
-        super().__init__(message)
-        self.returncode = returncode
-        self.cmd = cmd
-        self.stdout = stdout
-        self.stderr = stderr
+    DEFAULT_CODE = root.TopModules.FOSSIL.value + Message.Default.ERROR.value
 
-    def __str__(self) -> str:
-        return (f'{self.__class__.__name__}: Fossil command failed with '
-                f'return code {self.returncode}.  Command: {self.cmd}. '
-                f'Error: {self.message}')
+    def __init__(self,
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
+
+        effective_code = code if code is not None else self.DEFAULT_CODE
+
+        super().__init__(
+            message=message,
+            code=effective_code,
+            details=details,
+            user_message=user_message)
 
 
-class ConfigError(ArgumentError):
-    """Configuration Error
+class MainError(QuarryForgeError):
+    """Main Error
 
-    Raised when there is an issue with the configuration of the quarryforge
-    package, such as a missing or invalid configuration file, or missing
-    required configuration values.
+    Base exception class for all exceptions in the main module.
     """
-    pass
+    DEFAULT_CODE = root.TopModules.MAIN.value + Message.Default.ERROR.value
 
+    def __init__(self,
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
 
-class RepositoryOperationError(QuarryForgeError):
-    """Repository Operation Error
+        effective_code = code if code is not None else self.DEFAULT_CODE
 
-    Raised when a general repository operation fails, such as creating a
-    new repository, setting user configurations, or any other repository-level
-    operation.
-    """
-    pass
-
-
-class FileOperationError(QuarryForgeError):
-    """File Operation Error
-
-    Raised when an operation involving files fails, such as reading file
-    content or determining file changes.
-    """
-    pass
+        super().__init__(
+            message=message,
+            code=effective_code,
+            details=details,
+            user_message=user_message)
