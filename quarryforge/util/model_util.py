@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 from typing import List, TypeVar
 
-from quarryforge.config.exception_conf import PathMessage
+from quarryforge.config.exception_conf import message
 from quarryforge.exceptions import base_exception
 from quarryforge.exceptions.model_exception import commit_exception
 
@@ -92,7 +92,7 @@ def exists(arg: Path, exception: type[_ModelError]) -> Path:
         exception: If the path does not exist.
     """
     if not arg.exists():
-        raise exception(PathMessage.does_not_exist(str(arg)))
+        raise exception(message.PathMessage.does_not_exist(str(arg)))
     return arg
 
 
@@ -110,7 +110,7 @@ def is_file(arg: Path, exception: type[_ModelError]) -> Path:
     """
     path = arg
     if not path.is_file():
-        raise exception(PathMessage.not_a_file(path))
+        raise exception(message.PathMessage.not_a_file(path))
     return path
 
 
@@ -128,7 +128,7 @@ def is_dir(arg: Path, exception: type[_ModelError]) -> Path:
         exception: If the path is not a directory.
     """
     if not arg.is_dir():
-        raise exception(PathMessage.not_a_directory(str(arg)))
+        raise exception(message.PathMessage.not_a_directory(str(arg)))
     return arg
 
 
@@ -147,7 +147,7 @@ def is_read_ok(arg: Path, exception: type[_ModelError]) -> Path:
         exception: If the path does not have read permissions.
     """
     if not os.access(arg, os.R_OK):
-        raise exception(PathMessage.no_read_permission(str(arg)))
+        raise exception(message.PathMessage.no_read_permission(str(arg)))
     return arg
 
 
@@ -166,7 +166,7 @@ def is_write_ok(arg: Path, exception: type[_ModelError]) -> Path:
         exception: If the path does not have write permissions.
     """
     if not os.access(arg, os.W_OK):
-        raise exception(PathMessage.no_write_permission(str(arg)))
+        raise exception(message.PathMessage.no_write_permission(str(arg)))
     return arg
 
 
