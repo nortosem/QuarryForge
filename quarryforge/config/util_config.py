@@ -42,6 +42,7 @@ class TimelineData(Valid):
 
     The fields and patterns used to parse commits from the timeline output.
     """
+    INIT_CHECKIN = 'initial empty check-in'
     END_MARK = '+++ end of timeline'
     COMMITS = 'commits'
     COMMIT = '\\n(?=Commit:\\s+)'
