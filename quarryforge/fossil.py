@@ -5,185 +5,312 @@
 from pathlib import Path
 import subprocess
 
-from quarryforge import config
-from quarryforge.config import TimelineData
 from quarryforge import model
+from quarryforge.config import model_config
+from quarryforge.config import util_config
+from quarryforge.config.util_config import TimelineData as TL_Data
+from quarryforge.exceptions import fossil_exception
 from quarryforge.util import fossil_util
 
 
-def repo_config(user: str,
-                email: str,
-                src_repo: Path,
-                rebuild_repo: Path,
-                project_name: str,
-                project_desc: str,
-                template: Path = None) -> model.RepoConfig:
-    """Repository Configuration
+class Timeline:
+    """"""
+    __slots__ = ()
 
-    Prepare the updated repository configuration from a source repository.
-    """
-    src_repo = src_repo.expanduser()
-    rebuild_repo = rebuild_repo.expanduser()
-    template = template.expanduser()
+    @classmethod
+    def get(cls, source: model.FossilRepo) -> str:
+        """Get Raw Timeline
 
-    return model.RepoConfig(user, email, src_repo, project_name, project_desc)
+        """
+        try:
+            timeline: subprocess.CompletedProcess[bytes] = subprocess.run(
+                fossil_util.get_raw_timeline(source),
+                capture_output=True,
+                check=True)
+        except fossil_exception.FossilTimelineError as cpe:
+            raise (
+                cpe.returncode, cpe.cmd, cpe.stdout,
+                f'Timeline Process Exception: {cpe}') from cpe
 
-
-def create_new_repo(args: model.RepoConfig) -> model.GetTimelineArg:
-    """Create new repo
-
-    #todo
-    """
-    try:
-        initial_repo = subprocess.run(
-            fossil_util.init_rebuild_repo(args),
-            capture_output=True,
-            check=True)
-        default_user = subprocess.run(
-            fossil_util.set_default_user(args),
-            capture_output=True,
-            check=True)
-        user_contact = subprocess.run(
-            fossil_util.set_user_contact(args),
-            capture_output=True,
-            check=True)
-    except subprocess.CalledProcessError as cpe:
-        raise subprocess.CalledProcessError(
-            cpe.returncode, cpe.cmd, cpe.stdout,
-            f'Repo Creation Process Error: {cpe}'
-        ) from cpe
-
-    # log output #todo
-    output = (initial_repo.stdout.decode(),
-              default_user.stdout.decode(),
-              user_contact.stdout.decode())
-    print(output) #logging info
-    return model.GetTimelineArg(args.src)
+        raw_timeline = timeline.stdout.decode()
+        end_index = raw_timeline.find(TL_Data.END_MARK.value)
+        return raw_timeline[:end_index]
 
 
-def get_timeline(repo: model.GetTimelineArg) -> str:
-    """Get Timeline
+    @classmethod
+    def parse_timeline(cls, timeline: str) -> model.Timeline:
+        """Parse Timeline
 
-    #todo
-    """
-    try:
-        timeline: subprocess.CompletedProcess[bytes] = subprocess.run(
-            fossil_util.get_raw_timeline(repo.src),
-            capture_output=True,
-            check=True)
-    except subprocess.CalledProcessError as cpe:
-        raise subprocess.CalledProcessError(
-            cpe.returncode, cpe.cmd, cpe.stdout,
-            f'Timeline Process Exception: {cpe}') from cpe
+        """
+        commits = util_config.TL_Data.commit_pattern()
+        all_commits = commits.split(timeline)
+        uuid = util_config.TL_Data.hash_pattern()
+        date = util_config.TL_Data.date_pattern()
+        author = util_config.TL_Data.author_pattern()
+        comment = util_config.TL_Data.comment_pattern()
+        branch = util_config.TL_Data.branch_pattern()
+        tags = util_config.TL_Data.tags_pattern()
+        phase = util_config.TL_Data.phase_pattern()
+        change = util_config.TL_Data.change_pattern()
+        parsed_timeline = model.Timeline(commits = [])
 
-    raw_timeline = timeline.stdout.decode()
-    end_index = raw_timeline.find(TimelineData.END_MARK.value)
-    return raw_timeline[:end_index]
-
-
-def parse_timeline(timeline: str) -> model.Timeline:
-    """Parse Timeline
-
-    #todo
-    """
-    commits = TimelineData.commit_pattern()
-    all_commits = commits.split(timeline)
-    ci_hash = TimelineData.hash_pattern()
-    ci_date = TimelineData.date_pattern()
-    ci_author = TimelineData.author_pattern()
-    ci_comment = TimelineData.comment_pattern()
-    ci_branch = TimelineData.branch_pattern()
-    ci_tags = TimelineData.tags_pattern()
-    ci_phase = TimelineData.phase_pattern()
-    ci_change = TimelineData.change_pattern()
-    parsed_timeline = model.Timeline(commits = [])
-    initial_checkin = 'initial empty check-in'
-
-    for commit in all_commits:
-        data = commit.split('\n')
-        commit_data = {}
-        for entry in data:
-            if ci_hash.match(entry):
-                commit_data[TimelineData.HASH.value] = ci_hash.match(
-                    entry).group(TimelineData.HASH.value)
-            elif ci_date.match(entry):
-                commit_data[TimelineData.DATE.value] = ci_date.match(
-                    entry).group(TimelineData.DATE.value)
-            elif ci_author.match(entry):
-                commit_data[TimelineData.AUTHOR.value] = ci_author.match(
-                    entry).group(TimelineData.AUTHOR.value)
-            elif ci_comment.match(entry):
-                commit_data[TimelineData.COMMENT.value] = ci_comment.match(
-                    entry).group(TimelineData.COMMENT.value)
-            elif ci_branch.match(entry):
-                commit_data[TimelineData.BRANCH.value] = ci_branch.match(
-                    entry).group(TimelineData.BRANCH.value)
-            elif ci_tags.match(entry):
-                commit_data[TimelineData.TAGS.value] = ci_tags.match(
-                    entry).group(TimelineData.TAGS.value).split(', ')
-            elif ci_phase.match(entry):
-                if ci_phase.match(entry) is None:
-                    commit_data[TimelineData.PHASE.value] = None
-                else:
-                    commit_data[TimelineData.PHASE.value] = ci_phase.match(
-                        entry).group(TimelineData.PHASE.value)
-            elif ci_change.match(entry):
-                if TimelineData.CHANGES.value is None:
-                    commit_data[TimelineData.CHANGES.value] = [ci_change.match(
+        for commit in all_commits:
+            raw_data = commit.split('\n')
+            data = {}
+            for entry in raw_data:
+                if uuid.match(entry):
+                    data[TL_Data.HASH.value] = uuid.match(
+                        entry).group(TL_Data.HASH.value)
+                elif date.match(entry):
+                    data[TL_Data.DATE.value] = date.match(
+                        entry).group(TL_Data.DATE.value)
+                elif author.match(entry):
+                    data[TL_Data.AUTHOR.value] = author.match(
+                        entry).group(TL_Data.AUTHOR.value)
+                elif comment.match(entry):
+                    data[TL_Data.COMMENT.value] = comment.match(
+                        entry).group(TL_Data.COMMENT.value)
+                elif branch.match(entry):
+                    data[TL_Data.BRANCH.value] = branch.match(
+                        entry).group(TL_Data.BRANCH.value)
+                elif tags.match(entry):
+                    data[TL_Data.TAGS.value] = tags.match(
+                        entry).group(TL_Data.TAGS.value).split(', ')
+                elif phase.match(entry):
+                    if phase.match(entry) is None:
+                        data[TL_Data.PHASE.value] = None
+                    else:
+                        data[TL_Data.PHASE.value] = phase.match(
+                            entry).group(TL_Data.PHASE.value)
+                elif change.match(entry):
+                    if TL_Data.CHANGES.value is None:
+                        data[TL_Data.CHANGES.value] = [change.match(
                         entry).groups()]
-                else:
-                    commit_data[TimelineData.CHANGES.value].append(
-                        ci_change.match(entry).groups()
+                    else:
+                        data[TL_Data.CHANGES.value].append(
+                            change.match(entry).groups()
                     )
-            elif commit_data[TimelineData.COMMENT.value] == initial_checkin:
-                commit_data[TimelineData.CHANGES.value] = None
+                elif data[TL_Data.COMMENT.value] == TL_Data.INIT_CHECKIN.value:
+                    data[TL_Data.CHANGES.value] = None
 
         new_commit = model.Commit(
-            uuid=commit_data[TimelineData.HASH.value],
-            date=commit_data[TimelineData.DATE.value],
-            author=commit_data[TimelineData.AUTHOR.value],
-            comment=commit_data[TimelineData.COMMENT.value],
-            branch=commit_data[TimelineData.BRANCH.value],
-            tags=commit_data[TimelineData.TAGS.value],
-            phase=commit_data[TimelineData.PHASE.value],
-            changes=commit_data[TimelineData.CHANGES.value])
+            uuid=data[TL_Data.HASH.value],
+            date=data[TL_Data.DATE.value],
+            author=data[TL_Data.AUTHOR.value],
+            comment=data[TL_Data.COMMENT.value],
+            branch=data[TL_Data.BRANCH.value],
+            tags=data[TL_Data.TAGS.value],
+            phase=data[TL_Data.PHASE.value],
+            changes=data[TL_Data.CHANGES.value])
 
         parsed_timeline.add(new_commit)
 
     return parsed_timeline
 
 
-def get_changes(args: model.DiffArgs) -> str:
-    """Get Changes
+class Setup:
+    """Fossil Setup
 
-    #todo
+    Setup a target repository to store the changed source repository.
+
+    Attributes:  None
+
+    Methods:
+        new_repo:
+        defualt_user:
+        user_contact:
+
     """
-    try:
-        diff_process: subprocess.CompletedProcess[bytes] = subprocess.run(
-            fossil_util.get_file_changes(args),
-            capture_output=True,
-            check=True)
-    except subprocess.CalledProcessError as cpe:
-        raise subprocess.CalledProcessError(
-            cpe.returncode, cpe.cmd, cpe.stdout,
-            f'Fossil Diff Process Exception: {cpe}'
-        ) from cpe
-    raw_changes = diff_process.stdout.decode()
-    return raw_changes
+    __slots__ = ()
+
+    @classmethod
+    def new_repo(
+        cls,
+        username: str,
+        date_override: str,
+        new_repo: model.FossilRepo,
+        template: model.FossilRepo = None,
+        project_name: str = None,
+        project_desc: str = None,
+    ) -> str:
+        """Run the fossil new repository command."""
+        try:
+            init_repo = subprocess.run(
+                fossil_util.rebuild_init(
+                    username,
+                    user_email,
+                    date_override,
+                    new_repo,
+                    template,
+                    project_name,
+                    project_desc,
+                ),
+                capture_output=True,
+                check=True)
+        except fossil_exception.FossilSetupError as cpe:
+            raise fossil_exception.FossilSetupError(
+                cpe.returncode, cpe.cmd, cpe.stdout,
+                f'Repo Creation Process Error: {cpe}'
+            ) from cpe
+
+        return init_repo.stdout.decode()
+
+    @classmethod
+    def default_user(cls, username: str, new_repo: model.FossilRepo) -> str:
+        """Run the fossil user set default user command"""
+        try:
+            default_user = subprocess.run(
+                fossil_util.set_default_user(username, new_repo),
+                capture_output=True,
+                check=True)
+        except subprocess.FossilSetupError as cpe:
+            raise subprocess.FossilSetupError(
+                cpe.returncode, cpe.cmd, cpe.stdout,
+                f'Repo Creation Process Error: {cpe}'
+            ) from cpe
+
+        return default_user.stdout.decode()
+
+    @classmethod
+    def user_contact(
+        cls,
+        username: str,
+        email: str,
+        source: model.FossilRepo
+    ) -> str:
+        """Run the fossil user contact command"""
+        try:
+            user_contact = subprocess.run(
+                    fossil_util.set_user_contact(args),
+                    capture_output=True,
+                    check=True)
+        except fossil_exception.FossilSetupError as cpe:
+            raise fossil_exception.FossilSetupError(
+                cpe.returncode, cpe.cmd, cpe.stdout,
+                f'Repo Creation Process Error: {cpe}'
+            ) from cpe
+
+        return user_contact.stdout.decode())
+
+    @classmethod
+    def create_target_repo(
+        username: str,
+        email: str,
+        date_override: str,
+        new_repo: model.FossilRepo,
+        template: model.FossilRepo = None,
+        project_name: str = None,
+        project_desc: str = None,
+    ) -> str:
+        """Run the new repo command sequence to configure new repo."""
+        try:
+            target_init = cls.new_repo()
+            target_user_default = cls.default_user()
+            target_user_default = cls.user_contact()
+        except fossil_exception.FossilSetupError as cpe:
+            raise fossil_exception.FossilSetupError(
+                cpe.returncode, cpe.cmd, cpe.stdout,
+                f'Repo Creation Process Error: {cpe}'
+            ) from cpe
+
+        return (target_init.stdout.decode(),
+                target_user_default.stdout.decode(),
+                target_user_contact.stdout.decode())
 
 
-def get_content(args: model.CatArgs) -> str:
-    """Get Content
+class Info:
+    """Fossil Info Command
 
-    #todo
+    Get the parent commit hash for the commit version and repository provided.
     """
-    try:
-        cat_process: subprocess.CompletedProcess[bytes] = subprocess.run(
-            fossil_util.get_file_content(args),capture_output=True,check=True)
-    except subprocess.CalledProcessError as cpe:
-        raise subprocess.CalledProcessError(
-            cpe.returncode, cpe.cmd, cpe.stdout,
-            f'Fossil Cat Process Exception: {cpe}'
-        ) from cpe
-    content_changes = cat_process.stdout.decode()
-    return content_changes
+    __slots__ = ()
+
+    @classmethod
+    def get_parent(cls, version: str, source: model.FossilRepo) -> str | None:
+        """Get Parent Commit Version
+
+        Args:
+            version: (str): The specific check-in hash to get parent.
+            source (FossilRepo): Valid Path to the source repository.
+        Returns:
+            Version string for parent or None for initial commit.
+        Raises:
+            e
+        """
+        try:
+            info_process: subprocess.CompletedProcess[bytes] = subprocess.run(
+                fossil_util.get_parent_hash(args),
+                capture_output=True,
+                check=True)
+        except fossil_exception.FossilInfoError as cpe:
+            raise fossil_exception.FossilInfoError(
+                cpe.returncode, cpe.cmd, cpe.stdout,
+                f'Fossil Info Process Exception: {cpe}') from cpe
+        raw_parent_hash = info_process.stdout.decode()
+        initial_commit = util_config.InfoData.init_pattern()
+        commit_parent = util_config.InfoData.parent_pattern()
+        match_init = initial_commit.match(raw_parent_hash)
+        match_parent = commit_parent.match(raw_parent_hash)
+        if match_parent:
+            return match_parent.group(model_config.ConfigCommit.HASH.value)
+        if match_init:
+            return None
+        else:
+            raise base_model_exception.CommitError('unexpected error')
+
+
+class Diff:
+    """Fossil Diff Command
+
+    from, to, source
+    """
+    __slots__ = ()
+
+    @classmethod
+    def changes(
+            cls,
+            from_arg: str,
+            to_arg: str,
+            source: model.FossilRepo
+    ) -> str:
+        """Get all files changed on a commit from the source repo."""
+        try:
+            diff_process: subprocess.CompletedProcess[bytes] = subprocess.run(
+                fossil_util.get_file_changes(args),
+                capture_output=True,
+                check=True)
+        except fossil_exception.FossilDiffError as cpe:
+            raise fossil_exception.FossilDiffError(
+                cpe.returncode, cpe.cmd, cpe.stdout,
+                f'Fossil Diff Process Exception: {cpe}'
+            ) from cpe
+        raw_changes = diff_process.stdout.decode()
+        return raw_changes
+
+
+class Cat:
+    """Get files from source and put in target project directory.
+
+    """
+    __slots__ = ()
+
+    @classmethod
+    def content(
+        cls,
+        filename: str,
+        outfile: str,
+        version: str,
+        source: model.FossilRepo
+    ) -> str:
+        try:
+            cat_process: subprocess.CompletedProcess[bytes] = subprocess.run(
+                fossil_util.get_file_content(args),
+                capture_output=True,
+                check=True)
+        except fossil_exception.FossilCatError as cpe:
+            raise fossil_exception.FossilCatError(
+                cpe.returncode, cpe.cmd, cpe.stdout,
+                f'Fossil Cat Process Exception: {cpe}'
+            ) from cpe
+        content_changes = cat_process.stdout.decode()
+        return content_changes
