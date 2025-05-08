@@ -5,6 +5,7 @@ It includes a base exception class and specific exceptions for different
 modules within the package.
 """
 import datetime
+import subprocess
 from typing import Dict, Optional
 
 from quarryforge.config import root
@@ -72,7 +73,7 @@ class ModelError(QuarryForgeError):
 
     Base exception class for all exceptions in the model module.
     """
-    DEFAULT_CODE = root.TopModules.MODEL.value + Message.Default.ERROR.value
+    CODE = root.TopModules.MODEL.value + Message.Default.ERROR.value
 
     def __init__(self,
                  message: Optional[str] = None,
@@ -80,7 +81,7 @@ class ModelError(QuarryForgeError):
                  details: Optional[Dict] = None,
                  user_message: Optional[str] = None):
 
-        effective_code = code if code is not None else self.DEFAULT_CODE
+        effective_code = code if code is not None else self.CODE
 
         super().__init__(
             message=message,
@@ -89,12 +90,12 @@ class ModelError(QuarryForgeError):
             user_message=user_message)
 
 
-class FossilError(QuarryForgeError):
+class FossilError(QuarryForgeError, subprocess.CalledProcessError):
     """Fossil Error
 
     Base exception class for all exceptions in the fossil module.
     """
-    DEFAULT_CODE = root.TopModules.FOSSIL.value + Message.Default.ERROR.value
+    CODE = root.TopModules.FOSSIL.value + Message.Default.ERROR.value
 
     def __init__(self,
                  message: Optional[str] = None,
@@ -102,7 +103,7 @@ class FossilError(QuarryForgeError):
                  details: Optional[Dict] = None,
                  user_message: Optional[str] = None):
 
-        effective_code = code if code is not None else self.DEFAULT_CODE
+        effective_code = code if code is not None else self.CODE
 
         super().__init__(
             message=message,
@@ -116,7 +117,7 @@ class MainError(QuarryForgeError):
 
     Base exception class for all exceptions in the main module.
     """
-    DEFAULT_CODE = root.TopModules.MAIN.value + Message.Default.ERROR.value
+    CODE = root.TopModules.MAIN.value + Message.Default.ERROR.value
 
     def __init__(self,
                  message: Optional[str] = None,
@@ -124,7 +125,7 @@ class MainError(QuarryForgeError):
                  details: Optional[Dict] = None,
                  user_message: Optional[str] = None):
 
-        effective_code = code if code is not None else self.DEFAULT_CODE
+        effective_code = code if code is not None else self.CODE
 
         super().__init__(
             message=message,

@@ -2,11 +2,11 @@
 
 
 """
-import subprocess
+from quarryforge.exceptions import base_exception FossilError
 
 
-class FossilCommandError(QuarryForgeError, subprocess.CalledProcessError):
-    """Fossil Command Error
+class FossilTimelineError(FossilError):
+    """
 
     Raised when a fossil command executed via subprocess returns a non-zero
     exit code, indicating an error in the command's execution.  Wraps the
@@ -30,33 +30,12 @@ class FossilCommandError(QuarryForgeError, subprocess.CalledProcessError):
         )
 
 
-class FossilTimelineError(FossilCommandError):
+class FossilSetupError(FossilError):
     """
 
-
-    """
-    CODE = Message.Default.ERROR.value
-
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
-
-        effective_code = code if code is not None else self.CODE
-
-        super().__init__(
-            message=message,
-            code=effective_code,
-            details=details,
-            user_message=user_message
-        )
-
-
-class FossilSetupError(FossilCommandError):
-    """
-
-
+    Raised when a fossil command executed via subprocess returns a non-zero
+    exit code, indicating an error in the command's execution.  Wraps the
+    subprocess.CalledProcessError with a quarryforge specific exception.
     """
     CODE = Message.Default.ERROR.value
 
@@ -76,33 +55,12 @@ class FossilSetupError(FossilCommandError):
         )
 
 
-class FossilInfoError(FossilCommandError):
+class FossilInfoError(FossilError):
     """
 
-
-    """
-    CODE = Message.Default.ERROR.value
-
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
-
-        effective_code = code if code is not None else self.CODE
-
-        super().__init__(
-            message=message,
-            code=effective_code,
-            details=details,
-            user_message=user_message
-        )
-
-
-class FossilDiffError(FossilCommandError):
-    """
-
-
+    Raised when a fossil command executed via subprocess returns a non-zero
+    exit code, indicating an error in the command's execution.  Wraps the
+    subprocess.CalledProcessError with a quarryforge specific exception.
     """
     CODE = Message.Default.ERROR.value
 
@@ -122,10 +80,37 @@ class FossilDiffError(FossilCommandError):
         )
 
 
-class FossilCatError(FossilCommandError):
+class FossilDiffError(FossilError):
     """
 
+    Raised when a fossil command executed via subprocess returns a non-zero
+    exit code, indicating an error in the command's execution.  Wraps the
+    subprocess.CalledProcessError with a quarryforge specific exception.
+    """
+    CODE = Message.Default.ERROR.value
 
+    def __init__(self,
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
+
+        effective_code = code if code is not None else self.CODE
+
+        super().__init__(
+            message=message,
+            code=effective_code,
+            details=details,
+            user_message=user_message
+        )
+
+
+class FossilCatError(FossilError):
+    """
+
+    Raised when a fossil command executed via subprocess returns a non-zero
+    exit code, indicating an error in the command's execution.  Wraps the
+    subprocess.CalledProcessError with a quarryforge specific exception.
     """
     CODE = Message.Default.ERROR.value
 
