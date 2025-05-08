@@ -47,14 +47,8 @@ class ModelNames(Valid):
 
 
     """
-    ARG_STRING = 'ArgString'
     COMMIT = 'Commit'
-    CAT_ARGS = 'CatArgs'
     FOSSIL_REPO = 'FossilRepo'
-    FOSSIL_REBUILD = 'FossilRebuild'
-    GET_TIMELINE_ARG = 'GetTimelineArg'
-    INFO_ARGS = 'InfoArg'
-    DIFF_ARGS = 'DiffArg'
     TIMELINE = 'Timeline'
 
 
