@@ -216,7 +216,7 @@ class Commit:
         return self.uuid[:12]
 
 
-class Timeline:
+class FossilTimeline:
     """A list of all commits from the source repository timeline.
 
     Attributes:
