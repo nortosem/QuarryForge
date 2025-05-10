@@ -58,4 +58,5 @@ class UtilNames(Valid):
     """
     FOSSIL_UTIL = 'fossil_util'
     MAIN_UTIL = 'main_util'
+    META_UTIL = 'meta'
     MODEL_UTIL = 'model_util'
