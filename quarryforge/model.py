@@ -10,10 +10,11 @@ from quarryforge.config import model_config
 from quarryforge.config import util_config
 from quarryforge.exceptions import model_exception
 from quarryforge.util import fossil_util
+from quarryforge.util import meta
 from quarryforge.util import model_util
 
 
-class FossilRepo:
+class FossilRepo(metaclass=meta.Immutable):
     """Represents an immutable Fossil repository configuration.
 
     This class encapsulates the file path to a Fossil repository.
@@ -118,7 +119,7 @@ class FossilRepo:
         return hash(getattr(self, ConfigFossilRepo.FILE.value))
 
 
-class Commit:
+class Commit(metaclass=meta.Immutable):
     """Commit
 
     #todo
