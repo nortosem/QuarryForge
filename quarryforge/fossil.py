@@ -11,11 +11,19 @@ from quarryforge.config import util_config
 from quarryforge.config.util_config import TimelineData as TL_Data
 from quarryforge.exceptions import fossil_exception
 from quarryforge.util import fossil_util
+from quarryforge.util import meta
 
 
-class Timeline:
+class Timeline(metaclass=meta.Immutable):
     """"""
     __slots__ = ()
+
+    def __setattr__(self, name: Any, value: Any) -> None:
+        raise Exception('no attributes')
+
+
+    def __deltattr__(self, name: Any) -> None:
+        raise Exception('no attributes')
 
     @classmethod
     def get(cls, source: model.FossilRepo) -> str:
@@ -108,7 +116,7 @@ class Timeline:
     return parsed_timeline
 
 
-class Setup:
+class Setup(metaclass=meta.Immutable):
     """Fossil Setup
 
     Setup a target repository to store the changed source repository.
@@ -218,7 +226,7 @@ class Setup:
                 target_user_contact.stdout.decode())
 
 
-class Info:
+class Info(metaclass=meta.Immutable):
     """Fossil Info Command
 
     Get the parent commit hash for the commit version and repository provided.
@@ -239,7 +247,7 @@ class Info:
         """
         try:
             info_process: subprocess.CompletedProcess[bytes] = subprocess.run(
-                fossil_util.get_parent_hash(args),
+                fossil_util.get_parent_hash(version, source),
                 capture_output=True,
                 check=True)
         except fossil_exception.FossilInfoError as cpe:
@@ -259,7 +267,7 @@ class Info:
             raise base_model_exception.CommitError('unexpected error')
 
 
-class Diff:
+class Diff(metaclass=meta.Immutable):
     """Fossil Diff Command
 
     from, to, source
@@ -276,7 +284,7 @@ class Diff:
         """Get all files changed on a commit from the source repo."""
         try:
             diff_process: subprocess.CompletedProcess[bytes] = subprocess.run(
-                fossil_util.get_file_changes(args),
+                fossil_util.get_file_changes(from_arg, to_arg, source),
                 capture_output=True,
                 check=True)
         except fossil_exception.FossilDiffError as cpe:
@@ -288,7 +296,7 @@ class Diff:
         return raw_changes
 
 
-class Cat:
+class Cat(metaclass=meta.Immutable):
     """Get files from source and put in target project directory.
 
     """
@@ -302,9 +310,17 @@ class Cat:
         version: str,
         source: model.FossilRepo
     ) -> str:
+        """Use fossil cat to transfer source content to the updated repo
+        project dir.
+        """
         try:
             cat_process: subprocess.CompletedProcess[bytes] = subprocess.run(
-                fossil_util.get_file_content(args),
+                fossil_util.get_file_content(
+                    filename,
+                    outfile,
+                    version,
+                    source
+                ),
                 capture_output=True,
                 check=True)
         except fossil_exception.FossilCatError as cpe:
@@ -314,3 +330,39 @@ class Cat:
             ) from cpe
         content_changes = cat_process.stdout.decode()
         return content_changes
+
+
+class Branch(metaclass=meta.Immutable):
+    """Manage branch info using fossil branch
+
+
+    """
+    __slots__ = ()
+
+    @classmethod
+    def list_all(cls, source: model.FossilRepo) -> str:
+        """List all Branches for the source reposiotory"""
+        try:
+            list_process: subprocess.CompletedProcess[bytes] = subprocess.run(
+                fossil_util.ls_branches(source),
+            capture_output=True,
+            check=True)
+        except
+
+
+class Add(metaclass=Immutable):
+    """
+
+
+    """
+    __slots__ = ()
+    pass
+
+
+class Commit(metaclass=Immutable):
+    """
+
+
+    """
+    __slots__ = ()
+    pass
