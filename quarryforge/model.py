@@ -32,7 +32,9 @@ class FossilRepo(metaclass=meta.Immutable):
             file: A `pathlib.Path` object representing the full path to the
                   Fossil repository file.
         """
-        file = model_util.viable_fossil_repo(file, is_new)
+        file = model_util.viable_fossil_repo(
+            file, is_new, model_exception.FossilRepoError
+        )
         object.__setattr__(
             self,
             model_config.ConfigFossilRepo.FILE.value,
@@ -49,7 +51,7 @@ class FossilRepo(metaclass=meta.Immutable):
         """
         return getattr(self, ConfigFossilRepo.FILE.value)
 
-    def __setattr__(self, name: Any, value: Any) -> None:
+    def __setattr__(self, name: str, value: Any) -> None:
         """Prevents attribute modification, enforcing immutability.
 
         Attempting to set any attribute on a `FossilRepo` instance after
@@ -231,7 +233,7 @@ class FossilTimeline:
     def add(self, commit: Commit) -> None:
         self.commits.append(commit)
 
-    def reverse(self) -> List[Commit] -> None:
+    def reverse(self) -> List[Commit]:
         """Reverse Commit Order
 
         Default order is latest commit first.
