@@ -5,22 +5,58 @@
 from quarryforge.config.root import Valid
 
 
+class ConfigValidErrorData(Valid):
+    """Valid Error Message Fields"""
+    CODE = 'code'
+    MESSAGE = 'message'
+    USER_MESSAGE = 'user_message'
+    DETAILS = 'details'
+
+
+class ConfigBuilder(Valid):
+    """ValidErrorData Builder fields"""
+    CONTEXT = 'context'
+    FIELD = 'field'
+    ERROR_TYPE = 'error_type'
+    MESSAGE = 'message'
+    USER_MESSAGE = 'user_message'
+    INPUT_VALUE = 'input_value'
+    EXPECTED_DESC = 'expected_desc'
+    EXTRA_DETAILS = 'extra_details'
+
+
+class ErrorType(Valid):
+    """"""
+    EMPTY = 'Empty_String'
+
+
+class ErrorKind(Valid):
+    """"""
+    STR = 'str'
+    PATH = 'Path'
+
+
 class Argument(Valid):
     """Argument Messages
 
 
     """
-    ARG = ' argument'
-    INVALID = 'Invalid '
-    MISSING = 'Missing '
+    ARG = 'argument'
+    INVALID = 'Invalid'
+    MISSING = 'Missing'
+    TYPE = 'type:'
 
     @classmethod
     def invalid(cls, name: Valid):
-        return cls.INVALID.value + name.value + cls.ARG.value
+        return (Default.SPC.value).join(
+            [cls.INVALID.value, name.value, cls.ARG.value]
+        )
 
     @classmethod
-    def missing(cls, name: Valid):
-        return cls.MISSING.value + name.value + cls.ARG.value
+    def missing(cls, name: Valid, kind: str):
+        return (Default.SPC.value).join(
+            [cls.MISSING.value,cls.ARG.value,name.value,cls.TYPE.value, kind]
+        )
 
 
 class Default(Valid):
@@ -28,6 +64,11 @@ class Default(Valid):
 
 
     """
+    DOT = '.'
+    SPC = ' '
+    BAR = ' | '
+    NL = '\n'
+    EMPTY = 'EMPTY'
     ERROR = '_ERROR'
 
 
@@ -49,7 +90,7 @@ class PathMessage(Valid):
 
     """
     NAP = ' is not a path.'
-    DNE = ' does not exit.'
+    DNE = ' does not exist.'
     NAF = ' is not a file.'
     NAD = ' is not a directory.'
     READ = ' is not readable.'
