@@ -15,6 +15,10 @@ class ConfigFossilRepo(Valid):
     """
     FILE = '_file'
 
+    @classmethod
+    def file(cls):
+        return cls.File.value[1:]
+
 
 class ConfigCommit(Valid):
     """Commit Configuration
