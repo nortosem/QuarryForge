@@ -34,9 +34,7 @@ def get_raw_timeline(source: model.FossilRepo) -> List[str]:
             arg, util_exception.FossilUtilError
         ) and model_util.is_not_empty(
             arg, util_exception.FossilUtilError
-        ) for arg in [
-            username, date_override, new_repo,
-            template, project_name, project_desc]):
+        ) for arg in [source]):
         raise ArgumentError('#TODO is missing required attributes.')
     cmd = [util_conf.Command.FOSSIL.value,
            util_conf.Command.TIMELINE.value,
@@ -178,62 +176,6 @@ def set_user_contact(
     return cmd
 
 
-def ls_branches(source: model.FossilRepo) -> List[str]:
-    """List Branches
-
-    Creates a command to list all branches in a Fossil timeline.
-
-    Args:
-        src: GetTimelineArg containing the source repository path.
-
-    Returns:
-        A list of strings representing the command and its arguments for use
-        with `subprocess.run`.
-    """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [str(source)]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.BRANCH.value,
-           util_conf.Command.LIST.value,
-           util_conf.Command.ALL.value,
-           util_conf.Command.REPO.value,
-           src]
-    return cmd
-
-
-def closed_branches(source: model.FossilRepo) -> List[str]:
-    """Closed Branches
-
-    Creates a command to list all closed branches in a Fossil timeline.
-
-    Args:
-        src: GetTimelineArg containing the source repository path.
-
-    Returns:
-        A list of strings representing the command and its arguments for use
-        with `subprocess.run`.
-    """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [str(source)]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.BRANCH.value,
-           util_conf.Command.LIST.value,
-           util_conf.Command.CLOSED.value,
-           util_conf.Command.REPO.value,
-           src]
-    return cmd
-
-
 def get_parent_hash(version: str, source: FossilRepo) -> List[str]:
     """Get Parent Hash ID
 
@@ -331,3 +273,70 @@ def get_file_content(
            util_conf.Command.REPO.value,
            args.src_repo]
     return cmd
+
+
+def ls_branches(source: model.FossilRepo) -> List[str]:
+    """List Branches
+
+    Creates a command to list all branches in a Fossil timeline.
+
+    Args:
+        src: GetTimelineArg containing the source repository path.
+
+    Returns:
+        A list of strings representing the command and its arguments for use
+        with `subprocess.run`.
+    """
+    if not all(
+        model_util.is_valid_str_type(
+            arg, util_exception.FossilUtilError
+        ) and model_util.is_not_empty(
+            arg, util_exception.FossilUtilError
+        ) for arg in [str(source)]):
+        raise ArgumentError('#TODO is missing required attributes.')
+    cmd = [util_conf.Command.FOSSIL.value,
+           util_conf.Command.BRANCH.value,
+           util_conf.Command.LIST.value,
+           util_conf.Command.ALL.value,
+           util_conf.Command.REPO.value,
+           src]
+    return cmd
+
+
+def closed_branches(source: model.FossilRepo) -> List[str]:
+    """Closed Branches
+
+    Creates a command to list all closed branches in a Fossil timeline.
+
+    Args:
+        src: GetTimelineArg containing the source repository path.
+
+    Returns:
+        A list of strings representing the command and its arguments for use
+        with `subprocess.run`.
+    """
+    if not all(
+        model_util.is_valid_str_type(
+            arg, util_exception.FossilUtilError
+        ) and model_util.is_not_empty(
+            arg, util_exception.FossilUtilError
+        ) for arg in [str(source)]):
+        raise ArgumentError('#TODO is missing required attributes.')
+    cmd = [util_conf.Command.FOSSIL.value,
+           util_conf.Command.BRANCH.value,
+           util_conf.Command.LIST.value,
+           util_conf.Command.CLOSED.value,
+           util_conf.Command.REPO.value,
+           src]
+    return cmd
+
+
+def add_files(target: model.FossilRepo, *files):
+    """Add Files"""
+    pass
+
+
+
+def commit(target: model.FossilRepo, *files):
+    """Commit file changes"""
+    pass
