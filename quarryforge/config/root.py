@@ -16,6 +16,17 @@ class Valid(Enum):
         return tuple(slot.value for slot in cls)
 
 
+
+class Config(Enum):
+    """Config
+
+    Define class method to return config dictionary.
+    """
+    @classmethod
+    def get(cls):
+        return {element.name: element.value for element in cls}
+
+
 class TopModules(Valid):
     """Top level Modules
 
