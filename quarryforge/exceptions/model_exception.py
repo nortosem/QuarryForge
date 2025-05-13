@@ -23,7 +23,7 @@ class FossilRepoError(base_exception.ModelError):
                  details: Optional[Dict] = None,
                  user_message: Optional[str] = None):
 
-        effective_code = code if code is not None else self.CODE
+        effective_code = code if code is not None else self.__class__.CODE
 
         super().__init__(
             message=message,
@@ -47,7 +47,7 @@ class CommitError(base_exception.ModelError):
                  details: Optional[Dict] = None,
                  user_message: Optional[str] = None):
 
-        effective_code = code if code is not None else self.CODE
+        effective_code = code if code is not None else self.__class__.CODE
 
         super().__init__(
             message=message,
@@ -73,7 +73,7 @@ class TimelineError(base_exception.ModelError):
                  details: Optional[Dict] = None,
                  user_message: Optional[str] = None):
 
-        effective_code = code if code is not None else self.CODE
+        effective_code = code if code is not None else self.__class__.CODE
 
         super().__init__(
             message=message,
