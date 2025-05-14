@@ -2,10 +2,26 @@
 
 #TODO
 """
-from quarryforge.config.root import Valid
+from quarryforge.config import root
+from quarryforge.config.exception_conf import exception_config as msg
 
 
-class ConfigFossilRepo(Valid):
+class ModelConfig(root.Valid):
+    """Model Config
+
+    Define the module path base for all models
+    """
+    PATH = (msg.Default.DOT.value).join([
+        root.Valid.QUARRYFORGE.value,
+        root.TopModules.MODEL.value,
+    ])
+
+    @classmethod
+    def path(cls, sub_path: str) -> str:
+        return f'{cls.PATH}.{sub_path}'
+
+
+class ConfigFossilRepo(root.Valid):
     """FossilRepo Configuration
 
     The slots for a fossil repository.
@@ -19,8 +35,12 @@ class ConfigFossilRepo(Valid):
     def file(cls):
         return cls.File.value[1:]
 
+    @classmethod
+    def path(cls):
+        return ModelConfig.path(root.ModelNames.FOSSIL_REPO.value)
 
-class ConfigFossilCommit(Valid):
+
+class ConfigFossilCommit(root.Valid):
     """Fossil Commit Configuration
 
     The slots for a fossil checkin.
@@ -43,3 +63,7 @@ class ConfigFossilCommit(Valid):
     TAGS = 'tags'
     PHASE = 'phase'
     CHANGES = 'changes'
+
+    @classmethod
+    def path(cls):
+        return ModelConfig.path(root.ModelNames.FOSSIL_COMMIT.value)
