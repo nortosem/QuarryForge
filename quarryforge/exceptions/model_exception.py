@@ -33,8 +33,8 @@ class FossilRepoError(base_exception.ModelError):
         )
 
 
-class CommitError(base_exception.ModelError):
-    """Commit Error
+class FossilCommitError(base_exception.ModelError):
+    """FossilCommit Error
 
     Base exception for the Commit class.
     """
