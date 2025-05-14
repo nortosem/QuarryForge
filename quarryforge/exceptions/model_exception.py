@@ -39,7 +39,7 @@ class CommitError(base_exception.ModelError):
     Base exception for the Commit class.
     """
     CODE = code.ModelErrorContext.default_error(
-        code.ModelErrorContext.COMMIT)
+        code.ModelErrorContext.FOSSIL_COMMIT)
 
     def __init__(self,
                  message: Optional[str] = None,
