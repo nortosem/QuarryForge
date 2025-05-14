@@ -113,7 +113,7 @@ class Timeline(metaclass=meta.Immutable):
 
         parsed_timeline.add(new_commit)
 
-    return parsed_timeline
+        return parsed_timeline
 
 
 class Setup(metaclass=meta.Immutable):
@@ -198,7 +198,7 @@ class Setup(metaclass=meta.Immutable):
                 f'Repo Creation Process Error: {cpe}'
             ) from cpe
 
-        return user_contact.stdout.decode())
+        return user_contact.stdout.decode()
 
     @classmethod
     def create_target_repo(
@@ -347,7 +347,8 @@ class Branch(metaclass=meta.Immutable):
                 fossil_util.ls_branches(source),
             capture_output=True,
             check=True)
-        except
+        except Exception as e:
+            raise Exception
 
 
 class Add(metaclass=Immutable):
