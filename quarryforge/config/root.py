@@ -59,9 +59,9 @@ class ModelNames(Valid):
 
 
     """
-    COMMIT = 'Commit'
+    FOSSIL_COMMIT = 'FossilCommit'
     FOSSIL_REPO = 'FossilRepo'
-    TIMELINE = 'Timeline'
+    FOSSIL_TIMELINE = 'FossilTimeline'
 
 
 class UtilNames(Valid):
