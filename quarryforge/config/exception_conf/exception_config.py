@@ -5,7 +5,7 @@
 from quarryforge.config.root import Valid
 
 
-class ConfigValidErrorData(Valid):
+class ConfigQuarryForgeError(Valid):
     """Valid Error Message Fields"""
     CODE = 'code'
     MESSAGE = 'message'
@@ -69,7 +69,7 @@ class Default(Valid):
     BAR = ' | '
     NL = '\n'
     EMPTY = 'EMPTY'
-    ERROR = '_ERROR'
+    ERROR = 'ERROR'
 
 
 class Immutable(Valid):
