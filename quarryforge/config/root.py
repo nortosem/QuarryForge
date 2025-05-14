@@ -64,6 +64,18 @@ class ModelNames(Valid):
     FOSSIL_TIMELINE = 'FossilTimeline'
 
 
+class FossilCommand(Valid):
+    """Fossil Command names"""
+    TIMELINE = 'Timeline'
+    SETUP = 'Setup'
+    INFO = 'Info'
+    DIFF = 'Diff'
+    CAT = 'Cat'
+    BRANCH = 'Branch'
+    ADD = 'Add'
+    COMMIT = 'Commit'
+
+
 class UtilNames(Valid):
     """Utility Names
 
