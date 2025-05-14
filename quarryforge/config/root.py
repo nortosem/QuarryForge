@@ -11,6 +11,8 @@ class Valid(Enum):
 
     Define class method to return member values as a tuple.
     """
+    QUARRYFORGE = 'quarryforge'
+
     @classmethod
     def slots(cls) -> Tuple[str, ...]:
         return tuple(slot.value for slot in cls)
@@ -41,7 +43,6 @@ class TopModules(Valid):
     FOSSIL = 'fossil'
     MAIN = 'main'
     MODEL = 'model'
-    PROTOCOL = 'protocol'
 
 
 class TopSubPackages(Valid):
