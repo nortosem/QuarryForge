@@ -20,10 +20,10 @@ class ConfigFossilRepo(Valid):
         return cls.File.value[1:]
 
 
-class ConfigCommit(Valid):
-    """Commit Configuration
+class ConfigFossilCommit(Valid):
+    """Fossil Commit Configuration
 
-    The slots for a Commit.
+    The slots for a fossil checkin.
 
     Attributes:
         HASH = uuid for a commit entry

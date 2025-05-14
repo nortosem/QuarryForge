@@ -121,12 +121,12 @@ class FossilRepo(metaclass=meta.Immutable):
         return hash(getattr(self, ConfigFossilRepo.FILE.value))
 
 
-class Commit(metaclass=meta.Immutable):
+class FossilCommit(metaclass=meta.Immutable):
     """Commit
 
     #todo
     """
-    __slots__ = model_config.ConfigCommit.slots()
+    __slots__ = model_config.ConfigFossilCommit.slots()
 
     def __init__(self,
                  uuid: str,
