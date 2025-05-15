@@ -34,9 +34,8 @@ class QuarryForgeError(Exception):
         to_dict(): Returns a dictionary representation of the exception.
         __str__(): Returns a formatted string representation of the exception.
     """
-    CODE = code.BaseErrorContext.default_error(
-        BaseErrorContext.QUARRY_FORGE_ERROR
-    )
+    CODE = code.BaseErrorContext.package_error()
+
     def __init__(self,
                  message: Optional[str] = None,
                  code: Optional[str] = None,
