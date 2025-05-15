@@ -5,7 +5,6 @@ It includes a base exception class and specific exceptions for different
 modules within the package.
 """
 import datetime
-import subprocess
 from typing import Dict, Optional
 
 from quarryforge.config import root
@@ -102,7 +101,7 @@ class ModelError(QuarryForgeError):
             user_message=user_message)
 
 
-class FossilError(QuarryForgeError, subprocess.CalledProcessError):
+class FossilError(QuarryForgeError):
     """Fossil Error
 
     Base exception class for all exceptions in the fossil module.
