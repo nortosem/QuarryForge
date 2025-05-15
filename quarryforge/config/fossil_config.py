@@ -21,6 +21,26 @@ class FossilConfig(root.Valid):
         return f'{cls.PATH}.{sub_path}'
 
 
+class ConfigProcess(root.Valid):
+    """ConfigProcess
+
+
+    """
+    @classmethod
+    def path(cls):
+        return FossilConfig.path('CalledProcessError')
+
+
+class ConfigTimeout(root.Valid):
+    """ConfigTimeout
+
+
+    """
+    @classmethod
+    def path(cls):
+        return FossilConfig.path('TimeoutExpiredError')
+
+
 class ConfigTimeline(root.Valid):
     """ConfigTimeline
 
@@ -28,7 +48,7 @@ class ConfigTimeline(root.Valid):
     """
     @classmethod
     def path(cls):
-        return ModelConfig.path(root.FossilCommand.TIMELINE.value)
+        return FossilConfig.path(root.FossilCommand.TIMELINE.value)
 
 
 class ConfigSetup(root.Valid):
@@ -38,7 +58,7 @@ class ConfigSetup(root.Valid):
     """
     @classmethod
     def path(cls):
-        return ModelConfig.path(root.FossilCommand.SETUP.value)
+        return FossilConfig.path(root.FossilCommand.SETUP.value)
 
 
 class ConfigInfo(root.Valid):
@@ -48,7 +68,7 @@ class ConfigInfo(root.Valid):
     """
     @classmethod
     def path(cls):
-        return ModelConfig.path(root.FossilCommand.INFO.value)
+        return FossilConfig.path(root.FossilCommand.INFO.value)
 
 
 class ConfigDiff(root.Valid):
@@ -58,7 +78,7 @@ class ConfigDiff(root.Valid):
     """
     @classmethod
     def path(cls):
-        return ModelConfig.path(root.FossilCommand.DIFF.value)
+        return FossilConfig.path(root.FossilCommand.DIFF.value)
 
 
 class ConfigCat(root.Valid):
@@ -68,7 +88,7 @@ class ConfigCat(root.Valid):
     """
     @classmethod
     def path(cls):
-        return ModelConfig.path(root.FossilCommand.CAT.value)
+        return FossilConfig.path(root.FossilCommand.CAT.value)
 
 
 class ConfigBranch(root.Valid):
@@ -78,7 +98,7 @@ class ConfigBranch(root.Valid):
     """
     @classmethod
     def path(cls):
-        return ModelConfig.path(root.FossilCommand.BRANCH.value)
+        return FossilConfig.path(root.FossilCommand.BRANCH.value)
 
 
 class ConfigAdd(root.Valid):
@@ -88,7 +108,7 @@ class ConfigAdd(root.Valid):
     """
     @classmethod
     def path(cls):
-        return ModelConfig.path(root.FossilCommand.ADD.value)
+        return FossilConfig.path(root.FossilCommand.ADD.value)
 
 
 class ConfigCommit(root.Valid):
@@ -98,4 +118,4 @@ class ConfigCommit(root.Valid):
     """
     @classmethod
     def path(cls):
-        return ModelConfig.path(root.FossilCommand.COMMIT.value)
+        return FossilConfig.path(root.FossilCommand.COMMIT.value)
