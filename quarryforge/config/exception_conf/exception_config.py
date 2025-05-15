@@ -2,10 +2,10 @@
 
 
 """
-from quarryforge.config.root import Valid
+from quarryforge.config import root
 
 
-class ConfigQuarryForgeError(Valid):
+class ConfigQuarryForgeError(root.Valid):
     """Valid Error Message Fields"""
     CODE = 'code'
     MESSAGE = 'message'
@@ -13,7 +13,7 @@ class ConfigQuarryForgeError(Valid):
     DETAILS = 'details'
 
 
-class ConfigBuilder(Valid):
+class ConfigBuilder(root.Valid):
     """ValidErrorData Builder fields"""
     CONTEXT = 'context'
     FIELD = 'field'
@@ -25,18 +25,18 @@ class ConfigBuilder(Valid):
     EXTRA_DETAILS = 'extra_details'
 
 
-class ErrorType(Valid):
+class ErrorType(root.Valid):
     """"""
     EMPTY = 'Empty_String'
 
 
-class ErrorKind(Valid):
+class ErrorKind(root.Valid):
     """"""
     STR = 'str'
     PATH = 'Path'
 
 
-class Argument(Valid):
+class Argument(root.Valid):
     """Argument Messages
 
 
@@ -59,7 +59,7 @@ class Argument(Valid):
         )
 
 
-class Default(Valid):
+class Default(root.Valid):
     """Default Messages
 
 
@@ -72,7 +72,7 @@ class Default(Valid):
     ERROR = 'ERROR'
 
 
-class Immutable(Valid):
+class Immutable(root.Valid):
     """Immutable Message
 
 
@@ -84,7 +84,7 @@ class Immutable(Valid):
         return name.value + cls.MESSAGE.value
 
 
-class PathMessage(Valid):
+class PathMessage(root.Valid):
     """Filename Message
 
 
@@ -126,7 +126,7 @@ class PathMessage(Valid):
         return path + cls.WRITE.value
 
 
-class Required(Valid):
+class Required(root.Valid):
     """Field Missing Message
 
 
