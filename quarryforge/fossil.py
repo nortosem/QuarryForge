@@ -12,24 +12,17 @@ from quarryforge.config import util_config
 from quarryforge.config.util_config import TimelineData as TL_Data
 from quarryforge.exceptions import fossil_exception
 from quarryforge.exceptions import util_exception
+from quarryforge.meta import immutable
 from quarryforge.util import fossil_util
-from quarryforge.util import meta
 
 
-class Timeline(metaclass=meta.Immutable):
+class Timeline(metaclass=immutable.Namespace):
     """Fossil Timeline Process
 
     The fossil.Timeline namespace for executing fossil timeline processes on a
     fossil repository.
     """
     __slots__ = ()
-
-    def __setattr__(self, name: Any, value: Any) -> None:
-        raise util_exception.ImmutableError('todo')
-
-
-    def __deltattr__(self, name: Any) -> None:
-        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def get(cls, source: model.FossilRepo) -> str:
@@ -122,7 +115,7 @@ class Timeline(metaclass=meta.Immutable):
         return parsed_timeline
 
 
-class Setup(metaclass=meta.Immutable):
+class Setup(metaclass=immutable.Namespace):
     """Fossil Setup Process
 
     Setup a target repository to store the changed source repository.
@@ -136,13 +129,6 @@ class Setup(metaclass=meta.Immutable):
 
     """
     __slots__ = ()
-
-    def __setattr__(self, name: Any, value: Any) -> None:
-        raise util_exception.ImmutableError('todo')
-
-
-    def __deltattr__(self, name: Any) -> None:
-        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def new_repo(
@@ -242,19 +228,12 @@ class Setup(metaclass=meta.Immutable):
                 target_user_contact.stdout.decode())
 
 
-class Info(metaclass=meta.Immutable):
+class Info(metaclass=immutable.Namespace):
     """Fossil Info Process
 
     Get the parent commit hash for the commit version and repository provided.
     """
     __slots__ = ()
-
-    def __setattr__(self, name: Any, value: Any) -> None:
-        raise util_exception.ImmutableError('todo')
-
-
-    def __deltattr__(self, name: Any) -> None:
-        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def get_parent(cls, version: str, source: model.FossilRepo) -> str | None:
@@ -290,19 +269,12 @@ class Info(metaclass=meta.Immutable):
             raise base_model_exception.CommitError('unexpected error')
 
 
-class Diff(metaclass=meta.Immutable):
+class Diff(metaclass=immutable.Namespace):
     """Fossil Diff Process
 
     from, to, source
     """
     __slots__ = ()
-
-    def __setattr__(self, name: Any, value: Any) -> None:
-        raise util_exception.ImmutableError('todo')
-
-
-    def __deltattr__(self, name: Any) -> None:
-        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def changes(
@@ -326,19 +298,12 @@ class Diff(metaclass=meta.Immutable):
         return raw_changes
 
 
-class Cat(metaclass=meta.Immutable):
+class Cat(metaclass=immutable.Namespace):
     """Fossil Cat Process
 
     Get files from source and put in target project directory.
     """
     __slots__ = ()
-
-    def __setattr__(self, name: Any, value: Any) -> None:
-        raise util_exception.ImmutableError('todo')
-
-
-    def __deltattr__(self, name: Any) -> None:
-        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def content(
@@ -370,19 +335,12 @@ class Cat(metaclass=meta.Immutable):
         return content_changes
 
 
-class Branch(metaclass=meta.Immutable):
+class Branch(metaclass=immutable.Namespace):
     """Fossil Branch Process
 
     Manage branch info using fossil branch
     """
     __slots__ = ()
-
-    def __setattr__(self, name: Any, value: Any) -> None:
-        raise util_exception.ImmutableError('todo')
-
-
-    def __deltattr__(self, name: Any) -> None:
-        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def list_all(cls, source: model.FossilRepo) -> str:
@@ -396,32 +354,19 @@ class Branch(metaclass=meta.Immutable):
             raise Exception
 
 
-class Add(metaclass=Immutable):
+class Add(metaclass=immutable.Namespace):
     """Fossil Add Process
 
 
     """
     __slots__ = ()
-
-    def __setattr__(self, name: Any, value: Any) -> None:
-        raise util_exception.ImmutableError('todo')
+    pass
 
 
-    def __deltattr__(self, name: Any) -> None:
-        raise util_exception.ImmutableError('todo')
-
-
-
-class Commit(metaclass=Immutable):
+class Commit(metaclass=immutable.Namespace):
     """Fossil Commit Process
 
 
     """
     __slots__ = ()
-
-    def __setattr__(self, name: Any, value: Any) -> None:
-        raise util_exception.ImmutableError('todo')
-
-
-    def __deltattr__(self, name: Any) -> None:
-        raise util_exception.ImmutableError('todo')
+    pass
