@@ -11,10 +11,13 @@ class FossilConfig(root.Valid):
 
     Define the module path base for all models
     """
-    PATH = (msg.Default.DOT.value).join([
-        root.Valid.QUARRYFORGE.value,
-        root.TopModules.FOSSIL.value
-    ])
+    PATH = (
+        f'{root.Valid.QUARRYFORGE.value}'
+        f'{msg.Default.DOT.value}'
+        f'{root.TopModules.FOSSIL.value}'
+    )
+
+
 
     @classmethod
     def path(cls, sub_path: str) -> str:
