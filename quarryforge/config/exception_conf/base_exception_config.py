@@ -5,30 +5,31 @@ The configuraiton for the exception base class of quarryforge errors.
 from quarryforge.config import root
 from quarryforge.config.exception_conf import exception_config as msg
 from quarryforge.exceptions import QuarryForgeError
+from quarryforge.meta import immutable
 
 
-class BaseConfig(root.Valid):
+class BaseConfig(metaclass=immutable.Namespace):
     """Base Config
 
     Define default path for all base exceptions.
     """
-    PACKAGE = root.Valid.QUARRYFORGE.value
+    PACKAGE = root.PACKAGE.name
 
     @classmethod
     def path(cls, module_name: str) -> str:
         return f'{cls.PACKAGE}.{module_name}'
 
 
-class BaseErrorContext(root.Config):
+class BaseErrorContext(metaclass=immutable.Namespace):
     """Context for the Base Exceptions of QuarryForge"""
-    QUARRY_FORGE = BaseConfig.PACKAGE.value
-    MODEL_ERROR = BaseConfig.path(root.TopModules.MODEL.value)
-    FOSSIL_ERROR = BaseConfig.path(root.TopModules.FOSSIL.value)
-    MAIN_ERROR = BaseConfig.path(root.TopModules.MAIN.value)
+    QUARRY_FORGE = BaseConfig.PACKAGE
+    MODEL_ERROR = BaseConfig.path(root.MODULE.model)
+    FOSSIL_ERROR = BaseConfig.path(root.MODULE.fossil)
+    MAIN_ERROR = BaseConfig.path(root.MODULE.main)
 
     @classmethod
     def package_error(cls):
-        return f'{cls.QUARRY_FORGE.value}.{msg.Default.ERROR.value}'
+        return f'{cls.QUARRY_FORGE}.{msg.Default.ERROR.value}'
 
     @classmethod
     def default_error(cls, context: BaseErrorContext):
