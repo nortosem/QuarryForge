@@ -13,6 +13,8 @@ class BaseConfig(metaclass=immutable.Namespace):
 
     Define default path for all base exceptions.
     """
+    __slots__ = ('PACKAGE')
+
     PACKAGE = root.PACKAGE.name
 
     @classmethod
@@ -22,6 +24,8 @@ class BaseConfig(metaclass=immutable.Namespace):
 
 class BaseErrorContext(metaclass=immutable.Namespace):
     """Context for the Base Exceptions of QuarryForge"""
+    __slots__ = ('QUARRY_FORGE','MODEL_ERROR', 'FOSSIL_ERROR', 'MAIN_ERROR')
+
     QUARRY_FORGE = BaseConfig.PACKAGE
     MODEL_ERROR = BaseConfig.path(root.MODULE.model)
     FOSSIL_ERROR = BaseConfig.path(root.MODULE.fossil)
