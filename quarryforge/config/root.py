@@ -27,10 +27,10 @@ __all__ = [
 
 class Package(NamedTuple):
     """Application package name"""
-    name: str
+    name: str = 'quarryforge'
 
 
-PACKAGE: Package = Package(name='quarryforge')
+PACKAGE: Package = Package()
 """Global constant for the main package name."""
 
 class Module(NamedTuple):
@@ -44,12 +44,12 @@ class Module(NamedTuple):
         main (str): Name of the main application or entry point module.
         model (str): Name of the module defining core data models or structures.
     """
-    fossil: str
-    main: str
-    model: str
+    fossil: str = 'fossil'
+    main: str = 'main'
+    model: str = 'model'
 
 
-MODULE: Module = Module(fossil='fossil', main='main', model='model')
+MODULE: Module = Module()
 """Global constant for top-level module names."""
 
 
@@ -64,16 +64,12 @@ class SubPackage(NamedTuple):
         exception (str): Name of the sub-package for custom exceptions.
         util (str): Name of the sub-package for utility modules.
     """
-    config: str
-    exception: str
-    util: str
+    config: str = 'config'
+    exception: str = 'exception'
+    util: str = 'util'
 
 
-SUB_PACKAGE: SubPackage = SubPackage(
-    config = 'config',
-    exception = 'exception',
-    util = 'util'
-)
+SUB_PACKAGE: SubPackage = SubPackage()
 """Global constant for sub-package name configurations."""
 
 
@@ -88,16 +84,12 @@ class Model(NamedTuple):
         fossil_timeline (str):
             Name of the model representing a Fossil timeline entry.
     """
-    fossil_commit: str
-    fossil_repo: str
-    fossil_timeline:str
+    fossil_commit: str = 'FossilCommit'
+    fossil_repo: str = 'FossilRepo'
+    fossil_timeline:str = 'FossilTimeline'
 
 
-MODEL: Model = Model(
-    fossil_commit = 'FossilCommit',
-    fossil_repo = 'FossilRepo',
-    fossil_timeline = 'FossilTimeline'
-)
+MODEL: Model = Model()
 """Global constant for data model names."""
 
 
@@ -117,26 +109,17 @@ class FossilCommand(NamedTuple):
         add (str): Identifier for the Fossil 'add' command.
         commit (str): Identifier for the Fossil 'commit' command.
     """
-    timeline: str
-    setup: str
-    info: str
-    diff: str
-    cat: str
-    branch: str
-    add: str
-    commit: str
+    timeline: str = 'Timeline'
+    setup: str = 'Setup'
+    info: str = 'Info'
+    diff: str = 'Diff'
+    cat: str = 'Cat'
+    branch: str = 'Branch'
+    add: str = 'Add'
+    commit: str = 'Commit'
 
 
-FOSSIL_COMMAND: FossilCommand = FossilCommand(
-    timeline = 'Timeline',
-    setup = 'Setup',
-    info = 'Info',
-    diff = 'Diff',
-    cat = 'Cat',
-    branch = 'Branch',
-    add = 'Add',
-    commit = 'Commit'
-)
+FOSSIL_COMMAND: FossilCommand = FossilCommand()
 """Global constant for Fossil SCM command names."""
 
 
@@ -156,16 +139,11 @@ class UtilModule(NamedTuple):
         model_util (str):
             Name of the utility module for model-related helpers.
     """
-    error_data_util: str
-    fossil_util: str
-    main_util: str
-    model_util: str
+    error_data_util: str = 'error_data_util'
+    fossil_util: str = 'fossil_util'
+    main_util: str = 'main_util'
+    model_util: str = 'model_util'
 
 
-UTIL_MODULE: UtilModule = UtilModule(
-    error_data_util = 'error_data_util',
-    fossil_util = 'fossil_util',
-    main_util = 'main_util',
-    model_util = 'model_util',
-)
+UTIL_MODULE: UtilModule = UtilModule()
 """Global constant for utility module names."""
