@@ -2,10 +2,15 @@
 
 #TODO
 """
-from quarryforge.config.root import Valid
+from typing import NamedTuple
+
 import re
 
-class Command(Valid):
+
+__all__ = ['COMMAND', 'TIMELINE_DATA', '']
+
+
+class Command(NamedTuple):
     """The permitted fossil commands and options"""
     FOSSIL = 'fossil'
     REPO = '-R'
@@ -37,7 +42,11 @@ class Command(Valid):
     VERSION = '-r'
 
 
-class TimelineData(Valid):
+COMMAND: Command = Command()
+"""Global constant for fossil command arguments."""
+
+
+class TimelineData(NamedTuple):
     """Timeline Data
 
     The fields and patterns used to parse commits from the timeline output.
@@ -60,51 +69,55 @@ class TimelineData(Valid):
 
     @classmethod
     def commit_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.COMMIT.value}')
+        pattern = re.compile(f'{cls.COMMIT}')
         return pattern
 
     @classmethod
     def hash_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.HASH.value}')
+        pattern = re.compile(f'{cls.HASH}')
         return pattern
 
     @classmethod
     def date_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.DATE.value}')
+        pattern = re.compile(f'{cls.DATE}')
         return pattern
 
     @classmethod
     def author_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.AUTHOR.value}')
+        pattern = re.compile(f'{cls.AUTHOR}')
         return pattern
 
     @classmethod
     def comment_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.COMMENT.value}')
+        pattern = re.compile(f'{cls.COMMENT}')
         return pattern
 
     @classmethod
     def branch_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.BRANCH.value}')
+        pattern = re.compile(f'{cls.BRANCH}')
         return pattern
 
     @classmethod
     def tags_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.TAGS.value}')
+        pattern = re.compile(f'{cls.TAGS}')
         return pattern
 
     @classmethod
     def phase_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.PHASE.value}')
+        pattern = re.compile(f'{cls.PHASE}')
         return pattern
 
     @classmethod
     def change_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.CHANGE.value}')
+        pattern = re.compile(f'{cls.CHANGE}')
         return pattern
 
 
-class InfoData(Valid):
+TIMELINE_DATA: TimelineData = TimelineData()
+"""Global constant for timeline data configuration."""
+
+
+class InfoData(NamedTuple):
     """Parser for Fossil Info output."""
     INIT_HASH = '^comment:\\s+(?P<init>)\\s.+\\n'
     PARENT = 'parent'
@@ -112,10 +125,14 @@ class InfoData(Valid):
 
     @classmethod
     def init_pattern(cls) -> re.Pattern:
-        pattern = re.compile(cls.INIT_HASH.value)
+        pattern = re.compile(cls.INIT_HASH)
         return pattern
 
     @classmethod
     def parent_pattern(cls) -> re.Pattern:
-        pattern = re.compile(cls.PARENT_DATA.value)
+        pattern = re.compile(cls.PARENT_DATA)
         return pattern
+
+
+INFO_DATA: InfoData = InfoData()
+"""Global constant for info data patterns."""
