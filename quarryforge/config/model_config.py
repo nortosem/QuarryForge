@@ -11,14 +11,15 @@ class ModelConfig(root.Valid):
 
     Define the module path base for all models
     """
-    PATH = (msg.Default.DOT.value).join([
-        root.Valid.QUARRYFORGE.value,
-        root.TopModules.MODEL.value,
-    ])
+    PATH = (
+        f'{root.Valid.QUARRYFORGE.value}'
+        f'{msg.Default.DOT.value}'
+        f'{root.TopModules.MODEL.value}'
+    )
 
     @classmethod
     def path(cls, sub_path: str) -> str:
-        return f'{cls.PATH}.{sub_path}'
+        return f'{cls.PATH}{msg.Default.DOT.value}{sub_path}'
 
 
 class ConfigFossilRepo(root.Valid):
