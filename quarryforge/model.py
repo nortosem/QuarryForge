@@ -8,12 +8,15 @@ from typing import Any, List, Optional
 from quarryforge.config import model_config
 from quarryforge.config import util_config
 from quarryforge.exceptions import model_exception
+from quarryforge.meta import immutable
 from quarryforge.util import fossil_util
-from quarryforge.util import meta
 from quarryforge.util import model_util
 
 
-class FossilRepo(metaclass=meta.Immutable):
+class FossilRepo(
+    immutable.ImmutableInstance,
+    metaclass=immutable.ImmutableMetaClass
+):
     """Represents an immutable Fossil repository configuration.
 
     This class encapsulates the file path to a Fossil repository.
@@ -22,7 +25,7 @@ class FossilRepo(metaclass=meta.Immutable):
     Attributes:
         file (Path): A read-only property providing the path to the Fossil
                      repository file.    """
-    __slots__ = model_config.ConfigFossilRepo.slots()
+    __slots__ = model_config.FOSSIL_REPO_CONFIG.slots()
 
     def __init__(self, file: Path | str, is_new: bool) -> None:
         """Initializes a new FossilRepo instance.
@@ -34,10 +37,7 @@ class FossilRepo(metaclass=meta.Immutable):
         file = model_util.viable_fossil_repo(
             file, is_new, model_exception.FossilRepoError
         )
-        object.__setattr__(
-            self,
-            model_config.ConfigFossilRepo.FILE.value,
-            file)
+        object.__setattr__(self, model_config.FOSSIL_REPO_CONFIG.file, file)
 
     @property
     def file(self) -> Path:
@@ -48,7 +48,7 @@ class FossilRepo(metaclass=meta.Immutable):
         Returns:
             pathlib.Path: The path object representing the repository file.
         """
-        return getattr(self, model_config.ConfigFossilRepo.FILE.value)
+        return getattr(self, model_config.FOSSIL_REPO_CONFIG.file)
 
     def __setattr__(self, name: str, value: Any) -> None:
         """Prevents attribute modification, enforcing immutability.
@@ -87,7 +87,7 @@ class FossilRepo(metaclass=meta.Immutable):
         Returns:
             str: The string form of the repository's `Path` object.
         """
-        return str(getattr(self, model_config.ConfigFossilRepo.FILE.value))
+        return str(getattr(self, model_config.FOSSIL_REPO_CONFIG.file))
 
     def __repr__(self) -> str:
         """The representation of a FossilRepo instance for logging/debugging.
@@ -115,14 +115,17 @@ class FossilRepo(metaclass=meta.Immutable):
         if not isinstance(obj, FossilRepo):
             return NotImplemented
         return getattr(
-            self, model_config.ConfigFossilRepo.FILE.value) == obj.file
+            self, model_config.FOSSIL_REPO_CONFIG.file) == obj.file
 
     def __hash__(self) -> int:
         """Returns a hash for this reposiory Path instance."""
-        return hash(getattr(self, model_config.ConfigFossilRepo.FILE.value))
+        return hash(getattr(self, model_config.FOSSIL_REPO_CONFIG.file))
 
 
-class FossilCommit(metaclass=meta.Immutable):
+class FossilCommit(
+    immutable.ImmutableInstance,
+    metaclass=immutable.ImmutableMetaClass
+):
     """Commit
 
     #todo
