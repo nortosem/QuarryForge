@@ -2,22 +2,10 @@
 
 #TODO
 """
-from enum import Enum
-from typing import Tuple
+from typing import NamedTuple, Tuple
 
 
-class Valid(Enum):
-    """Valid
-
-    Define class method to return member values as a tuple.
-    """
-    QUARRYFORGE = 'quarryforge'
-
-    @classmethod
-    def slots(cls) -> Tuple[str, ...]:
-        return tuple(slot.value for slot in cls)
-
-
+__all__ = [PACKAGE, MODULE, SUB_PACKAGE, MODEL, FOSSIL_COMMAND, UTIL_MODULE]
 
 class Config(Enum):
     """Config
@@ -29,58 +17,108 @@ class Config(Enum):
         return {element.name: element.value for element in cls}
 
 
-class TopModules(Valid):
+class Package(NamedTuple):
+    """Package name"""
+    name: str
+
+
+PACKAGE: Package = Package(name='quarryforge')
+
+
+class Module(NamedTuple):
     """Top level Modules
 
     The module names in the top-level package directory.
 
     Attributes:
-        FOSSIL: the fossil module
-        MAIN: the main module
-        MODEL: the model module
-        PROTOCOL: the protocol module
+        fossil: the fossil module
+        main: the main module
+        meta: the meetaclass module
+        model: the model module
     """
-    FOSSIL = 'fossil'
-    MAIN = 'main'
-    MODEL = 'model'
+    fossil: str
+    main: str
+    model: str
 
 
-class TopSubPackages(Valid):
+MODULE: Module = Module(fossil='fossil', main='main', model='model')
+
+
+class SubPackage(NamedTuple):
     """Top level subpackages
 
+    Attributes:
+        config: the configuration subpackage
+        exception: the exception subpackage
+        util: the utility subpackage
     """
-    CONFIG = 'config'
-    EXCEPTIONS = 'exceptions'
-    UTIL = 'util'
+    config: str
+    exception: str
+    util: str
 
 
-class ModelNames(Valid):
-    """ModelNames
+SUB_PACKAGE: SubPackage = SubPackage(
+    config = 'config',
+    exception = 'exception',
+    util = 'util'
+)
 
+
+class Model(NamedTuple):
+    """Model names
+
+    Attributes:
 
     """
-    FOSSIL_COMMIT = 'FossilCommit'
-    FOSSIL_REPO = 'FossilRepo'
-    FOSSIL_TIMELINE = 'FossilTimeline'
+    fossil_commit: str
+    fossil_repo: str
+    fossil_timeline:str
 
 
-class FossilCommand(Valid):
+MODEL: Model = Model(
+    fossil_commit = 'FossilCommit',
+    fossil_repo = 'FossilRepo',
+    fossil_timeline = 'FossilTimeline'
+)
+
+
+class FossilCommand(NamedTuple):
     """Fossil Command names"""
-    TIMELINE = 'Timeline'
-    SETUP = 'Setup'
-    INFO = 'Info'
-    DIFF = 'Diff'
-    CAT = 'Cat'
-    BRANCH = 'Branch'
-    ADD = 'Add'
-    COMMIT = 'Commit'
+    timeline: str
+    setup: str
+    info: str
+    diff: str
+    cat: str
+    branch: str
+    add: str
+    commit: str
 
 
-class UtilNames(Valid):
-    """Utility Names
+FOSSIL_COMMAND: FossilCommand = FossilCommand(
+    timeline = 'Timeline',
+    setup = 'Setup',
+    info = 'Info',
+    diff = 'Diff',
+    cat = 'Cat',
+    branch = 'Branch',
+    add = 'Add',
+    commit = 'Commit'
+)
+
+
+class UtilModule(NamedTuple):
+    """Utility Module Names
 
     """
-    FOSSIL_UTIL = 'fossil_util'
-    MAIN_UTIL = 'main_util'
-    META_UTIL = 'meta'
-    MODEL_UTIL = 'model_util'
+    error_data_util: str
+    fossil_util: str
+    main_util: str
+    model_util: str
+
+
+UTIL_MODULE: UtilModule = UtilModule(
+    error_data_util = 'error_data_util'
+    fossil_util = 'fossil_util'
+    main_util = 'main_util'
+    model_util = 'model_util'
+)
