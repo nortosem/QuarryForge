@@ -3,7 +3,6 @@
 #todo
 """
 from pathlib import Path
-import subprocess
 from typing import Any, List, Optional
 
 from quarryforge.config import model_config
@@ -49,7 +48,7 @@ class FossilRepo(metaclass=meta.Immutable):
         Returns:
             pathlib.Path: The path object representing the repository file.
         """
-        return getattr(self, ConfigFossilRepo.FILE.value)
+        return getattr(self, model_config.ConfigFossilRepo.FILE.value)
 
     def __setattr__(self, name: str, value: Any) -> None:
         """Prevents attribute modification, enforcing immutability.
@@ -88,7 +87,7 @@ class FossilRepo(metaclass=meta.Immutable):
         Returns:
             str: The string form of the repository's `Path` object.
         """
-        return str(getattr(self, ConfigFossilRepo.FILE.value))
+        return str(getattr(self, model_config.ConfigFossilRepo.FILE.value))
 
     def __repr__(self) -> str:
         """The representation of a FossilRepo instance for logging/debugging.
@@ -108,17 +107,19 @@ class FossilRepo(metaclass=meta.Immutable):
         Returns:
             bool: `True` if the other object is a `FossilRepo` instance and
                   their `file` attributes are equal, `False` otherwise.
-            NotImplemented: If the `other` object is not a `FossilRepo` instance,
-                            allowing for the comparison to be handled by the
-                            other object's `__eq__` method.
+            NotImplemented:
+                If the `other` object is not a `FossilRepo` instance,
+                allowing for the comparison to be handled by the other
+                object's `__eq__` method.
         """
         if not isinstance(obj, FossilRepo):
             return NotImplemented
-        return getattr(self, ConfigFossilRepo.FILE.value) == obj.file
+        return getattr(
+            self, model_config.ConfigFossilRepo.FILE.value) == obj.file
 
     def __hash__(self) -> int:
         """Returns a hash for this reposiory Path instance."""
-        return hash(getattr(self, ConfigFossilRepo.FILE.value))
+        return hash(getattr(self, model_config.ConfigFossilRepo.FILE.value))
 
 
 class FossilCommit(metaclass=meta.Immutable):
