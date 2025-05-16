@@ -12,10 +12,17 @@ Attributes:
     FOSSIL_COMMAND (FossilCommand): Fossil SCM command names.
     UTIL_MODULE (UtilModule): Utility module names.
 """
-from typing import NamedTuple, Tuple
+from typing import NamedTuple
 
 
-__all__ = [PACKAGE, MODULE, SUB_PACKAGE, MODEL, FOSSIL_COMMAND, UTIL_MODULE]
+__all__ = [
+    'PACKAGE',
+    'MODULE',
+    'SUB_PACKAGE',
+    'MODEL',
+    'FOSSIL_COMMAND',
+    'UTIL_MODULE'
+]
 
 
 class Package(NamedTuple):
@@ -156,10 +163,9 @@ class UtilModule(NamedTuple):
 
 
 UTIL_MODULE: UtilModule = UtilModule(
-    error_data_util = 'error_data_util'
-    fossil_util = 'fossil_util'
-    main_util = 'main_util'
-    model_util = 'model_util'
+    error_data_util = 'error_data_util',
+    fossil_util = 'fossil_util',
+    main_util = 'main_util',
+    model_util = 'model_util',
 )
 """Global constant for utility module names."""
-
