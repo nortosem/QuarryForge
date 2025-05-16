@@ -1,28 +1,30 @@
-"""Models Configuration
+"""Model Configuration
 
 #TODO
 """
+from typing import NamedTuple, Tuple
+
 from quarryforge.config import root
-from quarryforge.config.exception_conf import exception_config as msg
 
 
-class ModelConfig(root.Valid):
+__all__ = ['FOSSIL_REPO_CONFIG','FOSSIL_COMMIT_CONFIG']
+
+
+class ModelConfig(NamedTuple):
     """Model Config
 
     Define the module path base for all models
     """
-    PATH = (
-        f'{root.Valid.QUARRYFORGE.value}'
-        f'{msg.Default.DOT.value}'
-        f'{root.TopModules.MODEL.value}'
-    )
+    PATH = f'{root.PACKAGE.name}.{root.MODULE.model}'
 
     @classmethod
     def path(cls, sub_path: str) -> str:
-        return f'{cls.PATH}{msg.Default.DOT.value}{sub_path}'
+        return f'{cls.PATH}.{sub_path}'
+
+model_config: ModelConfig = ModelConfig()
 
 
-class ConfigFossilRepo(root.Valid):
+class ConfigFossilRepo(NamedTuple):
     """FossilRepo Configuration
 
     The slots for a fossil repository.
@@ -30,18 +32,25 @@ class ConfigFossilRepo(root.Valid):
     Attributes:
         FILE: the full path to a fossil repository
     """
-    FILE = '_file'
+    file = '_file'
 
     @classmethod
-    def file(cls):
-        return cls.File.value[1:]
+    def slots(cls) -> Tuple[str, ...]:
+        return tuple(cls._fields)
+
+    @classmethod
+    def field_name(cls):
+        return cls.file.value[1:]
 
     @classmethod
     def path(cls):
-        return ModelConfig.path(root.ModelNames.FOSSIL_REPO.value)
+        return model_config.path(root.MODEL.fossil_repo)
 
 
-class ConfigFossilCommit(root.Valid):
+FOSSIL_REPO_CONFIG: ConfigFossilRepo = ConfigFossilRepo()
+"""Global constant for FossilRepo configuration."""
+
+class ConfigFossilCommit(NamedTuple):
     """Fossil Commit Configuration
 
     The slots for a fossil checkin.
@@ -56,15 +65,23 @@ class ConfigFossilCommit(root.Valid):
         PHASE = phase for a commit entry
         CHANGES = changes for a commit entry
     """
-    HASH = 'uuid'
-    DATE = 'date'
-    AUTHOR = 'author'
-    COMMENT = 'comment'
-    BRANCH = 'branch'
-    TAGS = 'tags'
-    PHASE = 'phase'
-    CHANGES = 'changes'
+    uuid = 'uuid'
+    date = 'date'
+    author = 'author'
+    comment = 'comment'
+    branch = 'branch'
+    tags = 'tags'
+    phase = 'phase'
+    changes = 'changes'
+
+    @classmethod
+    def slots(cls) -> Tuple[str, ...]:
+        return tuple(cls._fields)
 
     @classmethod
     def path(cls):
-        return ModelConfig.path(root.ModelNames.FOSSIL_COMMIT.value)
+        return model_config.path(root.MODEL.fossil_commit)
+
+
+FOSSIL_COMMIT_CONFIG: ConfigFossilCommit = ConfigFossilCommit()
+"""Global constant for FossilCommit configuration."""
