@@ -4,26 +4,32 @@
 """
 from pathlib import Path
 import subprocess
+from typing import Any
 
 from quarryforge import model
 from quarryforge.config import model_config
 from quarryforge.config import util_config
 from quarryforge.config.util_config import TimelineData as TL_Data
 from quarryforge.exceptions import fossil_exception
+from quarryforge.exceptions import util_exception
 from quarryforge.util import fossil_util
 from quarryforge.util import meta
 
 
 class Timeline(metaclass=meta.Immutable):
-    """"""
+    """Fossil Timeline Process
+
+    The fossil.Timeline namespace for executing fossil timeline processes on a
+    fossil repository.
+    """
     __slots__ = ()
 
     def __setattr__(self, name: Any, value: Any) -> None:
-        raise Exception('no attributes')
+        raise util_exception.ImmutableError('todo')
 
 
     def __deltattr__(self, name: Any) -> None:
-        raise Exception('no attributes')
+        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def get(cls, source: model.FossilRepo) -> str:
@@ -117,7 +123,7 @@ class Timeline(metaclass=meta.Immutable):
 
 
 class Setup(metaclass=meta.Immutable):
-    """Fossil Setup
+    """Fossil Setup Process
 
     Setup a target repository to store the changed source repository.
 
@@ -131,6 +137,13 @@ class Setup(metaclass=meta.Immutable):
     """
     __slots__ = ()
 
+    def __setattr__(self, name: Any, value: Any) -> None:
+        raise util_exception.ImmutableError('todo')
+
+
+    def __deltattr__(self, name: Any) -> None:
+        raise util_exception.ImmutableError('todo')
+
     @classmethod
     def new_repo(
         cls,
@@ -141,7 +154,10 @@ class Setup(metaclass=meta.Immutable):
         project_name: str = None,
         project_desc: str = None,
     ) -> str:
-        """Run the fossil new repository command."""
+        """new_repo
+
+        Run the fossil new repository command to configure a new repository.
+        """
         try:
             init_repo = subprocess.run(
                 fossil_util.rebuild_init(
@@ -227,11 +243,18 @@ class Setup(metaclass=meta.Immutable):
 
 
 class Info(metaclass=meta.Immutable):
-    """Fossil Info Command
+    """Fossil Info Process
 
     Get the parent commit hash for the commit version and repository provided.
     """
     __slots__ = ()
+
+    def __setattr__(self, name: Any, value: Any) -> None:
+        raise util_exception.ImmutableError('todo')
+
+
+    def __deltattr__(self, name: Any) -> None:
+        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def get_parent(cls, version: str, source: model.FossilRepo) -> str | None:
@@ -268,11 +291,18 @@ class Info(metaclass=meta.Immutable):
 
 
 class Diff(metaclass=meta.Immutable):
-    """Fossil Diff Command
+    """Fossil Diff Process
 
     from, to, source
     """
     __slots__ = ()
+
+    def __setattr__(self, name: Any, value: Any) -> None:
+        raise util_exception.ImmutableError('todo')
+
+
+    def __deltattr__(self, name: Any) -> None:
+        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def changes(
@@ -297,10 +327,18 @@ class Diff(metaclass=meta.Immutable):
 
 
 class Cat(metaclass=meta.Immutable):
-    """Get files from source and put in target project directory.
+    """Fossil Cat Process
 
+    Get files from source and put in target project directory.
     """
     __slots__ = ()
+
+    def __setattr__(self, name: Any, value: Any) -> None:
+        raise util_exception.ImmutableError('todo')
+
+
+    def __deltattr__(self, name: Any) -> None:
+        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def content(
@@ -333,11 +371,18 @@ class Cat(metaclass=meta.Immutable):
 
 
 class Branch(metaclass=meta.Immutable):
-    """Manage branch info using fossil branch
+    """Fossil Branch Process
 
-
+    Manage branch info using fossil branch
     """
     __slots__ = ()
+
+    def __setattr__(self, name: Any, value: Any) -> None:
+        raise util_exception.ImmutableError('todo')
+
+
+    def __deltattr__(self, name: Any) -> None:
+        raise util_exception.ImmutableError('todo')
 
     @classmethod
     def list_all(cls, source: model.FossilRepo) -> str:
@@ -352,18 +397,31 @@ class Branch(metaclass=meta.Immutable):
 
 
 class Add(metaclass=Immutable):
-    """
+    """Fossil Add Process
 
 
     """
     __slots__ = ()
-    pass
+
+    def __setattr__(self, name: Any, value: Any) -> None:
+        raise util_exception.ImmutableError('todo')
+
+
+    def __deltattr__(self, name: Any) -> None:
+        raise util_exception.ImmutableError('todo')
+
 
 
 class Commit(metaclass=Immutable):
-    """
+    """Fossil Commit Process
 
 
     """
     __slots__ = ()
-    pass
+
+    def __setattr__(self, name: Any, value: Any) -> None:
+        raise util_exception.ImmutableError('todo')
+
+
+    def __deltattr__(self, name: Any) -> None:
+        raise util_exception.ImmutableError('todo')
