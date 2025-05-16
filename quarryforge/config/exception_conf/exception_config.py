@@ -2,68 +2,45 @@
 
 
 """
-from quarryforge.config import root
+from typing import NamedTuple
 
 
-class ConfigQuarryForgeError(root.Valid):
-    """Valid Error Message Fields"""
-    CODE = 'code'
-    MESSAGE = 'message'
-    USER_MESSAGE = 'user_message'
-    DETAILS = 'details'
+__all__ = ['ERROR_TYPE', 'ARG', 'DEFAULT', 'IMMUTABLE', 'PATH_MSG', 'REQUIRED']
 
 
-class ConfigBuilder(root.Valid):
-    """ValidErrorData Builder fields"""
-    CONTEXT = 'context'
-    FIELD = 'field'
-    ERROR_TYPE = 'error_type'
-    MESSAGE = 'message'
-    USER_MESSAGE = 'user_message'
-    INPUT_VALUE = 'input_value'
-    EXPECTED_DESC = 'expected_desc'
-    EXTRA_DETAILS = 'extra_details'
-
-
-class ErrorType(root.Valid):
-    """"""
-    EMPTY = 'Empty_String'
-
-
-class ErrorKind(root.Valid):
-    """"""
+class ErrorType(NamedTuple):
+    """Strings for types of errors."""
     STR = 'str'
     PATH = 'Path'
+    EMPTY = 'empty_string'
 
 
-class Argument(root.Valid):
-    """Argument Messages
+ERROR_TYPE: ErrorType = ErrorType()
+"""Global ..."""
 
 
-    """
+class Argument(NamedTuple):
+    """Argument Messages"""
     ARG = 'argument'
     INVALID = 'Invalid'
     MISSING = 'Missing'
     TYPE = 'type:'
 
     @classmethod
-    def invalid(cls, name: Valid):
-        return (Default.SPC.value).join(
-            [cls.INVALID.value, name.value, cls.ARG.value]
-        )
+    def invalid(cls, name: str):
+        return f'{cls.INVALID} {name} {cls.ARG}'
 
     @classmethod
-    def missing(cls, name: Valid, kind: str):
-        return (Default.SPC.value).join(
-            [cls.MISSING.value,cls.ARG.value,name.value,cls.TYPE.value, kind]
-        )
+    def missing(cls, name: str, kind: str):
+        return f'{cls.MISSING} {cls.ARG} {name} {cls.TYPE} {kind}'
 
 
-class Default(root.Valid):
-    """Default Messages
+ARG: Argument = Argument()
+"""Global ..."""
 
 
-    """
+class Default(NamedTuple):
+    """Default message parts"""
     DOT = '.'
     SPC = ' '
     BAR = ' | '
@@ -72,73 +49,86 @@ class Default(root.Valid):
     ERROR = 'ERROR'
 
 
-class Immutable(root.Valid):
-    """Immutable Message
+DEFAULT: Default = Default()
+"""Global ..."""
 
 
-    """
-    MESSAGE = ' object is immutable.'
+class Immutable(NamedTuple):
+    """Immutable Message"""
+    MESSAGE = 'object is immutable.'
 
     @classmethod
     def error_message(cls, name: Valid):
-        return name.value + cls.MESSAGE.value
+        return f'{name} {cls.MESSAGE}'
 
 
-class PathMessage(root.Valid):
+IMMUTABLE: Immutable = Immutable()
+"""Global ..."""
+
+
+class PathMessage(NamedTuple):
     """Filename Message
 
 
     """
-    NAP = ' is not a path.'
-    DNE = ' does not exist.'
-    NAF = ' is not a file.'
-    NAD = ' is not a directory.'
-    READ = ' is not readable.'
-    WRITE = ' is not writable.'
-    NO_DIR = ' cannot write output to a directory.'
+    NAP = 'is not a path.'
+    DNE = 'does not exist.'
+    NAF = 'is not a file.'
+    NAD = 'is not a directory.'
+    READ = 'is not readable.'
+    WRITE = 'is not writable.'
+    NO_DIR = 'cannot write output to a directory.'
 
     @classmethod
     def dir_not_allowed(cls, path: str):
-        return path + cls.NO_DIR.value
+        return f'{path} {cls.NO_DIR.value}'
 
     @classmethod
     def not_a_path(cls, path: str) -> str:
-        return path + cls.NAP.value
+        return f'{path} {cls.NAP}'
 
     @classmethod
     def does_not_exist(cls, path: str) -> str:
-        return path + cls.DNE.value
+        return f'{path} {cls.DNE}'
 
     @classmethod
     def not_a_file(cls, path: str) -> str:
-        return path + cls.NAF.value
+        return f'{path} {cls.NAF}'
 
     @classmethod
     def not_a_directory(cls, path: str) -> str:
-        return path + cls.NAD. value
+        return f'{path} {cls.NAD}'
 
     @classmethod
     def no_read_permission(cls, path: str) -> str:
-        return path + cls.READ.value
+        return f'{path} {cls.READ}'
 
     @classmethod
     def no_write_permission(cls, path: str) -> str:
-        return path + cls.WRITE.value
+        return f'{path} {cls.WRITE}'
 
 
-class Required(root.Valid):
+PATH_MSG: PathMessage = PathMessage()
+"""Global ..."""
+
+
+class Required(NamedTuple):
     """Field Missing Message
 
 
     """
-    THE = 'The '
-    EMPTY = ' field cannot be empty'
-    REQUIRE = ' field requires a '
+    THE = 'The'
+    EMPTY = 'field cannot be empty'
+    REQUIRE = 'field requires a'
 
     @classmethod
     def field_type(cls, field: Valid, kind: type):
-        return cls.THE.value + field.value + cls.REQUIRE.value + str(kind)
+        return f'{cls.THE} {field} {cls.REQUIRE} {str(kind)}'
 
     @classmethod
     def field_empty(cls, field: Valid, kind: type):
-        return cls.The.value + str(kind) + field.value + cls.EMPTY.value
+        return f'{cls.THE} {str(kind)} {field} cls.EMPTY}'
+
+
+REQUIRED: Required = Required()
+"""Global ..."""
