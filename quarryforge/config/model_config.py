@@ -16,7 +16,7 @@ from typing import NamedTuple, Tuple
 from quarryforge.config import root
 
 
-__all__ = ['FOSSIL_REPO','FOSSIL_COMMIT']
+__all__: list = ['FOSSIL_REPO','FOSSIL_COMMIT']
 
 
 class BaseModelConfig(NamedTuple):
@@ -72,7 +72,7 @@ class ConfigFossilRepo(NamedTuple):
             Tuple[str, ...]:
             A tuple containing the names of the fields
         """
-        tuple(getattr(self, field) for field in self._fields)
+        return tuple(getattr(self, field) for field in self._fields)
 
     def field_name(self) -> str:
         """Get public property field name.
@@ -127,7 +127,7 @@ class ConfigFossilCommit(NamedTuple):
             Tuple[str, ...]:
                 A tuple containing the names of all fields
         """
-        tuple(getattr(self, field) for field in self._fields)
+        return tuple(getattr(self, field) for field in self._fields)
 
 
     def path(self):
