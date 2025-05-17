@@ -13,6 +13,7 @@ class ConfigErrorData(NamedTuple):
     details: str = 'details'
     message: str = 'message'
     user_message: str = 'user_message'
+    timestamp: str = 'timestamp'
 
 
 ERROR_DATA: ConfigErrorData = ConfigErrorData()
