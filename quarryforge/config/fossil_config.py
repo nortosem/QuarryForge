@@ -2,26 +2,25 @@
 
 #TODO
 """
-from quarryforge.config import root
-from quarryforge.config.exception_conf import exception_config as msg
+from quarryforge import root
+from quarryforge.meta import immutable
 
 
-class FossilConfig(root.Valid):
+class FossilConfig(metaclass=immutable.Namespace):
     """Fossil Config
 
     Define the module path base for all models
     """
-    PATH = (
-        f'{root.Valid.QUARRYFORGE.value}'
-        f'{msg.Default.DOT.value}'
-        f'{root.TopModules.FOSSIL.value}'
+    base_path = (
+        f'{root.PACKAGE.name}.{root.Module.fossil}'
     )
 
-    def path(self, sub_path: str) -> str:
-        return f'{self.PATH}.{sub_path}'
+    @classmethod
+    def path(cls, sub_path: str) -> str:
+        return f'{cls.base_path}.{sub_path}'
 
 
-class ConfigProcess(root.Valid):
+class ConfigProcess(metaclass=immutable.Namespace):
     """ConfigProcess
 
 
@@ -31,7 +30,7 @@ class ConfigProcess(root.Valid):
         return FossilConfig.path('CalledProcessError')
 
 
-class ConfigTimeout(root.Valid):
+class ConfigTimeout(metaclass=immutable.Namespace):
     """ConfigTimeout
 
 
@@ -41,7 +40,7 @@ class ConfigTimeout(root.Valid):
         return FossilConfig.path('TimeoutExpiredError')
 
 
-class ConfigTimeline(root.Valid):
+class ConfigTimeline(metaclass=immutable.Namespace):
     """ConfigTimeline
 
 
@@ -51,7 +50,7 @@ class ConfigTimeline(root.Valid):
         return FossilConfig.path(root.FossilCommand.TIMELINE.value)
 
 
-class ConfigSetup(root.Valid):
+class ConfigSetup(metaclass=immutable.Namespace):
     """ConfigSetup
 
 
@@ -61,7 +60,7 @@ class ConfigSetup(root.Valid):
         return FossilConfig.path(root.FossilCommand.SETUP.value)
 
 
-class ConfigInfo(root.Valid):
+class ConfigInfo(metaclass=immutable.Namespace):
     """ConfigInfo
 
 
@@ -71,7 +70,7 @@ class ConfigInfo(root.Valid):
         return FossilConfig.path(root.FossilCommand.INFO.value)
 
 
-class ConfigDiff(root.Valid):
+class ConfigDiff(metaclass=immutable.Namespace):
     """ConfigDiff
 
 
@@ -81,7 +80,7 @@ class ConfigDiff(root.Valid):
         return FossilConfig.path(root.FossilCommand.DIFF.value)
 
 
-class ConfigCat(root.Valid):
+class ConfigCat(metaclass=immutable.Namespace):
     """ConfigCat
 
 
@@ -91,7 +90,7 @@ class ConfigCat(root.Valid):
         return FossilConfig.path(root.FossilCommand.CAT.value)
 
 
-class ConfigBranch(root.Valid):
+class ConfigBranch(metaclass=immutable.Namespace):
     """ConfigBranch
 
 
@@ -101,7 +100,7 @@ class ConfigBranch(root.Valid):
         return FossilConfig.path(root.FossilCommand.BRANCH.value)
 
 
-class ConfigAdd(root.Valid):
+class ConfigAdd(metaclass=immutable.Namespace):
     """ConfigAdd
 
 
@@ -111,7 +110,7 @@ class ConfigAdd(root.Valid):
         return FossilConfig.path(root.FossilCommand.ADD.value)
 
 
-class ConfigCommit(root.Valid):
+class ConfigCommit(metaclass=immutable.Namespace):
     """ConfigCommit
 
 
