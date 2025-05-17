@@ -29,10 +29,10 @@ class ModelErrorContext(metaclass=immutable.Namespace):
    #         root.ModelNames.FOSSIL_TIMELINE])
    # )
 
-    def default_error(self, model: str):
+    @staticmethod
+    def default_error(model: str):
         """Default Exception Context Code"""
-        return (msg.Default.DOT).join([
-            model, msg.Default.ERROR])
+        return f'{model}.{msg.Default.ERROR}'
 
 
 class FossilRepoContext(metaclass=immutable.Namespace):
