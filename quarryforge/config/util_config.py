@@ -7,7 +7,7 @@ from typing import NamedTuple
 import re
 
 
-__all__: list = ['COMMAND', 'TIMELINE_DATA', '']
+__all__: list = ['COMMAND', 'TIMELINE_DATA', 'INFO_DATA']
 
 
 class Command(NamedTuple):
