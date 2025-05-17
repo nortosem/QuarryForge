@@ -128,8 +128,6 @@ class Setup(metaclass=immutable.Namespace):
         user_contact:
 
     """
-    __slots__ = ()
-
     @classmethod
     def new_repo(
         cls,
@@ -233,8 +231,6 @@ class Info(metaclass=immutable.Namespace):
 
     Get the parent commit hash for the commit version and repository provided.
     """
-    __slots__ = ()
-
     @classmethod
     def get_parent(cls, version: str, source: model.FossilRepo) -> str | None:
         """Get Parent Commit Version
@@ -274,8 +270,6 @@ class Diff(metaclass=immutable.Namespace):
 
     from, to, source
     """
-    __slots__ = ()
-
     @classmethod
     def changes(
             cls,
@@ -303,8 +297,6 @@ class Cat(metaclass=immutable.Namespace):
 
     Get files from source and put in target project directory.
     """
-    __slots__ = ()
-
     @classmethod
     def content(
         cls,
@@ -340,8 +332,6 @@ class Branch(metaclass=immutable.Namespace):
 
     Manage branch info using fossil branch
     """
-    __slots__ = ()
-
     @classmethod
     def list_all(cls, source: model.FossilRepo) -> str:
         """List all Branches for the source reposiotory"""
@@ -359,7 +349,6 @@ class Add(metaclass=immutable.Namespace):
 
 
     """
-    __slots__ = ()
     pass
 
 
@@ -368,5 +357,4 @@ class Commit(metaclass=immutable.Namespace):
 
 
     """
-    __slots__ = ()
     pass
