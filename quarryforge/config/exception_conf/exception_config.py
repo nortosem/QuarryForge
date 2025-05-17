@@ -12,9 +12,9 @@ __all__: list = [
 
 class ErrorType(NamedTuple):
     """Strings for types of errors."""
-    STR = 'str'
-    PATH = 'Path'
-    EMPTY = 'empty_string'
+    STR: str = 'str'
+    PATH: str = 'Path'
+    EMPTY: str = 'empty_string'
 
 
 ERROR_TYPE: ErrorType = ErrorType()
@@ -23,10 +23,10 @@ ERROR_TYPE: ErrorType = ErrorType()
 
 class Argument(NamedTuple):
     """Argument Messages"""
-    ARG = 'argument'
-    INVALID = 'Invalid'
-    MISSING = 'Missing'
-    TYPE = 'type:'
+    ARG: str = 'argument'
+    INVALID: str = 'Invalid'
+    MISSING: str = 'Missing'
+    TYPE: str = 'type:'
 
     def invalid(self, name: str):
         return f'{self.INVALID} {name} {self.ARG}'
@@ -41,12 +41,12 @@ ARG: Argument = Argument()
 
 class Default(NamedTuple):
     """Default message parts"""
-    DOT = '.'
-    SPC = ' '
-    BAR = ' | '
-    NL = '\n'
-    EMPTY = 'EMPTY'
-    ERROR = 'ERROR'
+    DOT: str = '.'
+    SPC: str = ' '
+    BAR: str = ' | '
+    NL: str = '\n'
+    EMPTY: str = 'EMPTY'
+    ERROR: str = 'ERROR'
 
 
 DEFAULT: Default = Default()
@@ -55,7 +55,7 @@ DEFAULT: Default = Default()
 
 class Immutable(NamedTuple):
     """Immutable Message"""
-    MESSAGE = 'object is immutable.'
+    MESSAGE: str = 'object is immutable.'
 
     def error_message(self, name: str):
         return f'{name} {self.MESSAGE}'
@@ -70,13 +70,13 @@ class PathMessage(NamedTuple):
 
 
     """
-    NAP = 'is not a path.'
-    DNE = 'does not exist.'
-    NAF = 'is not a file.'
-    NAD = 'is not a directory.'
-    READ = 'is not readable.'
-    WRITE = 'is not writable.'
-    NO_DIR = 'cannot write output to a directory.'
+    NAP: str = 'is not a path.'
+    DNE: str = 'does not exist.'
+    NAF: str = 'is not a file.'
+    NAD: str = 'is not a directory.'
+    READ: str = 'is not readable.'
+    WRITE: str = 'is not writable.'
+    NO_DIR: str = 'cannot write output to a directory.'
 
     def dir_not_allowed(self, path: str):
         return f'{path} {self.NO_DIR.value}'
@@ -109,9 +109,9 @@ class Required(NamedTuple):
 
 
     """
-    THE = 'The'
-    EMPTY = 'field cannot be empty'
-    REQUIRE = 'field requires a'
+    THE: str = 'The'
+    EMPTY: str = 'field cannot be empty'
+    REQUIRE: str = 'field requires a'
 
     def field_type(self, field: str, kind: type):
         return f'{self.THE} {field} {self.REQUIRE} {str(kind)}'
