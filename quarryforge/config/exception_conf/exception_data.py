@@ -4,8 +4,6 @@
 """
 from typing import Any, Dict, NamedTuple
 
-from quarryforge.config.exception_conf import exception_config as error
-
 
 __all__: list = ['ERROR_FIELD', 'BUILDER_FIELD', 'ValidErrorData']
 
