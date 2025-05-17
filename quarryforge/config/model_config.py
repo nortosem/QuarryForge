@@ -111,14 +111,14 @@ class ConfigFossilCommit(NamedTuple):
         phase (str): Field name for the commit's phase
         changes (str): Field name for the summary of changes in the commit.
     """
-    uuid = 'uuid'
-    date = 'date'
-    author = 'author'
-    comment = 'comment'
-    branch = 'branch'
-    tags = 'tags'
-    phase = 'phase'
-    changes = 'changes'
+    uuid: str = 'uuid'
+    date: str = 'date'
+    author: str = 'author'
+    comment: str = 'comment'
+    branch: str = 'branch'
+    tags: str = 'tags'
+    phase: str = 'phase'
+    changes: str = 'changes'
 
     def slots(self) -> Tuple[str, ...]:
         """Returns the field names defined in this NamedTuple.
