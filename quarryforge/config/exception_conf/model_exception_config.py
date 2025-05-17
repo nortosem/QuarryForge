@@ -13,31 +13,54 @@ mst be path or path from string.
 file does not exist.
 is parent dir exist and writeable?
 """
-from enum import Enum
+from typing import NamedTuple
 
 from quarryforge.config import model_config
 from quarryforge.config import root
 from quarryforge.config.exception_conf import exception_config as msg
 from quarryforge.config.exception_conf import exception_data
+from quarryforge.meta import immutable
 
 
-class ModelErrorContext(root.Config):
+class ModelErrorContext(metaclass=immutable.Namespace):
     """Context for Model Errors"""
-    FOSSIL_COMMIT = model_config.ConfigFossilCommit.path()
-    FOSSIL_REPO = model_config.ConfigFossilRepo.path()
-    TIMELINE = (
-        (msg.Default.DOT.value).join([
-            root.Valid.QUARRYFORGE.value,
-            root.TopModules.MODEL.value,
-            root.ModelNames.FOSSIL_TIMELINE.value])
-    )
+    FOSSIL_COMMIT = model_config.FOSSIL_COMMIT.path()
+    FOSSIL_REPO = model_config.FOSSIL_REPO.path()
+   # TIMELINE = (
+   #     (msg.Default.DOT).join([
+            #root.Valid.QUARRYFORGE,
+   #         root.TopModules.MODEL,
+   #         root.ModelNames.FOSSIL_TIMELINE])
+   # )
 
     @classmethod
-    def default_error(cls, model: ModelErrorContext):
+    def default_error(cls, model: str):
         """Default Exception Context Code"""
-        return (msg.Default.DOT.value.join([
-            model.value, msg.Default.ERROR.value])
-        )
+        return (msg.Default.DOT).join([
+            model, msg.Default.ERROR])
 
 
+class FossilRepoContext(metaclass=immutable.Namespace):
+    """FossilRepo Context
 
+    Messages for FossilRepo.
+    """
+    EMPTY_STR_MSG = ''
+  #  msg.Argument.missing(
+  #      ConfigFossilRepo.FILE, (msg.Default.SPC).join(
+  #          msg.ErrorKind.STR,
+  #          msg.Default.BAR,
+  #          msg.ErrorKind.PATH)
+  #      )
+  #  EMPTY_STR_USER_MSG = msg.Required.field_empty(
+  #      ConfigFossilRepo.file(), str
+  #  )
+  #  INVALID = (msg.Default.NL).join(
+  #      [msg.Argument.invalid(
+  #          ConfigFossilRepo.file()),
+  #       msg.Required.field_type(ConfigFossilRepo.file())]
+  #  )
+    NOT_EXIST = ()
+    NOT_FILE = ()
+    NOT_READ = ()
+    DIR_WRITE = ()

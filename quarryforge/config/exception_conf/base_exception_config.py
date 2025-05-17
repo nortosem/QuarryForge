@@ -4,7 +4,6 @@ The configuraiton for the exception base class of quarryforge errors.
 """
 from quarryforge.config import root
 from quarryforge.config.exception_conf import exception_config as msg
-from quarryforge.exceptions import QuarryForgeError
 from quarryforge.meta import immutable
 
 
@@ -33,17 +32,17 @@ class BaseErrorContext(metaclass=immutable.Namespace):
 
     @classmethod
     def package_error(cls):
-        return f'{cls.QUARRY_FORGE}.{msg.Default.ERROR.value}'
+        return f'{cls.QUARRY_FORGE}.{msg.Default.ERROR}'
 
     @classmethod
-    def default_error(cls, context: BaseErrorContext):
+    def default_error(cls, context: str):
         """Default Exception Context Code"""
-        if not isinstance(context, BaseErrorContext):
+        if not isinstance(context, str):
             raise TypeError('todo')
 
         if context is BaseErrorContext.QUARRY_FORGE:
             return cls.package_error()
 
         return (
-            f'{context.value}{msg.Default.DOT.value}{msg.Default.ERROR.value}'
+            f'{context}.{msg.Default.ERROR}'
         )

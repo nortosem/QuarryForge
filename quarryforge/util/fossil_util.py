@@ -8,8 +8,8 @@ from typing import List
 
 from quarryforge import model
 from quarryforge.config import util_config
-from quarryforge.config import model_util
-from quarryforge.exceptions import util_exception
+from quarryforge.config import model_config
+from quarryforge.exception import util_exception
 
 
 def get_raw_timeline(source: model.FossilRepo) -> List[str]:
@@ -52,8 +52,8 @@ def get_raw_timeline(source: model.FossilRepo) -> List[str]:
 def rebuild_init(
     username: str,
     date_override: str,
-    new_repo: FossilRepo,
-    template: FossilRepo,
+    new_repo: model.FossilRepo,
+    template: model.FossilRepo,
     project_name: str,
     project_desc: str,
 ) -> List[str]:
@@ -101,7 +101,7 @@ def rebuild_init(
     return cmd
 
 
-def set_default_user(username: str, new_repo: FossilRepo) -> List[str]:
+def set_default_user(username: str, new_repo: model.FossilRepo) -> List[str]:
     """Set Default User
 
     Creates a command to set the default user for a Fossil repository.
@@ -176,7 +176,7 @@ def set_user_contact(
     return cmd
 
 
-def get_parent_hash(version: str, source: FossilRepo) -> List[str]:
+def get_parent_hash(version: str, source: model.FossilRepo) -> List[str]:
     """Get Parent Hash ID
 
     Creates a command to get the parent hash of a specific commit

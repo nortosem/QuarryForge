@@ -68,7 +68,7 @@ class BuildError(ABC):
             error.BUILDER_FIELD.input_value: input_value
         }
         if expected_input:
-            details[error.BUILDER_FIELD.expected_desc] = expected_input
+            details[error.BUILDER_FIELD.expected_desc] = expected_desc
 
         if extra_details:
             details[error.BUILDER_FIELD.extra_details] = extra_details

@@ -10,8 +10,7 @@ import tomllib
 from typing import Dict
 
 from quarryforge import fossil
-from quarryforge.exceptions.main_exception import base_main_exception
-from quarryforge.exceptions.main_exception. import ArgumentError
+from quarryforge.exception import main_exception
 
 
 DEFAULT_CONFIG = {

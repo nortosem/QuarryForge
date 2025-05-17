@@ -66,24 +66,22 @@ class ConfigFossilRepo(NamedTuple):
     """
     file: str = '_file'
 
-    @classmethod
-    def slots(cls) -> Tuple[str, ...]:
+    def slots(self) -> Tuple[str, ...]:
         """Returns the field names defined in this NamedTuple.
 
         Returns:
             Tuple[str, ...]:
             A tuple containing the names of the fields
         """
-        return tuple(cls._fields)
+        tuple(getattr(self, field) for field in self._fields)
 
-    @classmethod
-    def field_name(cls) -> str:
+    def field_name(self) -> str:
         """Get public property field name.
 
         Returns:
             str: The public field name 'file' from the internal '_file' slot.
         """
-        return str(cls.file)[1:]
+        return str(self.file)[1:]
 
 
     @classmethod
@@ -124,15 +122,19 @@ class ConfigFossilCommit(NamedTuple):
     phase = 'phase'
     changes = 'changes'
 
-    @classmethod
-    def slots(cls) -> Tuple[str, ...]:
+    def slots(self) -> Tuple[str, ...]:
         """Returns the field names defined in this NamedTuple.
 
         Returns:
             Tuple[str, ...]:
                 A tuple containing the names of all fields
         """
-        return tuple(cls._fields)
+        return tuple(
+            getattr(
+                self,
+                self._fields[field]
+            ) for field in range(len(self._fields))
+        )
 
     @classmethod
     def path(cls):
@@ -141,7 +143,7 @@ class ConfigFossilCommit(NamedTuple):
         Returns:
             str: The full Python dot-path 'quarryforge.model.FossilCommit'.
         """
-        return model_config.path(root.MODEL.fossil_commit)
+        return BASE_MODEL.path(root.MODEL.fossil_commit)
 
 
 FOSSIL_COMMIT: ConfigFossilCommit = ConfigFossilCommit()

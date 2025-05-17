@@ -58,7 +58,7 @@ class Immutable(NamedTuple):
     MESSAGE = 'object is immutable.'
 
     @classmethod
-    def error_message(cls, name: Valid):
+    def error_message(cls, name: str):
         return f'{name} {cls.MESSAGE}'
 
 
@@ -122,12 +122,12 @@ class Required(NamedTuple):
     REQUIRE = 'field requires a'
 
     @classmethod
-    def field_type(cls, field: Valid, kind: type):
+    def field_type(cls, field: str, kind: type):
         return f'{cls.THE} {field} {cls.REQUIRE} {str(kind)}'
 
     @classmethod
-    def field_empty(cls, field: Valid, kind: type):
-        return f'{cls.THE} {str(kind)} {field} cls.EMPTY}'
+    def field_empty(cls, field: str, kind: type):
+        return f'{cls.THE} {str(kind)} {field} {cls.EMPTY}'
 
 
 REQUIRED: Required = Required()

@@ -7,9 +7,8 @@ from typing import Any, List, Optional
 
 from quarryforge.config import model_config
 from quarryforge.config import util_config
-from quarryforge.exceptions import model_exception
+from quarryforge.exception import model_exception
 from quarryforge.meta import immutable
-from quarryforge.util import fossil_util
 from quarryforge.util import model_util
 
 
@@ -25,7 +24,7 @@ class FossilRepo(
     Attributes:
         file (Path): A read-only property providing the path to the Fossil
                      repository file.    """
-    __slots__ = model_config.FOSSIL_REPO_CONFIG.slots()
+    __slots__ = model_config.FOSSIL_REPO.slots()
 
     def __init__(self, file: Path | str, is_new: bool) -> None:
         """Initializes a new FossilRepo instance.
@@ -40,7 +39,7 @@ class FossilRepo(
         object.__setattr__(self, model_config.FOSSIL_REPO_CONFIG.file, file)
 
     @property
-    def file(self) -> Path:
+    def get_path(self) -> Path:
         """The path to the fossil repository file.
 
         This property provides read-only access to the repository's file path.
@@ -130,7 +129,7 @@ class FossilCommit(
 
     #todo
     """
-    __slots__ = model_config.ConfigFossilCommit.slots()
+    __slots__ = model_config.FOSSIL_COMMIT.slots()
 
     def __init__(self,
                  uuid: str,
@@ -227,17 +226,17 @@ class FossilTimeline:
     """A list of all commits from the source repository timeline.
 
     Attributes:
-        commits List[Commit]: A list of all timeline commits
+        commits List[FossilCommit]: A list of all timeline commits
     """
-    __slots__ = tuple(util_config.TimelineData.COMMITS.value)
+    __slots__ = ()#tuple(util_config.TimelineData.COMMITS.value)
 
     def __init__(self, commits: List = None):
         self.commits = commits
 
-    def add(self, commit: Commit) -> None:
+    def add(self, commit: FossilCommit) -> None:
         self.commits.append(commit)
 
-    def reverse(self) -> List[Commit]:
+    def reverse(self) -> List[FossilCommit]:
         """Reverse Commit Order
 
         Default order is latest commit first.

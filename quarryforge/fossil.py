@@ -10,8 +10,8 @@ from quarryforge import model
 from quarryforge.config import model_config
 from quarryforge.config import util_config
 from quarryforge.config.util_config import TimelineData as TL_Data
-from quarryforge.exceptions import fossil_exception
-from quarryforge.exceptions import util_exception
+from quarryforge.exception import fossil_exception
+from quarryforge.exception import util_exception
 from quarryforge.meta import immutable
 from quarryforge.util import fossil_util
 
@@ -45,7 +45,7 @@ class Timeline(metaclass=immutable.Namespace):
 
 
     @classmethod
-    def parse_timeline(cls, timeline: str) -> model.Timeline:
+    def parse_timeline(cls, timeline: str) -> model.FossilTimeline:
         """Parse Timeline
 
         """

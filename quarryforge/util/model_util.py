@@ -14,14 +14,17 @@ import os
 from pathlib import Path
 from typing import List, TypeVar
 
-from quarryforge.config.exception_conf import message
-from quarryforge.exceptions import base_exception
-from quarryforge.exceptions.model_exception import commit_exception
+from quarryforge.config.exception_conf import exception_config as msg
+from quarryforge.exception import base_exception
+from quarryforge.exception import model_exception
 
 _ModelError = TypeVar('_ModelError', bound=base_exception.ModelError)
 
 
-def is_valid_str_type(arg: str, exception: type[_ModelError]) -> str:
+def is_valid_str_type(
+    arg: str,
+    field: str,
+    exception: type[_ModelError]) -> str:
     """Validates if the given argument is a string.
 
     Args:
@@ -39,7 +42,10 @@ def is_valid_str_type(arg: str, exception: type[_ModelError]) -> str:
     return arg
 
 
-def is_not_empty(arg: str, exception: type[_ModelError]) -> str:
+def is_not_empty(
+    arg: str,
+    exception: type[_ModelError]
+) -> str:
     """Validates if the given string argument is not empty.
 
     This function checks if the string is not empty after stripping leading
@@ -78,6 +84,35 @@ def is_valid_path_type(arg: Path, exception: type[_ModelError]) -> Path:
     return arg
 
 
+def resolve_path_arg(arg: Path | str, exception: type[_ModelError]) -> Path:
+    """Resolve a path or convert and resolve a string argument
+
+    Args:
+        arg: The path argument to check.
+        exception: The specific type of exception to raise.
+
+    Returns:
+        The validated Path object.
+
+    Raises:
+        RuntimeError if the expanduser function fails
+        OSError for permission or other os errors.
+        exception: if the argument s is not a string or Path object.
+    """
+    if isinstance(arg, str):
+        arg = is_not_empty(arg, )
+        return arg.expanduser().resolve()
+    elif isinstance(arg, Path):
+        try:
+            return arg.expanduser().resolve()
+        except RuntimeError as run_error:
+            raise
+        except OSError as os_error:
+            raise
+    else:
+        raise exception
+
+
 def exists(arg: Path, exception: type[_ModelError]) -> Path:
     """Validates if the path specified by the pathlib.Path object exists.
 
@@ -106,10 +141,9 @@ def is_file(arg: Path, exception: type[_ModelError]) -> Path:
         exception (Exception): The specific type of exception to raise.
 
     Returns:
-        path (Path): Returns a valid path path attribute.
+        A valid path path attribute.
     """
-    path = arg
-    if not path.is_file():
+    if not arg.is_file():
         raise exception(message.PathMessage.not_a_file(path))
     return path
 
@@ -168,6 +202,65 @@ def is_write_ok(arg: Path, exception: type[_ModelError]) -> Path:
     if not os.access(arg, os.W_OK):
         raise exception(message.PathMessage.no_write_permission(str(arg)))
     return arg
+
+
+def viable_fossil_repo(
+    self,
+    file: Path | str,
+    is_new: bool,
+    exception: type[_ModelError]
+) -> Path:
+    """Validates if the path points to a viable Fossil repository.
+
+    For an existing repository (is_new=False):
+    - Must be a Path or string.
+    - Must exist.
+    - Must be a file.
+    - Must be readable.
+    - Must be a Fossil repository
+
+    For a new repository (is_new=True):
+    - Must be a Path or string.
+    - File itself must NOT exist.
+    - Parent directory must exist and be writable.
+
+    Args:
+        arg:
+            The path (Path object or string) to the Fossil repository.
+        is_new:
+            If True, validates for creating a new repository.
+            If False (default), validates an existing repository.
+
+    Returns:
+        The validated and resolved Path object.
+
+    Raises:
+        exception: With specific codes and messages for different failures.
+    """
+    if not isinstance(file, (str, Path)):
+        raise exception
+    if isinstance(file, str):
+        try:
+            if file.strip():
+                return (file := (file := Path(file)).expanduser().resolve())
+            else:
+                raise exception("Empty string not a valid Path")
+        except Exception as e:
+            raise e
+
+    elif isinstance(file, Path):
+        try:
+            return arg.expanduser().resolve()
+        except RuntimeError as run_error:
+            raise
+        except OSError as os_error:
+            raise
+    else:
+        raise exception
+
+
+def viable_update_repo() -> Path:
+    pass
 
 
 def viable_infile(arg: Path, exception: type[_ModelError]) -> Path:
