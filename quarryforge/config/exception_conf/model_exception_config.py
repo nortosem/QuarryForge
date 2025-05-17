@@ -13,12 +13,8 @@ mst be path or path from string.
 file does not exist.
 is parent dir exist and writeable?
 """
-from typing import NamedTuple
-
 from quarryforge.config import model_config
-from quarryforge.config import root
 from quarryforge.config.exception_conf import exception_config as msg
-from quarryforge.config.exception_conf import exception_data
 from quarryforge.meta import immutable
 
 
