@@ -1,3 +1,10 @@
+"""Assembler Module
+
+
+"""
+from quarryforge.config.exception_conf import exception_data as error
+
+
 class BuildError(ABC):
     """Build Error Abstract Base Class.
 
@@ -54,19 +61,19 @@ class BuildError(ABC):
         code = ()
 
         details = {
-            error.ConfigAssembler.CONTEXT.value: context,
-            error.ConfigAssembler.FIELD.value: field,
-            error.ConfigAssembler.ERROR_TYPE.value: error_type,
-            error.ConfigAssembler.MESSAGE.value: message,
-            error.ConfigAssembler.INPUT_VALUE.value: input_value
+            error.BUILDER_FIELD.context: context,
+            error.BUILDER_FIELD.field: field,
+            error.BUILDER_FIELD.error_type: error_type,
+            error.BUILDER_FIELD.message: message,
+            error.BUILDER_FIELD.input_value: input_value
         }
         if expected_input:
-            details[error.ConfigAssembler.EXPECTED_DESC.value] = expected_input
+            details[error.BUILDER_FIELD.expected_desc] = expected_input
 
         if extra_details:
-            details[error.ConfigAssembler.EXTRA_DETAILS.value] = extra_details
+            details[error.BUILDER_FIELD.extra_details] = extra_details
 
-        return ValidErrorData(
+        return error.ValidErrorData(
             code=code
             message=message
             user_message=user_message
