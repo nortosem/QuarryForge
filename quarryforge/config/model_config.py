@@ -4,7 +4,7 @@ This module provides detailed configurations for the classes defined in the
 model module.
 
 Attributes:
-    model_config (ModelConfig):
+    BASE_MODEL (BaseModelConfig):
         An instance providing base path utilities for models.
     FOSSIL_REPO_CONFIG (ConfigFossilRepo):
         Configuration specific to the FossilRepo model.
@@ -16,10 +16,10 @@ from typing import NamedTuple, Tuple
 from quarryforge.config import root
 
 
-__all__ = ['FOSSIL_REPO_CONFIG','FOSSIL_COMMIT_CONFIG']
+__all__ = ['FOSSIL_REPO','FOSSIL_COMMIT']
 
 
-class ModelConfig(NamedTuple):
+class BaseModelConfig(NamedTuple):
     """Base configuration for model module paths.
 
     This class defines a standard base path for all model modules within the
@@ -49,7 +49,7 @@ class ModelConfig(NamedTuple):
         """
         return f'{cls.PATH}.{sub_path}'
 
-model_config: ModelConfig = ModelConfig()
+BASE_MODEL: BaseModelConfig = BaseModelConfig()
 """Instance of ModelConfig, providing access to model path utilities."""
 
 
@@ -77,7 +77,7 @@ class ConfigFossilRepo(NamedTuple):
         return tuple(cls._fields)
 
     @classmethod
-    def field_name(cls):
+    def field_name(cls) -> str:
         """Get public property field name.
 
         Returns:
@@ -87,16 +87,16 @@ class ConfigFossilRepo(NamedTuple):
 
 
     @classmethod
-    def path(cls):
+    def path(cls) -> str:
         """Returns the full Python module path for the FossilRepo model.
 
         Returns:
             str: The full Python dot-path 'quarryforge.model.FossilRepo'.
         """
-        return model_config.path(root.MODEL.fossil_repo)
+        return BASE_MODEL.path(root.MODEL.fossil_repo)
 
 
-FOSSIL_REPO_CONFIG: ConfigFossilRepo = ConfigFossilRepo()
+FOSSIL_REPO: ConfigFossilRepo = ConfigFossilRepo()
 """Global constant for FossilRepo configuration."""
 
 class ConfigFossilCommit(NamedTuple):
@@ -144,5 +144,5 @@ class ConfigFossilCommit(NamedTuple):
         return model_config.path(root.MODEL.fossil_commit)
 
 
-FOSSIL_COMMIT_CONFIG: ConfigFossilCommit = ConfigFossilCommit()
+FOSSIL_COMMIT: ConfigFossilCommit = ConfigFossilCommit()
 """Global constant for FossilCommit configuration."""
