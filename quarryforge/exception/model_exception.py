@@ -4,8 +4,7 @@
 """
 from typing import Dict, Optional
 
-from quarryforge.config import root as get
-from quarryforge.config.exception_conf import model_exception_config as code
+from quarryforge.config.exception_conf import model_exception_config as _
 from quarryforge.exception import base_exception
 
 
@@ -14,8 +13,7 @@ class FossilRepoError(base_exception.ModelError):
 
     Base exception for the FossilRepo class.
     """
-    CODE = code.ModelErrorContext.default_error(
-        code.ModelErrorContext.FOSSIL_REPO)
+    CODE = _.ModelErrorContext.default_error(_.ModelErrorContext.FOSSIL_REPO)
 
     def __init__(self,
                  message: Optional[str] = None,
@@ -38,8 +36,8 @@ class FossilCommitError(base_exception.ModelError):
 
     Base exception for the Commit class.
     """
-    CODE = code.ModelErrorContext.default_error(
-        code.ModelErrorContext.FOSSIL_COMMIT)
+    CODE = _.ModelErrorContext.default_error(
+        _.ModelErrorContext.FOSSIL_COMMIT)
 
     def __init__(self,
                  message: Optional[str] = None,
@@ -64,8 +62,8 @@ class TimelineError(base_exception.ModelError):
     command.  This might occur if the output format is unexpected or if
     there are issues extracting data from the timeline text.
     """
-    CODE = ''#code.ModelErrorContext.default_error(
-        #code.ModelErrorContext.TIMELINE)
+    CODE = ''#_.ModelErrorContext.default_error(
+        #_.ModelErrorContext.TIMELINE)
 
     def __init__(self,
                  message: Optional[str] = None,
