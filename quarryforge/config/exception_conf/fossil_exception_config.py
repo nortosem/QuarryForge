@@ -1,16 +1,13 @@
-"""
+"""Fossil Exception Configuration Module
 
 
 """
-from enum import Enum
-
 from quarryforge.config import fossil_config
-from quarryforge.config import root
 from quarryforge.config.exception_conf import exception_config as msg
-from quarryforge.config.exception_conf import exception_data
+from quarryforge.meta import immutable
 
 
-class ConfigFossilError(root.Valid):
+class ConfigFossilError(metaclass=immutable.Namespace):
     """Define the fossil error field configuration"""
     CMD = 'cmd'
     RETURN_CODE = 'returncode'
@@ -19,7 +16,7 @@ class ConfigFossilError(root.Valid):
     TIMEOUT = 'timeout'
 
 
-class FossilErrorContext(root.Config):
+class FossilErrorContext(metaclass=immutable.Namespace):
     """FossilErrorContext
 
 
@@ -35,9 +32,10 @@ class FossilErrorContext(root.Config):
     FOSSIL_ADD = fossil_config.ConfigAdd.path()
     FOSSIL_COMMIT = fossil_config.ConfigCommit.path()
 
-    def default_error(self, context: FossilErrorContext):
+    @classmethod
+    def default_error(cls, context: str):
         """Default Exception Context Code"""
-        if not isinstance(context, FossilErrorContext):
+        if not isinstance(context, str):
             raise TypeError('todo')
 
         return (
