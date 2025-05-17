@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any, List, Optional
 
 from quarryforge.config import model_config
-from quarryforge.config import util_config
 from quarryforge.exception import model_exception
 from quarryforge.meta import immutable
 from quarryforge.util import model_util
