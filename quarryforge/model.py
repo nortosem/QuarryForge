@@ -33,10 +33,13 @@ class FossilRepo(
             file: A `pathlib.Path` object representing the full path to the
                   Fossil repository file.
         """
+        print(
+            f'file: {file}, '
+            f'new: {is_new}, exception: {model_exception.FossilRepoError}')
         file = model_util.viable_fossil_repo(
             file, is_new, model_exception.FossilRepoError
         )
-        object.__setattr__(self, model_config.FOSSIL_REPO_CONFIG.file, file)
+        object.__setattr__(self, model_config.FOSSIL_REPO.file, file)
 
     @property
     def get_path(self) -> Path:
@@ -47,7 +50,7 @@ class FossilRepo(
         Returns:
             pathlib.Path: The path object representing the repository file.
         """
-        return getattr(self, model_config.FOSSIL_REPO_CONFIG.file)
+        return getattr(self, model_config.FOSSIL_REPO.file)
 
     def __setattr__(self, name: str, value: Any) -> None:
         """Prevents attribute modification, enforcing immutability.
@@ -86,7 +89,7 @@ class FossilRepo(
         Returns:
             str: The string form of the repository's `Path` object.
         """
-        return str(getattr(self, model_config.FOSSIL_REPO_CONFIG.file))
+        return str(getattr(self, model_config.FOSSIL_REPO.file))
 
     def __repr__(self) -> str:
         """The representation of a FossilRepo instance for logging/debugging.
@@ -114,11 +117,11 @@ class FossilRepo(
         if not isinstance(obj, FossilRepo):
             return NotImplemented
         return getattr(
-            self, model_config.FOSSIL_REPO_CONFIG.file) == obj.file
+            self, model_config.FOSSIL_REPO.file) == obj.file
 
     def __hash__(self) -> int:
         """Returns a hash for this reposiory Path instance."""
-        return hash(getattr(self, model_config.FOSSIL_REPO_CONFIG.file))
+        return hash(getattr(self, model_config.FOSSIL_REPO.file))
 
 
 class FossilCommit(
