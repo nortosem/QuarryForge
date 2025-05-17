@@ -7,39 +7,39 @@ from typing import NamedTuple
 import re
 
 
-__all__ = ['COMMAND', 'TIMELINE_DATA', '']
+__all__: list = ['COMMAND', 'TIMELINE_DATA', '']
 
 
 class Command(NamedTuple):
     """The permitted fossil commands and options"""
-    FOSSIL = 'fossil'
-    REPO = '-R'
-    TIMELINE = 'timeline'
-    VERBOSE = '--verbose'
-    TYPE = '--type'
-    CI = 'ci'
-    LIMIT = '--limit'
-    NO_LIMIT = '0'
-    FULL = '--full'
-    NEW = 'new'
-    USER = 'user'
-    DEFAULT = 'default'
-    CONTACT = 'contact'
-    TEMPLATE = '--template'
-    ADMIN_USER = '--admin-user'
-    PROJECT_NAME = '--project-name'
-    PROJECT_DESC = '--project-desc'
-    BRANCH = 'branch'
-    LIST = 'list'
-    ALL = '--all'
-    CLOSED = '--closed'
-    INFO = 'info'
-    DIFF = 'diff'
-    BRIEF = '--brief'
-    FROM = '--from'
-    TO = '--to'
-    CAT = 'cat'
-    VERSION = '-r'
+    FOSSIL: str = 'fossil'
+    REPO: str = '-R'
+    TIMELINE: str = 'timeline'
+    VERBOSE: str = '--verbose'
+    TYPE: str = '--type'
+    CI: str = 'ci'
+    LIMIT: str = '--limit'
+    NO_LIMIT: str = '0'
+    FULL: str = '--full'
+    NEW: str = 'new'
+    USER: str = 'user'
+    DEFAULT: str = 'default'
+    CONTACT: str = 'contact'
+    TEMPLATE: str = '--template'
+    ADMIN_USER: str = '--admin-user'
+    PROJECT_NAME: str = '--project-name'
+    PROJECT_DESC: str = '--project-desc'
+    BRANCH: str = 'branch'
+    LIST: str = 'list'
+    ALL: str = '--all'
+    CLOSED: str = '--closed'
+    INFO: str = 'info'
+    DIFF: str = 'diff'
+    BRIEF: str = '--brief'
+    FROM: str = '--from'
+    TO: str = '--to'
+    CAT: str = 'cat'
+    VERSION: str = '-r'
 
 
 COMMAND: Command = Command()
@@ -51,21 +51,21 @@ class TimelineData(NamedTuple):
 
     The fields and patterns used to parse commits from the timeline output.
     """
-    INIT_CHECKIN = 'initial empty check-in'
-    END_MARK = '+++ end of timeline'
-    COMMITS = 'commits'
-    COMMIT = '\\n(?=Commit:\\s+)'
-    HASH = '^(?P<label>Commit:\\s+)(?P<uuid>[0-9a-f]+)$'
-    DATE = '^(?P<label>Date):\\s+(?P<date>.+)$'
-    AUTHOR = '^(?P<label>Author):\\s+(?P<author>.+)?'
-    COMMENT = '^(?P<label>Comment):\\s+(?P<comment>.+)$'
-    BRANCH = '^(?P<label>Branch):\\s+(?P<branch>.+)$'
-    TAGS = '^(?P<label>Tags):\\s+(?P<tags>.+)$'
-    TAG = '?P<tag>[\\w-]+'
+    INIT_CHECKIN: str = 'initial empty check-in'
+    END_MARK: str = '+++ end of timeline'
+    COMMITS: str = 'commits'
+    COMMIT: str = '\\n(?=Commit:\\s+)'
+    HASH: str = '^(?P<label>Commit:\\s+)(?P<uuid>[0-9a-f]+)$'
+    DATE: str = '^(?P<label>Date):\\s+(?P<date>.+)$'
+    AUTHOR: str = '^(?P<label>Author):\\s+(?P<author>.+)?'
+    COMMENT: str = '^(?P<label>Comment):\\s+(?P<comment>.+)$'
+    BRANCH: str = '^(?P<label>Branch):\\s+(?P<branch>.+)$'
+    TAGS: str = '^(?P<label>Tags):\\s+(?P<tags>.+)$'
+    TAG: str = '?P<tag>[\\w-]+'
     PHASE = \
         '^(?P<label>Phase):\\s+\\*?(?P<phase>LEAF|PUBLISHED|FROZEN)?\\*?'
-    CHANGE = '^\\s+(?P<change>ADDED|EDITED|DELETED)\\s(?P<filename>.+)$'
-    PATH = '^(?P<path>.*[\\/])?(?P<file>[^/\\\\]+$)'
+    CHANGE: str = '^\\s+(?P<change>ADDED|EDITED|DELETED)\\s(?P<filename>.+)$'
+    PATH: str = '^(?P<path>.*[\\/])?(?P<file>[^/\\\\]+$)'
 
     def commit_pattern(self) -> re.Pattern:
         pattern = re.compile(f'{self.COMMIT}')
@@ -110,9 +110,9 @@ TIMELINE_DATA: TimelineData = TimelineData()
 
 class InfoData(NamedTuple):
     """Parser for Fossil Info output."""
-    INIT_HASH = '^comment:\\s+(?P<init>)\\s.+\\n'
-    PARENT = 'parent'
-    PARENT_DATA = '^parent:\\s+(?P<uuid>.+?)\\s.+\\n'
+    INIT_HASH: str = '^comment:\\s+(?P<init>)\\s.+\\n'
+    PARENT: str = 'parent'
+    PARENT_DATA: str = '^parent:\\s+(?P<uuid>.+?)\\s.+\\n'
 
     def init_pattern(self) -> re.Pattern:
         pattern = re.compile(self.INIT_HASH)
