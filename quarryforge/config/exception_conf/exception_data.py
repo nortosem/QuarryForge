@@ -7,6 +7,9 @@ from typing import Any, Dict, NamedTuple
 from quarryforge.config.exception_conf import exception_config as error
 
 
+__all__ = ['ERROR_FIELD', 'BUILDER_FIELD', 'ValidErrorData']
+
+
 class ConfigErrorData(NamedTuple):
     """Valid QuarryForge Exception Fields"""
     code: str = 'code'
@@ -16,7 +19,7 @@ class ConfigErrorData(NamedTuple):
     timestamp: str = 'timestamp'
 
 
-ERROR_DATA: ConfigErrorData = ConfigErrorData()
+ERROR_FIELD: ConfigErrorData = ConfigErrorData()
 """Global constant for quarryforge exception fields."""
 
 
@@ -32,7 +35,7 @@ class ConfigBuilder(NamedTuple):
     extra_details: str = 'extra_details'
 
 
-ERROR_DATA_CONFIG: ConfigBuilder = ConfigBuilder()
+BUILDER_FIELD: ConfigBuilder = ConfigBuilder()
 """Global constant for BuildError data fields."""
 
 
@@ -47,8 +50,8 @@ class ValidErrorData(NamedTuple):
     def to_exception(cls) -> Dict[str, Any]:
         """Assemble to convert keyword args for a QuarryForge exception."""
         return {
-            ERROR_DATA.code: cls.code,
-            ERROR_DATA.message: cls.message,
-            ERROR_DATA.user_message: cls.user_message,
-            ERROR_DATA.details: cls.details
+            ERROR_FIELD.code: cls.code,
+            ERROR_FIELD.message: cls.message,
+            ERROR_FIELD.user_message: cls.user_message,
+            ERROR_FIELD.details: cls.details
         }
