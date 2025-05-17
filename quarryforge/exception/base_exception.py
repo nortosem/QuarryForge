@@ -10,7 +10,7 @@ from typing import Dict, Optional
 from quarryforge.config import root
 from quarryforge.config.exception_conf import base_exception_config as code
 from quarryforge.config.exception_conf import exception_config as msg
-from quarryforge.config.excpetion_conf.exception_config import ConfigQuarryForgeError as ConfigQFE
+from quarryforge.config.excpetion_conf.exception_data import ERROR_DATA
 
 
 class QuarryForgeError(Exception):
@@ -36,28 +36,31 @@ class QuarryForgeError(Exception):
     """
     CODE = code.BaseErrorContext.package_error()
 
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
+    def __init__(
+        self,
+        message: Optional[str] = None,
+        code: Optional[str] = None,
+        details: Optional[Dict] = None,
+        user_message: Optional[str] = None
+    ):
+        """Initialize default exception for the QuarryForge package"""
         effective_code = code if code is not None else self.__class__.CODE
 
         super().__init__(message)
 
         self.code = effective_code
         self.details = details or {}
-        self.timestamp = datetime.datetime.utcnow()
+        self.timestamp = datetime.datetime.now(datetime.UTC).__str__()
         self.user_message = user_message or message
 
     def to_dict(self):
         """Returns a dictionary representation of the exception."""
         return {
-            ConfigQFE.MESSAGE.value: str(self),
-            ConfigQFE.CODE.value: self.code,
-            ConfigQFE.DETAILS.value: self.details,
-            ConfigQFE.TIMESTAMP.value: self.timestamp.isoformat(),
-            ConfigQFE.USER_MESSAGE.value: self.user_message,
+            ERROR_DATA.message: str(self),
+            ERROR_DATA.code: self.code,
+            ERROR_DATA.details: self.details,
+            ERROR_DATA.timestamp: self.timestamp.isoformat(),
+            ERROR_DATA.user_message: self.user_message,
         }
 
     def __str__(self):
@@ -74,7 +77,7 @@ class QuarryForgeError(Exception):
                 [f'{key}: {value}' for key, value in self.details.items()]
             )
             parts.append(f'({detail_str})')
-        return (msg.Default.SPC.value).join(parts)
+        return (' ').join(parts)
 
 
 class ModelError(QuarryForgeError):
@@ -85,12 +88,14 @@ class ModelError(QuarryForgeError):
     CODE = code.BaseErrorContext.default_error(
         BaseErrorContext.MODEL_ERROR
     )
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
-
+    def __init__(
+        self,
+        message: Optional[str] = None,
+        code: Optional[str] = None,
+        details: Optional[Dict] = None,
+        user_message: Optional[str] = None
+    ):
+        """Intialize a QuarryForge.ModelError"""
         effective_code = code if code is not None else self.__class__.CODE
 
         super().__init__(
@@ -103,17 +108,19 @@ class ModelError(QuarryForgeError):
 class FossilError(QuarryForgeError):
     """Fossil Error
 
-    Base exception class for all exceptions in the fossil module.
+    Base exception class for all exceptions for the fossil module.
     """
     CODE = code.BaseErrorContext.default_error(
         BaseErrorContext.FOSSIL_ERROR
     )
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
-
+    def __init__(
+        self,
+        message: Optional[str] = None,
+        code: Optional[str] = None,
+        details: Optional[Dict] = None,
+        user_message: Optional[str] = None
+    ):
+        """Initialize the QuarryForge.FossilError"""
         effective_code = code if code is not None else self.__class__.CODE
 
         super().__init__(
@@ -131,12 +138,38 @@ class MainError(QuarryForgeError):
     CODE = code.BaseErrorContext.default_error(
         BaseErrorContext.MAIN_ERROR
     )
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
+    def __init__(
+        self,
+        message: Optional[str] = None,
+        code: Optional[str] = None,
+        details: Optional[Dict] = None,
+        user_message: Optional[str] = None
+    ):
+        """Initialize the QuarryForge.MainError"""
+        effective_code = code if code is not None else self.__class__.CODE
 
+        super().__init__(
+            message=message,
+            code=effective_code,
+            details=details,
+            user_message=user_message)
+
+
+class MetaError(QuarryForgeError):
+    """Meta Error
+
+    Base exception class for all exceptions for the meta module.
+    """
+    CODE = 'todo'
+
+    def __init__(
+        self,
+        message: Optional[str] = None,
+        code: Optional[str] = None,
+        details: Optional[Dict] = None,
+        user_message: Optional[str] = None
+    )
+        """Initialize the QuarryForge.MetaError"""
         effective_code = code if code is not None else self.__class__.CODE
 
         super().__init__(
