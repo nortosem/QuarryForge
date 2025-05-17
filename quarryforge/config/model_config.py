@@ -129,12 +129,8 @@ class ConfigFossilCommit(NamedTuple):
             Tuple[str, ...]:
                 A tuple containing the names of all fields
         """
-        return tuple(
-            getattr(
-                self,
-                self._fields[field]
-            ) for field in range(len(self._fields))
-        )
+        tuple(getattr(self, field) for field in self._fields)
+
 
     @classmethod
     def path(cls):
