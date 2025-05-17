@@ -20,7 +20,7 @@ class ConfigFossilError(root.Valid):
 
 
 class FossilErrorContext(root.Config):
-    """
+    """FossilErrorContext
 
 
     """
@@ -35,8 +35,7 @@ class FossilErrorContext(root.Config):
     FOSSIL_ADD = fossil_config.ConfigAdd.path()
     FOSSIL_COMMIT = fossil_config.ConfigCommit.path()
 
-    @classmethod
-    def default_error(cls, context: FossilErrorContext):
+    def default_error(self, context: FossilErrorContext):
         """Default Exception Context Code"""
         if not isinstance(context, FossilErrorContext):
             raise TypeError('todo')

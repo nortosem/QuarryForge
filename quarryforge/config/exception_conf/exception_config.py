@@ -26,13 +26,11 @@ class Argument(NamedTuple):
     MISSING = 'Missing'
     TYPE = 'type:'
 
-    @classmethod
-    def invalid(cls, name: str):
-        return f'{cls.INVALID} {name} {cls.ARG}'
+    def invalid(self, name: str):
+        return f'{self.INVALID} {name} {self.ARG}'
 
-    @classmethod
-    def missing(cls, name: str, kind: str):
-        return f'{cls.MISSING} {cls.ARG} {name} {cls.TYPE} {kind}'
+    def missing(self, name: str, kind: str):
+        return f'{self.MISSING} {self.ARG} {name} {self.TYPE} {kind}'
 
 
 ARG: Argument = Argument()
@@ -57,9 +55,8 @@ class Immutable(NamedTuple):
     """Immutable Message"""
     MESSAGE = 'object is immutable.'
 
-    @classmethod
-    def error_message(cls, name: str):
-        return f'{name} {cls.MESSAGE}'
+    def error_message(self, name: str):
+        return f'{name} {self.MESSAGE}'
 
 
 IMMUTABLE: Immutable = Immutable()
@@ -79,33 +76,26 @@ class PathMessage(NamedTuple):
     WRITE = 'is not writable.'
     NO_DIR = 'cannot write output to a directory.'
 
-    @classmethod
-    def dir_not_allowed(cls, path: str):
-        return f'{path} {cls.NO_DIR.value}'
+    def dir_not_allowed(self, path: str):
+        return f'{path} {self.NO_DIR.value}'
 
-    @classmethod
-    def not_a_path(cls, path: str) -> str:
-        return f'{path} {cls.NAP}'
+    def not_a_path(self, path: str) -> str:
+        return f'{path} {self.NAP}'
 
-    @classmethod
-    def does_not_exist(cls, path: str) -> str:
-        return f'{path} {cls.DNE}'
+    def does_not_exist(self, path: str) -> str:
+        return f'{path} {self.DNE}'
 
-    @classmethod
-    def not_a_file(cls, path: str) -> str:
-        return f'{path} {cls.NAF}'
+    def not_a_file(self, path: str) -> str:
+        return f'{path} {self.NAF}'
 
-    @classmethod
-    def not_a_directory(cls, path: str) -> str:
-        return f'{path} {cls.NAD}'
+    def not_a_directory(self, path: str) -> str:
+        return f'{path} {self.NAD}'
 
-    @classmethod
-    def no_read_permission(cls, path: str) -> str:
-        return f'{path} {cls.READ}'
+    def no_read_permission(self, path: str) -> str:
+        return f'{path} {self.READ}'
 
-    @classmethod
-    def no_write_permission(cls, path: str) -> str:
-        return f'{path} {cls.WRITE}'
+    def no_write_permission(self, path: str) -> str:
+        return f'{path} {self.WRITE}'
 
 
 PATH_MSG: PathMessage = PathMessage()
@@ -121,13 +111,11 @@ class Required(NamedTuple):
     EMPTY = 'field cannot be empty'
     REQUIRE = 'field requires a'
 
-    @classmethod
-    def field_type(cls, field: str, kind: type):
-        return f'{cls.THE} {field} {cls.REQUIRE} {str(kind)}'
+    def field_type(self, field: str, kind: type):
+        return f'{self.THE} {field} {self.REQUIRE} {str(kind)}'
 
-    @classmethod
-    def field_empty(cls, field: str, kind: type):
-        return f'{cls.THE} {str(kind)} {field} {cls.EMPTY}'
+    def field_empty(self, field: str, kind: type):
+        return f'{self.THE} {str(kind)} {field} {self.EMPTY}'
 
 
 REQUIRED: Required = Required()

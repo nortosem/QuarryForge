@@ -46,12 +46,11 @@ class ValidErrorData(NamedTuple):
     user_message: str
     details: Dict[str, Any]
 
-    @classmethod
-    def to_exception(cls) -> Dict[str, Any]:
+    def to_exception(self) -> Dict[str, Any]:
         """Assemble to convert keyword args for a QuarryForge exception."""
         return {
-            ERROR_FIELD.code: cls.code,
-            ERROR_FIELD.message: cls.message,
-            ERROR_FIELD.user_message: cls.user_message,
-            ERROR_FIELD.details: cls.details
+            ERROR_FIELD.code: self.code,
+            ERROR_FIELD.message: self.message,
+            ERROR_FIELD.user_message: self.user_message,
+            ERROR_FIELD.details: self.details
         }

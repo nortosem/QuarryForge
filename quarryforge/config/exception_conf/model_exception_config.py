@@ -33,8 +33,7 @@ class ModelErrorContext(metaclass=immutable.Namespace):
    #         root.ModelNames.FOSSIL_TIMELINE])
    # )
 
-    @classmethod
-    def default_error(cls, model: str):
+    def default_error(self, model: str):
         """Default Exception Context Code"""
         return (msg.Default.DOT).join([
             model, msg.Default.ERROR])

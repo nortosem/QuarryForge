@@ -33,11 +33,10 @@ class BaseModelConfig(NamedTuple):
     """
     PATH: str = f'{root.PACKAGE.name}.{root.MODULE.model}'
 
-    @classmethod
-    def path(cls, sub_path: str) -> str:
+    def path(self, sub_path: str) -> str:
         """Constructs the full Python path to a model module.
 
-        Appends a given model's name to the base `cls.PATH`.
+        Appends a given model's name to the base `self.PATH`.
 
         Args:
             sub_path (str): The specific model module name or sub-path
@@ -47,7 +46,7 @@ class BaseModelConfig(NamedTuple):
             str: The full Python dot-path to the model module
                  (e.g., 'quarryforge.model.FossilRepo').
         """
-        return f'{cls.PATH}.{sub_path}'
+        return f'{self.PATH}.{sub_path}'
 
 BASE_MODEL: BaseModelConfig = BaseModelConfig()
 """Instance of ModelConfig, providing access to model path utilities."""
@@ -84,8 +83,7 @@ class ConfigFossilRepo(NamedTuple):
         return str(self.file)[1:]
 
 
-    @classmethod
-    def path(cls) -> str:
+    def path(self) -> str:
         """Returns the full Python module path for the FossilRepo model.
 
         Returns:
@@ -132,8 +130,7 @@ class ConfigFossilCommit(NamedTuple):
         tuple(getattr(self, field) for field in self._fields)
 
 
-    @classmethod
-    def path(cls):
+    def path(self):
         """Returns the full Python module path for the FossilCommit model.
 
         Returns:

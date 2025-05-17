@@ -67,49 +67,40 @@ class TimelineData(NamedTuple):
     CHANGE = '^\\s+(?P<change>ADDED|EDITED|DELETED)\\s(?P<filename>.+)$'
     PATH = '^(?P<path>.*[\\/])?(?P<file>[^/\\\\]+$)'
 
-    @classmethod
-    def commit_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.COMMIT}')
+    def commit_pattern(self) -> re.Pattern:
+        pattern = re.compile(f'{self.COMMIT}')
         return pattern
 
-    @classmethod
-    def hash_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.HASH}')
+    def hash_pattern(self) -> re.Pattern:
+        pattern = re.compile(f'{self.HASH}')
         return pattern
 
-    @classmethod
-    def date_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.DATE}')
+    def date_pattern(self) -> re.Pattern:
+        pattern = re.compile(f'{self.DATE}')
         return pattern
 
-    @classmethod
-    def author_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.AUTHOR}')
+    def author_pattern(self) -> re.Pattern:
+        pattern = re.compile(f'{self.AUTHOR}')
         return pattern
 
-    @classmethod
-    def comment_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.COMMENT}')
+    def comment_pattern(self) -> re.Pattern:
+        pattern = re.compile(f'{self.COMMENT}')
         return pattern
 
-    @classmethod
-    def branch_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.BRANCH}')
+    def branch_pattern(self) -> re.Pattern:
+        pattern = re.compile(f'{self.BRANCH}')
         return pattern
 
-    @classmethod
-    def tags_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.TAGS}')
+    def tags_pattern(self) -> re.Pattern:
+        pattern = re.compile(f'{self.TAGS}')
         return pattern
 
-    @classmethod
-    def phase_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.PHASE}')
+    def phase_pattern(self) -> re.Pattern:
+        pattern = re.compile(f'{self.PHASE}')
         return pattern
 
-    @classmethod
-    def change_pattern(cls) -> re.Pattern:
-        pattern = re.compile(f'{cls.CHANGE}')
+    def change_pattern(self) -> re.Pattern:
+        pattern = re.compile(f'{self.CHANGE}')
         return pattern
 
 
@@ -123,14 +114,12 @@ class InfoData(NamedTuple):
     PARENT = 'parent'
     PARENT_DATA = '^parent:\\s+(?P<uuid>.+?)\\s.+\\n'
 
-    @classmethod
-    def init_pattern(cls) -> re.Pattern:
-        pattern = re.compile(cls.INIT_HASH)
+    def init_pattern(self) -> re.Pattern:
+        pattern = re.compile(self.INIT_HASH)
         return pattern
 
-    @classmethod
-    def parent_pattern(cls) -> re.Pattern:
-        pattern = re.compile(cls.PARENT_DATA)
+    def parent_pattern(self) -> re.Pattern:
+        pattern = re.compile(self.PARENT_DATA)
         return pattern
 
 
