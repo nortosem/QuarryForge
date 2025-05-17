@@ -7,9 +7,7 @@ modules within the package.
 import datetime
 from typing import Dict, Optional
 
-from quarryforge.config import root
-from quarryforge.config.exception_conf import base_exception_config as code
-from quarryforge.config.exception_conf import exception_config as msg
+from quarryforge.config.exception_conf import base_exception_config as _
 from quarryforge.config.exception_conf.exception_data import ERROR_FIELD
 
 
@@ -34,7 +32,7 @@ class QuarryForgeError(Exception):
         to_dict(): Returns a dictionary representation of the exception.
         __str__(): Returns a formatted string representation of the exception.
     """
-    CODE = code.BaseErrorContext.package_error()
+    CODE = _.BaseErrorContext.package_error()
 
     def __init__(
         self,
@@ -85,8 +83,8 @@ class ModelError(QuarryForgeError):
 
     Base exception class for all exceptions in the model module.
     """
-    CODE = code.BaseErrorContext.default_error(
-        code.BaseErrorContext.MODEL_ERROR
+    CODE = _.BaseErrorContext.default_error(
+        _.BaseErrorContext.MODEL_ERROR
     )
     def __init__(
         self,
@@ -110,8 +108,8 @@ class FossilError(QuarryForgeError):
 
     Base exception class for all exceptions for the fossil module.
     """
-    CODE = code.BaseErrorContext.default_error(
-        code.BaseErrorContext.FOSSIL_ERROR
+    CODE = _.BaseErrorContext.default_error(
+        _.BaseErrorContext.FOSSIL_ERROR
     )
     def __init__(
         self,
@@ -135,8 +133,8 @@ class MainError(QuarryForgeError):
 
     Base exception class for all exceptions in the main module.
     """
-    CODE = code.BaseErrorContext.default_error(
-        code.BaseErrorContext.MAIN_ERROR
+    CODE = _.BaseErrorContext.default_error(
+        _.BaseErrorContext.MAIN_ERROR
     )
     def __init__(
         self,
