@@ -5,7 +5,9 @@
 from typing import NamedTuple
 
 
-__all__ = ['ERROR_TYPE', 'ARG', 'DEFAULT', 'IMMUTABLE', 'PATH_MSG', 'REQUIRED']
+__all__: list = [
+    'ERROR_TYPE', 'ARG', 'DEFAULT', 'IMMUTABLE', 'PATH_MSG', 'REQUIRED'
+]
 
 
 class ErrorType(NamedTuple):

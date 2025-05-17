@@ -15,7 +15,7 @@ Attributes:
 from typing import NamedTuple
 
 
-__all__ = [
+__all__: list = [
     'PACKAGE',
     'MODULE',
     'SUB_PACKAGE',
