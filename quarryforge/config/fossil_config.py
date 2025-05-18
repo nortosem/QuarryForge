@@ -2,7 +2,7 @@
 
 #TODO
 """
-from quarryforge import root
+from quarryforge.config import root
 from quarryforge.meta import immutable
 
 
