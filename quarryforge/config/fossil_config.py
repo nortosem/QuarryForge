@@ -47,7 +47,7 @@ class ConfigTimeline(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FossilCommand.TIMELINE.value)
+        return FossilConfig.path(root.FOSSIL_COMMAND.timeline)
 
 
 class ConfigSetup(metaclass=immutable.Namespace):
@@ -57,7 +57,7 @@ class ConfigSetup(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FossilCommand.SETUP.value)
+        return FossilConfig.path(root.FOSSIL_COMMAND.setup)
 
 
 class ConfigInfo(metaclass=immutable.Namespace):
@@ -67,7 +67,7 @@ class ConfigInfo(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FossilCommand.INFO.value)
+        return FossilConfig.path(root.FOSSIL_COMMAND.info)
 
 
 class ConfigDiff(metaclass=immutable.Namespace):
@@ -77,7 +77,7 @@ class ConfigDiff(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FossilCommand.DIFF.value)
+        return FossilConfig.path(root.FOSSIL_COMMAND.diff)
 
 
 class ConfigCat(metaclass=immutable.Namespace):
@@ -87,7 +87,7 @@ class ConfigCat(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FossilCommand.CAT.value)
+        return FossilConfig.path(root.FOSSIL_COMMAND.cat)
 
 
 class ConfigBranch(metaclass=immutable.Namespace):
@@ -97,7 +97,7 @@ class ConfigBranch(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FossilCommand.BRANCH.value)
+        return FossilConfig.path(root.FOSSIL_COMMAND.branch)
 
 
 class ConfigAdd(metaclass=immutable.Namespace):
@@ -107,7 +107,7 @@ class ConfigAdd(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FossilCommand.ADD.value)
+        return FossilConfig.path(root.FOSSIL_COMMAND.add)
 
 
 class ConfigCommit(metaclass=immutable.Namespace):
@@ -117,4 +117,4 @@ class ConfigCommit(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FossilCommand.COMMIT.value)
+        return FossilConfig.path(root.FOSSIL_COMMAND.commit)
