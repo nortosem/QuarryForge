@@ -42,3 +42,25 @@ class BaseErrorContext(metaclass=immutable.Namespace):
         return (
             f'{context}.{msg.Default.ERROR}'
         )
+
+
+class DefaultMessage(metaclass=immutable.Namespace):
+    """The default base_exception error messages."""
+    unexpected_error = (
+        'An unexpected error occurred within the '
+    )
+    quarryforge_error = (
+        f'{root.PACKAGE.name} package.'
+    )
+    model_error = (
+        f'{root.PACKAGE.name} {root.Module.model} module.'
+    )
+    fossil_error = (
+        f'{root.PACKAGE.name} {root.Module.model} module.'
+    )
+    main_error = (
+        f'{root.PACKAGE.name} {root.Module.model} module.'
+    )
+    meta_error = (
+        f'{root.PACKAGE.name} {root.Module.model} module.'
+    )
