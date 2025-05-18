@@ -42,19 +42,18 @@ class QuarryForgeError(Exception):
         user_message: Optional[str] = None
     ):
         """Initialize default exception for the QuarryForge package"""
-        effective_code = code if code is not None else self.__class__.CODE
+        error_message = message or _.DefaultMessage.quarryforge_error
+        super().__init__(error_message)
 
-        super().__init__(message)
-
-        self.code = effective_code
+        self.code = code or self.__class__.CODE,
         self.details = details or {}
-        self.timestamp = datetime.datetime.now(datetime.UTC).__str__()
-        self.user_message = user_message or message
+        self.timestamp = datetime.datetime.now(datetime.UTC)
+        self.user_message = user_message or error_message
 
     def to_dict(self):
         """Returns a dictionary representation of the exception."""
         return {
-            ERROR_FIELD.message: str(self),
+            ERROR_FIELD.message: super().__str__(),
             ERROR_FIELD.code: self.code,
             ERROR_FIELD.details: self.details,
             ERROR_FIELD.timestamp: self.timestamp.isoformat(),
@@ -94,11 +93,9 @@ class ModelError(QuarryForgeError):
         user_message: Optional[str] = None
     ):
         """Intialize a QuarryForge.ModelError"""
-        effective_code = code if code is not None else self.__class__.CODE
-
         super().__init__(
-            message=message,
-            code=effective_code,
+            message=message or _.DefaultMessage.model_error,
+            code=code or self.__class__.CODE,
             details=details,
             user_message=user_message)
 
@@ -119,11 +116,9 @@ class FossilError(QuarryForgeError):
         user_message: Optional[str] = None
     ):
         """Initialize the QuarryForge.FossilError"""
-        effective_code = code if code is not None else self.__class__.CODE
-
         super().__init__(
-            message=message,
-            code=effective_code,
+            message=message or _.DefaultMessage.fossil_error,
+            code=code or self.__class__.CODE,
             details=details,
             user_message=user_message)
 
@@ -144,11 +139,9 @@ class MainError(QuarryForgeError):
         user_message: Optional[str] = None
     ):
         """Initialize the QuarryForge.MainError"""
-        effective_code = code if code is not None else self.__class__.CODE
-
         super().__init__(
-            message=message,
-            code=effective_code,
+            message=message or _.DefaultMessage.main_error,
+            code=code or self.__class__.CODE,
             details=details,
             user_message=user_message)
 
@@ -168,10 +161,8 @@ class MetaError(QuarryForgeError):
         user_message: Optional[str] = None
     ):
         """Initialize the QuarryForge.MetaError"""
-        effective_code = code if code is not None else self.__class__.CODE
-
         super().__init__(
-            message=message,
-            code=effective_code,
+            message=message or _.DefaultMessage.meta_error,
+            code=code or self.__class__.CODE,
             details=details,
             user_message=user_message)
