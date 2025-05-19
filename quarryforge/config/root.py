@@ -47,6 +47,7 @@ class Module(NamedTuple):
     fossil: str = 'fossil'
     main: str = 'main'
     model: str = 'model'
+    meta: str = 'meta'
 
 
 MODULE: Module = Module()
