@@ -67,12 +67,12 @@ class DefaultMessage(metaclass=immutable.Namespace):
     quarryforge_error = (
         f'{root.PACKAGE.name} package.')
     model_error = (
-        f'{root.PACKAGE.name} {root.Module.model} module.')
+        f'{root.PACKAGE.name}.{root.Module.model} module.')
     fossil_error = (
-        f'{root.PACKAGE.name} {root.Module.model} module.')
+        f'{root.PACKAGE.name}.{root.Module.model} module.')
     main_error = (
-        f'{root.PACKAGE.name} {root.Module.model} module.')
+        f'{root.PACKAGE.name}.{root.Module.model} module.')
     meta_error = (
-        f'{root.PACKAGE.name} {root.SubPackage.meta} subpackage.')
+        f'{root.PACKAGE.name}.{root.SubPackage.meta} subpackage.')
     util_error = (
-        f'{root.PACKAGE.name} {root.SubPackage.util} subpackage.')
+        f'{root.PACKAGE.name}.{root.SubPackage.util} subpackage.')
