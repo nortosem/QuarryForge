@@ -25,6 +25,8 @@ class BaseErrorContext(metaclass=immutable.Namespace):
     MODEL_ERROR = BaseConfig.path(root.MODULE.model)
     FOSSIL_ERROR = BaseConfig.path(root.MODULE.fossil)
     MAIN_ERROR = BaseConfig.path(root.MODULE.main)
+    META_ERROR = BaseConfig.path(root.SUB_PACKAGE.meta)
+    UTIL_ERROR = BaseConfig.path(root.SUB_PACKAGE.util)
 
     @classmethod
     def package_error(cls):
@@ -42,6 +44,21 @@ class BaseErrorContext(metaclass=immutable.Namespace):
         return (
             f'{context}.{msg.Default.ERROR}'
         )
+
+
+class DefaultCode(metaclass=immutable.Namespace):
+    """Default Error Code message"""
+    package_error = BaseErrorContext.package_error()
+    model_error = BaseErrorContext.default_error(
+        BaseErrorContext.MODEL_ERROR)
+    fossil_error = BaseErrorContext.default_error(
+        BaseErrorContext.FOSSIL_ERROR)
+    main_error = BaseErrorContext.default_error(
+        BaseErrorContext.MAIN_ERROR)
+    meta_error = BaseErrorContext.default_error(
+        BaseErrorContext.META_ERROR)
+    util_error = BaseErrorContext.default_error(
+        BaseErrorContext.UTIL_ERROR)
 
 
 class DefaultMessage(metaclass=immutable.Namespace):
@@ -62,5 +79,8 @@ class DefaultMessage(metaclass=immutable.Namespace):
         f'{root.PACKAGE.name} {root.Module.model} module.'
     )
     meta_error = (
-        f'{root.PACKAGE.name} {root.Module.model} module.'
+        f'{root.PACKAGE.name} {root.SubPackage.meta} subpackage.'
+    )
+    util_error = (
+        f'{root.PACKAGE.name} {root.SubPackage.util} subpackage.'
     )
