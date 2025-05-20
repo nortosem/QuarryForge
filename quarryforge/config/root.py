@@ -47,7 +47,6 @@ class Module(NamedTuple):
     fossil: str = 'fossil'
     main: str = 'main'
     model: str = 'model'
-    meta: str = 'meta'
 
 
 MODULE: Module = Module()
@@ -67,6 +66,7 @@ class SubPackage(NamedTuple):
     """
     config: str = 'config'
     exception: str = 'exception'
+    meta: str = 'meta'
     util: str = 'util'
 
 
