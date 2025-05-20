@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Union
 
 from quarryforge.config.exception_conf import fossil_exception_config as _
 from quarryforge.config.exception_conf.fossil_exception_config import ConfigFossilError as config
-from quarryforge.exceptions import base_exception
+from quarryforge.exception import base_exception
 
 
 class FossilProcessError(
