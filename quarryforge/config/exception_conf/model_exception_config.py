@@ -14,6 +14,8 @@ file does not exist.
 is parent dir exist and writeable?
 """
 from quarryforge.config import model_config
+from quarryforge.config import root
+from quarryforge.config.exception_conf import base_exception_config
 from quarryforge.config.exception_conf import exception_config as msg
 from quarryforge.meta import immutable
 
@@ -22,17 +24,36 @@ class ModelErrorContext(metaclass=immutable.Namespace):
     """Context for Model Errors"""
     FOSSIL_COMMIT = model_config.FOSSIL_COMMIT.path()
     FOSSIL_REPO = model_config.FOSSIL_REPO.path()
-   # TIMELINE = (
-   #     (msg.Default.DOT).join([
-            #root.Valid.QUARRYFORGE,
-   #         root.TopModules.MODEL,
-   #         root.ModelNames.FOSSIL_TIMELINE])
-   # )
+    FOSSIL_TIMELINE = model_config.FOSSIL_TIMELINE.path()
 
     @staticmethod
     def default_error(model: str):
         """Default Exception Context Code"""
         return f'{model}.{msg.Default.ERROR}'
+
+
+class DefaultCode(metaclass=immutable.Namespace):
+    """The Default Exception Codes for Model Exceptions."""
+    fossil_repo = ModelErrorContext.default_error(
+        ModelErrorContext.FOSSIL_REPO)
+    fossil_commit = ModelErrorContext.default_error(
+        ModelErrorContext.FOSSIL_COMMIT)
+    fossil_timeline = ModelErrorContext.default_error(
+        ModelErrorContext.FOSSIL_TIMELINE)
+
+
+class DefaultMessage(metaclass=immutable.Namespace):
+    """The Default Exception Messages for Model Exceptions."""
+    fossil_repo = (
+        f'{base_exception_config.unexpected_error} '
+        f'{root.PACKAGE.name}.{root.Module.model}.{root.Model.fossil_repo}')
+    fossil_commit = (
+        f'{base_exception_config.unexpected_error} '
+        f'{root.PACKAGE.name}.{root.Module.model}.{root.Model.fossil_commit}')
+    fossil_timeline = (
+        f'{base_exception_config.unexpected_error} '
+        f'{root.PACKAGE.name}.{root.Module.model}.'
+        f'{root.Model.fossil_timeline}')
 
 
 class FossilRepoContext(metaclass=immutable.Namespace):
