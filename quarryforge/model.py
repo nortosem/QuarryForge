@@ -13,8 +13,7 @@ from quarryforge.util import model_util
 
 class FossilRepo(
     immutable.ImmutableInstance,
-    metaclass=immutable.ImmutableMetaClass
-):
+    metaclass=immutable.ImmutableMetaClass):
     """Represents an immutable Fossil repository configuration.
 
     This class encapsulates the file path to a Fossil repository.
@@ -125,8 +124,7 @@ class FossilRepo(
 
 class FossilCommit(
     immutable.ImmutableInstance,
-    metaclass=immutable.ImmutableMetaClass
-):
+    metaclass=immutable.ImmutableMetaClass):
     """Commit
 
     #todo
@@ -230,10 +228,11 @@ class FossilTimeline:
     Attributes:
         commits List[FossilCommit]: A list of all timeline commits
     """
-    __slots__ = ()#tuple(util_config.TimelineData.COMMITS.value)
+    __slots__ = model_config.FOSSIL_TIMELINE.commits
 
     def __init__(self, commits: List = None):
-        self.commits = commits
+
+        self.commits = commits.reverse()
 
     def add(self, commit: FossilCommit) -> None:
         self.commits.append(commit)
@@ -242,7 +241,6 @@ class FossilTimeline:
         """Reverse Commit Order
 
         Default order is latest commit first.
-        Reverse once return commits in order from iniital commit.
         """
         self.commits.reverse()
         return self.commits
