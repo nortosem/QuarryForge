@@ -32,8 +32,6 @@ class QuarryForgeError(Exception):
         to_dict(): Returns a dictionary representation of the exception.
         __str__(): Returns a formatted string representation of the exception.
     """
-    CODE = _.BaseErrorContext.package_error()
-
     def __init__(
         self,
         message: Optional[str] = None,
@@ -45,7 +43,7 @@ class QuarryForgeError(Exception):
         error_message = message or _.DefaultMessage.quarryforge_error
         super().__init__(error_message)
 
-        self.code = code or self.__class__.CODE,
+        self.code = code or _.DefaultCode.package_error,
         self.details = details or {}
         self.timestamp = datetime.datetime.now(datetime.UTC)
         self.user_message = user_message or error_message
@@ -82,9 +80,6 @@ class ModelError(QuarryForgeError):
 
     Base exception class for all exceptions in the model module.
     """
-    CODE = _.BaseErrorContext.default_error(
-        _.BaseErrorContext.MODEL_ERROR
-    )
     def __init__(
         self,
         message: Optional[str] = None,
@@ -95,7 +90,7 @@ class ModelError(QuarryForgeError):
         """Intialize a QuarryForge.ModelError"""
         super().__init__(
             message=message or _.DefaultMessage.model_error,
-            code=code or self.__class__.CODE,
+            code=code or _.DefaultCode.model_error,
             details=details,
             user_message=user_message)
 
@@ -105,9 +100,6 @@ class FossilError(QuarryForgeError):
 
     Base exception class for all exceptions for the fossil module.
     """
-    CODE = _.BaseErrorContext.default_error(
-        _.BaseErrorContext.FOSSIL_ERROR
-    )
     def __init__(
         self,
         message: Optional[str] = None,
@@ -118,7 +110,7 @@ class FossilError(QuarryForgeError):
         """Initialize the QuarryForge.FossilError"""
         super().__init__(
             message=message or _.DefaultMessage.fossil_error,
-            code=code or self.__class__.CODE,
+            code=code or _.DefaultCode.fossil_error,
             details=details,
             user_message=user_message)
 
@@ -128,9 +120,6 @@ class MainError(QuarryForgeError):
 
     Base exception class for all exceptions in the main module.
     """
-    CODE = _.BaseErrorContext.default_error(
-        _.BaseErrorContext.MAIN_ERROR
-    )
     def __init__(
         self,
         message: Optional[str] = None,
@@ -141,18 +130,16 @@ class MainError(QuarryForgeError):
         """Initialize the QuarryForge.MainError"""
         super().__init__(
             message=message or _.DefaultMessage.main_error,
-            code=code or self.__class__.CODE,
+            code=code or _.DefaultCode.main_error,
             details=details,
             user_message=user_message)
 
 
-class MetaError(QuarryForgeError):
+class MetaError(base_exception.QuarryForgeError):
     """Meta Error
 
-    Base exception class for all exceptions for the meta module.
+    Base exception class for all exceptions for the meta subpackage.
     """
-    CODE = 'todo'
-
     def __init__(
         self,
         message: Optional[str] = None,
@@ -163,6 +150,26 @@ class MetaError(QuarryForgeError):
         """Initialize the QuarryForge.MetaError"""
         super().__init__(
             message=message or _.DefaultMessage.meta_error,
-            code=code or self.__class__.CODE,
+            code=code or _.DefaultCode.meta_error,
+            details=details,
+            user_message=user_message)
+
+
+class UtilError(base_exception.QuarryForgeError):
+    """Meta Error
+
+    Base exception class for all exceptions for the util subpackage.
+    """
+    def __init__(
+        self,
+        message: Optional[str] = None,
+        code: Optional[str] = None,
+        details: Optional[Dict] = None,
+        user_message: Optional[str] = None
+    ):
+        """Initialize the QuarryForge.UtilError"""
+        super().__init__(
+            message=message or _.DefaultMessage.meta_error,
+            code=code or _.DefaultCode.meta_error,
             details=details,
             user_message=user_message)
