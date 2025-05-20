@@ -7,12 +7,15 @@ from quarryforge.config.exception_conf import exception_config as msg
 from quarryforge.meta import immutable
 
 
+__all__: List[str] = ['DefaultCode', 'DefaultMessage']
+
+
 class BaseConfig(metaclass=immutable.Namespace):
     """Base Config
 
     Define default path for all base exceptions.
     """
-    PACKAGE = root.PACKAGE.name
+    PACKAGE: str = root.PACKAGE.name
 
     @classmethod
     def path(cls, module_name: str) -> str:
@@ -21,12 +24,12 @@ class BaseConfig(metaclass=immutable.Namespace):
 
 class BaseErrorContext(metaclass=immutable.Namespace):
     """Context for the Base Exceptions of QuarryForge"""
-    QUARRY_FORGE = BaseConfig.PACKAGE
-    MODEL_ERROR = BaseConfig.path(root.MODULE.model)
-    FOSSIL_ERROR = BaseConfig.path(root.MODULE.fossil)
-    MAIN_ERROR = BaseConfig.path(root.MODULE.main)
-    META_ERROR = BaseConfig.path(root.SUB_PACKAGE.meta)
-    UTIL_ERROR = BaseConfig.path(root.SUB_PACKAGE.util)
+    QUARRY_FORGE: str = BaseConfig.PACKAGE
+    MODEL_ERROR: str = BaseConfig.path(root.MODULE.model)
+    FOSSIL_ERROR: str = BaseConfig.path(root.MODULE.fossil)
+    MAIN_ERROR: str = BaseConfig.path(root.MODULE.main)
+    META_ERROR: str = BaseConfig.path(root.SUB_PACKAGE.meta)
+    UTIL_ERROR: str = BaseConfig.path(root.SUB_PACKAGE.util)
 
     @classmethod
     def package_error(cls):
@@ -47,34 +50,34 @@ class BaseErrorContext(metaclass=immutable.Namespace):
 
 class DefaultCode(metaclass=immutable.Namespace):
     """Default Error Code message"""
-    package_error = BaseErrorContext.package_error()
-    model_error = BaseErrorContext.default_error(
+    package_error: str = BaseErrorContext.package_error()
+    model_error: str = BaseErrorContext.default_error(
         BaseErrorContext.MODEL_ERROR)
-    fossil_error = BaseErrorContext.default_error(
+    fossil_error: str = BaseErrorContext.default_error(
         BaseErrorContext.FOSSIL_ERROR)
-    main_error = BaseErrorContext.default_error(
+    main_error: str = BaseErrorContext.default_error(
         BaseErrorContext.MAIN_ERROR)
-    meta_error = BaseErrorContext.default_error(
+    meta_error: str = BaseErrorContext.default_error(
         BaseErrorContext.META_ERROR)
-    util_error = BaseErrorContext.default_error(
+    util_error: str = BaseErrorContext.default_error(
         BaseErrorContext.UTIL_ERROR)
 
 
 class DefaultMessage(metaclass=immutable.Namespace):
     """The default base_exception error messages."""
-    unexpected_error = (
+    unexpected_error: str = (
         'An unexpected error occurred within the')
-    quarryforge_error = (
+    quarryforge_error: str = (
         f'{unexpected_error} {root.PACKAGE.name} package.')
-    model_error = (
+    model_error: str = (
         f'{unexpected_error}  {root.PACKAGE.name}.{root.Module.model} module.')
-    fossil_error = (
+    fossil_error: str = (
         f'{unexpected_error} {root.PACKAGE.name}.{root.Module.model} module.')
-    main_error = (
+    main_error: str = (
         f'{unexpected_error} {root.PACKAGE.name}.{root.Module.model} module.')
-    meta_error = (
+    meta_error: str = (
         f'{unexpected_error} '
         f'{root.PACKAGE.name}.{root.SubPackage.meta} subpackage.')
-    util_error = (
+    util_error: str = (
         f'{unexpected_error} '
         f'{root.PACKAGE.name}.{root.SubPackage.util} subpackage.')
