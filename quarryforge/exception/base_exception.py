@@ -32,13 +32,11 @@ class QuarryForgeError(Exception):
         to_dict(): Returns a dictionary representation of the exception.
         __str__(): Returns a formatted string representation of the exception.
     """
-    def __init__(
-        self,
-        message: Optional[str] = None,
-        code: Optional[str] = None,
-        details: Optional[Dict] = None,
-        user_message: Optional[str] = None
-    ):
+    def __init__(self,
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
         """Initialize default exception for the QuarryForge package"""
         error_message = message or _.DefaultMessage.quarryforge_error
         super().__init__(error_message)
@@ -80,13 +78,11 @@ class ModelError(QuarryForgeError):
 
     Base exception class for all exceptions in the model module.
     """
-    def __init__(
-        self,
-        message: Optional[str] = None,
-        code: Optional[str] = None,
-        details: Optional[Dict] = None,
-        user_message: Optional[str] = None
-    ):
+    def __init__(self,
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
         """Intialize a QuarryForge.ModelError"""
         super().__init__(
             message=message or _.DefaultMessage.model_error,
@@ -100,13 +96,11 @@ class FossilError(QuarryForgeError):
 
     Base exception class for all exceptions for the fossil module.
     """
-    def __init__(
-        self,
-        message: Optional[str] = None,
-        code: Optional[str] = None,
-        details: Optional[Dict] = None,
-        user_message: Optional[str] = None
-    ):
+    def __init__(self,
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
         """Initialize the QuarryForge.FossilError"""
         super().__init__(
             message=message or _.DefaultMessage.fossil_error,
@@ -120,13 +114,11 @@ class MainError(QuarryForgeError):
 
     Base exception class for all exceptions in the main module.
     """
-    def __init__(
-        self,
-        message: Optional[str] = None,
-        code: Optional[str] = None,
-        details: Optional[Dict] = None,
-        user_message: Optional[str] = None
-    ):
+    def __init__(self,
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
         """Initialize the QuarryForge.MainError"""
         super().__init__(
             message=message or _.DefaultMessage.main_error,
@@ -140,13 +132,11 @@ class MetaError(base_exception.QuarryForgeError):
 
     Base exception class for all exceptions for the meta subpackage.
     """
-    def __init__(
-        self,
-        message: Optional[str] = None,
-        code: Optional[str] = None,
-        details: Optional[Dict] = None,
-        user_message: Optional[str] = None
-    ):
+    def __init__(self,
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
         """Initialize the QuarryForge.MetaError"""
         super().__init__(
             message=message or _.DefaultMessage.meta_error,
@@ -160,13 +150,11 @@ class UtilError(base_exception.QuarryForgeError):
 
     Base exception class for all exceptions for the util subpackage.
     """
-    def __init__(
-        self,
-        message: Optional[str] = None,
-        code: Optional[str] = None,
-        details: Optional[Dict] = None,
-        user_message: Optional[str] = None
-    ):
+    def __init__(self,
+                 message: Optional[str] = None,
+                 code: Optional[str] = None,
+                 details: Optional[Dict] = None,
+                 user_message: Optional[str] = None):
         """Initialize the QuarryForge.UtilError"""
         super().__init__(
             message=message or _.DefaultMessage.meta_error,
