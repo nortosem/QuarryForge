@@ -16,7 +16,7 @@ from typing import NamedTuple, Tuple
 from quarryforge.config import root
 
 
-__all__: list = ['FOSSIL_REPO','FOSSIL_COMMIT']
+__all__: list = ['FOSSIL_REPO','FOSSIL_COMMIT', 'FOSSIL_TIMELINE']
 
 
 class BaseModelConfig(NamedTuple):
@@ -141,3 +141,19 @@ class ConfigFossilCommit(NamedTuple):
 
 FOSSIL_COMMIT: ConfigFossilCommit = ConfigFossilCommit()
 """Global constant for FossilCommit configuration."""
+
+
+class ConfigFossilTimeline(NamedTuple):
+    """Configuration for the FossilTimeline model"""
+    commits: str = 'commits'
+
+    def path(self):
+        """Returns the full Python module path for the FossilTimeline model.
+
+        Returns:
+            str: The full Python dot-path 'quarryforge.model.FossilCommit'.
+        """
+        return BASE_MODEL.path(root.MODEL.fossil_timeline)
+
+
+FOSSIL_TIMELINE: ConfigFossilTimeline = ConfigFossilTimeline()
