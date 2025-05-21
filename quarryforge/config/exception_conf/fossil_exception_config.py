@@ -10,7 +10,7 @@ from quarryforge.meta import immutable
 
 
 __all__ = [
-    'FOSSIL_ERROR_FIELD',
+    'ERROR_FIELD',
     'DefaultCode',
     'DefaultMessage',
 ]
@@ -25,7 +25,7 @@ class ConfigFossilErrorField(NamedTuple):
     timeout: str = 'timeout'
 
 
-FOSSIL_ERROR_FIELD: ConfigFossilErrorField = ConfigFossilErrorField()
+ERROR_FIELD: ConfigFossilErrorField = ConfigFossilErrorField()
 
 
 class FossilErrorContext(metaclass=immutable.Namespace):
