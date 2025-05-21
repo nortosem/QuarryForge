@@ -7,6 +7,7 @@ import subprocess
 from typing import Any
 
 from quarryforge import model
+from quarryforge.config import fossil_config
 from quarryforge.config import model_config
 from quarryforge.config import util_config
 from quarryforge.config.util_config import TimelineData as TL_Data
@@ -24,8 +25,8 @@ class Timeline(metaclass=immutable.Namespace):
     """
     __slots__ = ()
 
-    @classmethod
-    def get(cls, source: model.FossilRepo) -> str:
+    @staticmethod
+    def get(source: model.FossilRepo) -> str:
         """Get Raw Timeline
 
         """
@@ -33,19 +34,55 @@ class Timeline(metaclass=immutable.Namespace):
             timeline: subprocess.CompletedProcess[bytes] = subprocess.run(
                 fossil_util.get_raw_timeline(source),
                 capture_output=True,
-                check=True)
-        except fossil_exception.FossilTimelineError as cpe:
-            raise (
-                cpe.returncode, cpe.cmd, cpe.stdout,
-                f'Timeline Process Exception: {cpe}') from cpe
+                check=True,
+                timeout=fossil_config.ConfigFossil.default_timeout)
+        except subprocess.CalledProcessError as error:
+            process_error = fossil_exception.FossilProcessError(
+                returncode=error.returncode,
+                cmd=error.cmd,
+                stdout=error.stdout,
+                stderr=error.stderr,
+                message=f'Failed to get timeline for {source.file.path}'
+            )
+            raise fossil_exception.FossilTimelineError(
+                message=(
+                    f'Timeline Process Exception: '
+                    f'Failed to get raw timeline from {source.file.path}.'),
+                details=process_error.details,
+                user_message=(
+                    f'Timeline data from repository {source.file.path} '
+                    f'could net be retrieved.'
+                )
+            ) from process_error
+        except subprocess.TimeoutExpired as error:
+            timeout_error = fossil_exception.FossilTimeoutError(
+                cmd=error.cmd,
+                timeout=error.timeout,
+                stdout=error.stdout,
+                stderr=error.stderr,
+                message=(
+                    f'Fossil timeline command timed out for {source.file.path}'
+                )
+            )
+            raise fossil_exception.FossilTimelineError(
+                message=(
+                    f'Timeline Process Timeout: '
+                    f'Unable to get raw timeline from {source.file.path}.'
+                ),
+                details=timeout_error.details,
+                user_message=(
+                    f'Timeline data retrieval from '
+                    f'{source.file.path} took too long.'
+                )
+            ) from timeout_error
 
         raw_timeline = timeline.stdout.decode()
         end_index = raw_timeline.find(TL_Data.END_MARK.value)
         return raw_timeline[:end_index]
 
 
-    @classmethod
-    def parse_timeline(cls, timeline: str) -> model.FossilTimeline:
+    @staticmethod
+    def parse_timeline(timeline: str) -> model.FossilTimeline:
         """Parse Timeline
 
         """
@@ -120,6 +157,25 @@ class Setup(metaclass=immutable.Namespace):
 
     Setup a target repository to store the changed source repository.
 
+    Order of setup operations:
+    # 1. Create new fossil repo for the rebuild:
+    cd ~/dev/fossil/; #fossil repo dir
+    #2 Fossil init command:
+    fossil init {rebuild}.fossil
+    --date-override DATETIME # sourced from init commit from original repo
+    --admin-user USERNAME # the name configured for use with github account
+    --template ./source_repo.fossil #to match existing config
+    --project-name # copy from source repo
+    --project-desc #copy from source repo
+
+    #2 The init only defines the admin-user, but a default user remains
+    necessary and undefined so far. Set the default user:
+    fossil user default USERNAME -R {rebuild}.fossil
+
+    #3 Update the default user with the correct contact mail
+    ## This will match the user name and email used with github for the repo.
+    fossil user contact USERNAME contact@email.com -R {rebuild}.fossil
+
     Attributes:  None
 
     Methods:
@@ -128,16 +184,14 @@ class Setup(metaclass=immutable.Namespace):
         user_contact:
 
     """
-    @classmethod
+    @staticmethod
     def new_repo(
-        cls,
         username: str,
         date_override: str,
         new_repo: model.FossilRepo,
         template: model.FossilRepo = None,
         project_name: str = None,
-        project_desc: str = None,
-    ) -> str:
+        project_desc: str = None) -> str:
         """new_repo
 
         Run the fossil new repository command to configure a new repository.
@@ -146,7 +200,6 @@ class Setup(metaclass=immutable.Namespace):
             init_repo = subprocess.run(
                 fossil_util.rebuild_init(
                     username,
-                    user_email,
                     date_override,
                     new_repo,
                     template,
@@ -154,7 +207,8 @@ class Setup(metaclass=immutable.Namespace):
                     project_desc,
                 ),
                 capture_output=True,
-                check=True)
+                check=True,
+                timeout=fossil_config.ConfigFossil.default_timeout)
         except fossil_exception.FossilSetupError as cpe:
             raise fossil_exception.FossilSetupError(
                 cpe.returncode, cpe.cmd, cpe.stdout,
@@ -163,14 +217,15 @@ class Setup(metaclass=immutable.Namespace):
 
         return init_repo.stdout.decode()
 
-    @classmethod
-    def default_user(cls, username: str, new_repo: model.FossilRepo) -> str:
+    @staticmethod
+    def default_user(username: str, new_repo: model.FossilRepo) -> str:
         """Run the fossil user set default user command"""
         try:
             default_user = subprocess.run(
                 fossil_util.set_default_user(username, new_repo),
                 capture_output=True,
-                check=True)
+                check=True,
+                timeout=fossil_config.ConfigFossil.default_timeout)
         except subprocess.FossilSetupError as cpe:
             raise subprocess.FossilSetupError(
                 cpe.returncode, cpe.cmd, cpe.stdout,
@@ -179,19 +234,18 @@ class Setup(metaclass=immutable.Namespace):
 
         return default_user.stdout.decode()
 
-    @classmethod
+    @staticmethod
     def user_contact(
-        cls,
         username: str,
         email: str,
-        source: model.FossilRepo
-    ) -> str:
+        source: model.FossilRepo) -> str:
         """Run the fossil user contact command"""
         try:
             user_contact = subprocess.run(
-                    fossil_util.set_user_contact(args),
-                    capture_output=True,
-                    check=True)
+                fossil_util.set_user_contact(args),
+                capture_output=True,
+                check=True
+                timeout=fossil_config.ConfigFossil.default_timeout)
         except fossil_exception.FossilSetupError as cpe:
             raise fossil_exception.FossilSetupError(
                 cpe.returncode, cpe.cmd, cpe.stdout,
@@ -200,7 +254,7 @@ class Setup(metaclass=immutable.Namespace):
 
         return user_contact.stdout.decode()
 
-    @classmethod
+    @staticmethod
     def create_target_repo(
         username: str,
         email: str,
@@ -208,8 +262,7 @@ class Setup(metaclass=immutable.Namespace):
         new_repo: model.FossilRepo,
         template: model.FossilRepo = None,
         project_name: str = None,
-        project_desc: str = None,
-    ) -> str:
+        project_desc: str = None) -> str:
         """Run the new repo command sequence to configure new repo."""
         try:
             target_init = cls.new_repo()
@@ -221,8 +274,8 @@ class Setup(metaclass=immutable.Namespace):
                 f'Repo Creation Process Error: {cpe}'
             ) from cpe
 
-        return (target_init.stdout.decode(),
-                target_user_default.stdout.decode(),
+        return (target_init,
+                target_user_default,
                 target_user_contact.stdout.decode())
 
 
@@ -231,8 +284,8 @@ class Info(metaclass=immutable.Namespace):
 
     Get the parent commit hash for the commit version and repository provided.
     """
-    @classmethod
-    def get_parent(cls, version: str, source: model.FossilRepo) -> str | None:
+    @staticmethod
+    def get_parent(version: str, source: model.FossilRepo) -> str | None:
         """Get Parent Commit Version
 
         Args:
@@ -247,14 +300,15 @@ class Info(metaclass=immutable.Namespace):
             info_process: subprocess.CompletedProcess[bytes] = subprocess.run(
                 fossil_util.get_parent_hash(version, source),
                 capture_output=True,
-                check=True)
+                check=True,
+                timeout=fossil_config.ConfigFossil.default_timeout)
         except fossil_exception.FossilInfoError as cpe:
             raise fossil_exception.FossilInfoError(
                 cpe.returncode, cpe.cmd, cpe.stdout,
                 f'Fossil Info Process Exception: {cpe}') from cpe
         raw_parent_hash = info_process.stdout.decode()
-        initial_commit = util_config.InfoData.init_pattern()
-        commit_parent = util_config.InfoData.parent_pattern()
+        initial_commit = util_config.INFO_DATA.init_pattern()
+        commit_parent = util_config.INFO_DATA.parent_pattern()
         match_init = initial_commit.match(raw_parent_hash)
         match_parent = commit_parent.match(raw_parent_hash)
         if match_parent:
@@ -262,7 +316,7 @@ class Info(metaclass=immutable.Namespace):
         if match_init:
             return None
         else:
-            raise base_model_exception.CommitError('unexpected error')
+            raise model_exception.CommitError('unexpected error')
 
 
 class Diff(metaclass=immutable.Namespace):
@@ -270,19 +324,18 @@ class Diff(metaclass=immutable.Namespace):
 
     from, to, source
     """
-    @classmethod
+    @staticmethod
     def changes(
-            cls,
             from_arg: str,
             to_arg: str,
-            source: model.FossilRepo
-    ) -> str:
+            source: model.FossilRepo) -> str:
         """Get all files changed on a commit from the source repo."""
         try:
             diff_process: subprocess.CompletedProcess[bytes] = subprocess.run(
                 fossil_util.get_file_changes(from_arg, to_arg, source),
                 capture_output=True,
-                check=True)
+                check=True,
+                timeout=fossil_config.ConfigFossil.default_timeout)
         except fossil_exception.FossilDiffError as cpe:
             raise fossil_exception.FossilDiffError(
                 cpe.returncode, cpe.cmd, cpe.stdout,
@@ -297,14 +350,12 @@ class Cat(metaclass=immutable.Namespace):
 
     Get files from source and put in target project directory.
     """
-    @classmethod
+    @staticmethod
     def content(
-        cls,
         filename: str,
         outfile: str,
         version: str,
-        source: model.FossilRepo
-    ) -> str:
+        source: model.FossilRepo) -> str:
         """Use fossil cat to transfer source content to the updated repo
         project dir.
         """
@@ -317,7 +368,8 @@ class Cat(metaclass=immutable.Namespace):
                     source
                 ),
                 capture_output=True,
-                check=True)
+                check=True,
+                timeout=fossil_config.ConfigFossil.default_timeout)
         except fossil_exception.FossilCatError as cpe:
             raise fossil_exception.FossilCatError(
                 cpe.returncode, cpe.cmd, cpe.stdout,
@@ -332,14 +384,16 @@ class Branch(metaclass=immutable.Namespace):
 
     Manage branch info using fossil branch
     """
-    @classmethod
-    def list_all(cls, source: model.FossilRepo) -> str:
+    @staticmethod
+    def list_all(source: model.FossilRepo) -> str:
         """List all Branches for the source reposiotory"""
         try:
             list_process: subprocess.CompletedProcess[bytes] = subprocess.run(
                 fossil_util.ls_branches(source),
-            capture_output=True,
-            check=True)
+                capture_output=True,
+                check=True,
+                timeout=fossil_config.ConfigFossil.default_timeout)
+            return list_process.stdout.decode()
         except Exception as e:
             raise Exception
 
