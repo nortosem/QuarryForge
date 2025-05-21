@@ -2,18 +2,30 @@
 
 
 """
+from typing import NamedTuple
+
 from quarryforge.config import fossil_config
 from quarryforge.config.exception_conf import exception_config as msg
 from quarryforge.meta import immutable
 
 
-class ConfigFossilError(metaclass=immutable.Namespace):
+__all__ = [
+    'FOSSIL_ERROR_FIELD',
+    'DefaultCode',
+    'DefaultMessage',
+]
+
+
+class ConfigFossilErrorField(NamedTuple):
     """Define the fossil error field configuration"""
-    CMD: str = 'cmd'
-    RETURN_CODE: str = 'returncode'
-    STDOUT: str = 'stdout'
-    STDERR: str = 'stderr'
-    TIMEOUT: str = 'timeout'
+    cmd: str = 'cmd'
+    return_code: str = 'returncode'
+    stdout: str = 'stdout'
+    stderr: str = 'stderr'
+    timeout: str = 'timeout'
+
+
+FOSSIL_ERROR_FIELD: ConfigFossilErrorField = ConfigFossilErrorField()
 
 
 class FossilErrorContext(metaclass=immutable.Namespace):
@@ -39,5 +51,62 @@ class FossilErrorContext(metaclass=immutable.Namespace):
             raise TypeError('todo')
 
         return (
-            f'{context.value}{msg.Default.DOT.value}{msg.Default.ERROR.value}'
-        )
+            f'{context}.{msg.Default.ERROR}')
+
+
+class DefaultCode(metaclass=immutable.Namespace):
+    """The Default Exception Codes for Fossil Exceptions."""
+    fossil_process: str = FossilErrorContext.default_error(
+        FossilErrorContext.FOSSIL_PROCESS)
+    fossil_timeout: str = FossilErrorContext.default_error(
+        FossilErrorContext.FOSSIL_TIMEOUT)
+    fossil_timeline: str = FossilErrorContext.default_error(
+        FossilErrorContext.FOSSIL_TIMELINE)
+    fossil_setup: str = FossilErrorContext.default_error(
+        FossilErrorContext.FOSSIL_SETUP)
+    fossil_info: str = FossilErrorContext.default_error(
+        FossilErrorContext.FOSSIL_SETUP)
+    fossila_diff: str = FossilErrorContext.default_error(
+        FossilErrorContext.FOSSIL_DIFF)
+    fossil_cat: str = FossilErrorContext.default_error(
+        FossilErrorContext.FOSSIL_CAT)
+    fossil_branch: str = FossilErrorContext.default_error(
+        FossilErrorContext.FOSSIL_BRANCH)
+    fossil_add: str = FossilErrorContext.default_error(
+        FossilErrorContext.FOSSIL_ADD)
+    fossil_commit: str = FossilErrorContext.default_error(
+        FossilErrorContext.FOSSIL_COMMIT)
+
+
+class DefaultMessage(metaclass=immutable.Namespace):
+    """The Default Exception Messages for Fossil Exceptions."""
+    fossil_process: str = (
+
+    )
+    fossil_timeout: str = (
+
+    )
+    fossil_timeline: str = (
+
+    )
+    fossil_setup: str = (
+
+    )
+    fossil_info: str = (
+
+    )
+    fossila_diff: str = (
+
+    )
+    fossil_cat: str = (
+
+    )
+    fossil_branch: str = (
+
+    )
+    fossil_add: str = (
+
+    )
+    fossil_commit: str = (
+
+    )
