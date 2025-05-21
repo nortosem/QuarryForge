@@ -66,7 +66,7 @@ def rebuild_init(
         username: Primary username for the new repo
         date_override: the date time for init from source repo
         new_repo: the new fossil repos for the updated inf
-        template: the source repo for fossil ui template
+        template: the source repo for fossil template
         project_name: name from the source repo
         project_desc: description from the source repo
 
