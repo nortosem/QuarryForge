@@ -2,6 +2,8 @@
 
 The configuraiton for the exception base class of quarryforge errors.
 """
+from typing import List
+
 from quarryforge.config import root
 from quarryforge.config.exception_conf import exception_config as msg
 from quarryforge.meta import immutable

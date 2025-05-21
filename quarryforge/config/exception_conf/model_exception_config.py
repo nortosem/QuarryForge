@@ -13,6 +13,8 @@ mst be path or path from string.
 file does not exist.
 is parent dir exist and writeable?
 """
+from typing import List
+
 from quarryforge.config import model_config
 from quarryforge.config import root
 from quarryforge.config.exception_conf import base_exception_config
@@ -51,13 +53,13 @@ class DefaultCode(metaclass=immutable.Namespace):
 class DefaultMessage(metaclass=immutable.Namespace):
     """The Default Exception Messages for Model Exceptions."""
     fossil_repo: str = (
-        f'{base_exception_config.unexpected_error} '
+        f'{base_exception_config.DefaultMessage.unexpected_error} '
         f'{root.PACKAGE.name}.{root.Module.model}.{root.Model.fossil_repo}')
     fossil_commit: str = (
-        f'{base_exception_config.unexpected_error} '
+        f'{base_exception_config.DefaultMessage.unexpected_error} '
         f'{root.PACKAGE.name}.{root.Module.model}.{root.Model.fossil_commit}')
     fossil_timeline: str = (
-        f'{base_exception_config.unexpected_error} '
+        f'{base_exception_config.DefaultMessage.unexpected_error} '
         f'{root.PACKAGE.name}.{root.Module.model}.'
         f'{root.Model.fossil_timeline}')
 
@@ -82,7 +84,7 @@ class FossilRepoContext(metaclass=immutable.Namespace):
   #          ConfigFossilRepo.file()),
   #       msg.Required.field_type(ConfigFossilRepo.file())]
   #  )
-    NOT_EXIST: str = ()
-    NOT_FILE: str = ()
-    NOT_READ: str = ()
-    DIR_WRITE: str = ()
+    NOT_EXIST: str = ('')
+    NOT_FILE: str = ('')
+    NOT_READ: str = ('')
+    DIR_WRITE: str = ('')
