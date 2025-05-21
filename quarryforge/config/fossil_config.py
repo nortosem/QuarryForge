@@ -6,11 +6,12 @@ from quarryforge.config import root
 from quarryforge.meta import immutable
 
 
-class FossilConfig(metaclass=immutable.Namespace):
-    """Fossil Config
+class ConfigFossil(metaclass=immutable.Namespace):
+    """Config Fossil
 
-    Define the module path base for all models
+    Define the module path base for all fossil Namespaces.
     """
+    default_timeout = 180 #seconds
     base_path = (
         f'{root.PACKAGE.name}.{root.Module.fossil}'
     )
@@ -27,7 +28,7 @@ class ConfigProcess(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path('CalledProcessError')
+        return ConfigFossil.path('CalledProcessError')
 
 
 class ConfigTimeout(metaclass=immutable.Namespace):
@@ -37,7 +38,7 @@ class ConfigTimeout(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path('TimeoutExpiredError')
+        return ConfigFossil.path('TimeoutExpiredError')
 
 
 class ConfigTimeline(metaclass=immutable.Namespace):
@@ -47,7 +48,7 @@ class ConfigTimeline(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FOSSIL_COMMAND.timeline)
+        return ConfigFossil.path(root.FOSSIL_COMMAND.timeline)
 
 
 class ConfigSetup(metaclass=immutable.Namespace):
@@ -57,7 +58,7 @@ class ConfigSetup(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FOSSIL_COMMAND.setup)
+        return ConfigFossil.path(root.FOSSIL_COMMAND.setup)
 
 
 class ConfigInfo(metaclass=immutable.Namespace):
@@ -67,7 +68,7 @@ class ConfigInfo(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FOSSIL_COMMAND.info)
+        return ConfigFossil.path(root.FOSSIL_COMMAND.info)
 
 
 class ConfigDiff(metaclass=immutable.Namespace):
@@ -77,7 +78,7 @@ class ConfigDiff(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FOSSIL_COMMAND.diff)
+        return ConfigFossil.path(root.FOSSIL_COMMAND.diff)
 
 
 class ConfigCat(metaclass=immutable.Namespace):
@@ -87,7 +88,7 @@ class ConfigCat(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FOSSIL_COMMAND.cat)
+        return ConfigFossil.path(root.FOSSIL_COMMAND.cat)
 
 
 class ConfigBranch(metaclass=immutable.Namespace):
@@ -97,7 +98,7 @@ class ConfigBranch(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FOSSIL_COMMAND.branch)
+        return ConfigFossil.path(root.FOSSIL_COMMAND.branch)
 
 
 class ConfigAdd(metaclass=immutable.Namespace):
@@ -107,7 +108,7 @@ class ConfigAdd(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FOSSIL_COMMAND.add)
+        return ConfigFossil.path(root.FOSSIL_COMMAND.add)
 
 
 class ConfigCommit(metaclass=immutable.Namespace):
@@ -117,4 +118,4 @@ class ConfigCommit(metaclass=immutable.Namespace):
     """
     @staticmethod
     def path():
-        return FossilConfig.path(root.FOSSIL_COMMAND.commit)
+        return ConfigFossil.path(root.FOSSIL_COMMAND.commit)
