@@ -127,7 +127,7 @@ class MainError(QuarryForgeError):
             user_message=user_message)
 
 
-class MetaError(base_exception.QuarryForgeError):
+class MetaError(QuarryForgeError):
     """Meta Error
 
     Base exception class for all exceptions for the meta subpackage.
@@ -145,7 +145,7 @@ class MetaError(base_exception.QuarryForgeError):
             user_message=user_message)
 
 
-class UtilError(base_exception.QuarryForgeError):
+class UtilError(QuarryForgeError):
     """Meta Error
 
     Base exception class for all exceptions for the util subpackage.
