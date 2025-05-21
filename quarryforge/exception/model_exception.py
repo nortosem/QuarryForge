@@ -13,19 +13,15 @@ class FossilRepoError(base_exception.ModelError):
 
     Base exception for the FossilRepo class.
     """
-    CODE = _.ModelErrorContext.default_error(_.ModelErrorContext.FOSSIL_REPO)
-
     def __init__(self,
                  message: Optional[str] = None,
                  code: Optional[str] = None,
                  details: Optional[Dict] = None,
                  user_message: Optional[str] = None):
 
-        effective_code = code if code is not None else self.__class__.CODE
-
         super().__init__(
-            message=message,
-            code=effective_code,
+            message=message or _.DefaultMessage.fossil_repo,
+            code=code or _.DefaultCode.fossil_repo,
             details=details,
             user_message=user_message
         )
@@ -36,46 +32,33 @@ class FossilCommitError(base_exception.ModelError):
 
     Base exception for the Commit class.
     """
-    CODE = _.ModelErrorContext.default_error(
-        _.ModelErrorContext.FOSSIL_COMMIT)
-
     def __init__(self,
                  message: Optional[str] = None,
                  code: Optional[str] = None,
                  details: Optional[Dict] = None,
                  user_message: Optional[str] = None):
 
-        effective_code = code if code is not None else self.__class__.CODE
-
         super().__init__(
-            message=message,
-            code=effective_code,
+            message=message or _.DefaultMessage.fossil_commit,
+            code=code or _.DefaultCode.fossil_commit,
             details=details,
             user_message=user_message
         )
 
 
-class TimelineError(base_exception.ModelError):
-    """Timeline Parsing Error
+class FossilTimelineError(base_exception.ModelError):
+    """Fossil Timeline Error
 
-    Raised when there is an error parsing the output of the `fossil timeline`
-    command.  This might occur if the output format is unexpected or if
-    there are issues extracting data from the timeline text.
     """
-    CODE = ''#_.ModelErrorContext.default_error(
-        #_.ModelErrorContext.TIMELINE)
-
     def __init__(self,
                  message: Optional[str] = None,
                  code: Optional[str] = None,
                  details: Optional[Dict] = None,
                  user_message: Optional[str] = None):
 
-        effective_code = code if code is not None else self.__class__.CODE
-
         super().__init__(
-            message=message,
-            code=effective_code,
+            message=message or _.DefaultMessage.fossil_timeline,
+            code=code or _.DefaultCode.fossil_timeline,
             details=details,
             user_message=user_message
         )
