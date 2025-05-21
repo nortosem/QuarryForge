@@ -40,7 +40,6 @@ class QuarryForgeError(Exception):
         """Initialize default exception for the QuarryForge package"""
         error_message = message or _.DefaultMessage.quarryforge_error
         super().__init__(error_message)
-
         self.code = code or _.DefaultCode.package_error,
         self.details = details or {}
         self.timestamp = datetime.datetime.now(datetime.UTC)
