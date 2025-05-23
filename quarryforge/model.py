@@ -31,12 +31,8 @@ class FossilRepo(
             file: A `pathlib.Path` object representing the full path to the
                   Fossil repository file.
         """
-        print(
-            f'file: {file}, '
-            f'new: {is_new}, exception: {model_exception.FossilRepoError}')
         file = model_util.viable_fossil_repo(
-            file, is_new, model_exception.FossilRepoError
-        )
+            file, is_new, model_exception.FossilRepoError)
         object.__setattr__(self, model_config.FOSSIL_REPO.file, file)
 
     @property
@@ -230,17 +226,9 @@ class FossilTimeline:
     """
     __slots__ = model_config.FOSSIL_TIMELINE.commits
 
-    def __init__(self, commits: List = None):
-
-        self.commits = commits.reverse()
+    def __init__(self, commits: Optional[List[FossilCommit]] = None):
+        commits.reverse()
+        self.commits = commits
 
     def add(self, commit: FossilCommit) -> None:
         self.commits.append(commit)
-
-    def reverse(self) -> List[FossilCommit]:
-        """Reverse Commit Order
-
-        Default order is latest commit first.
-        """
-        self.commits.reverse()
-        return self.commits
