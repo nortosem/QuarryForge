@@ -33,6 +33,7 @@ class FossilProcessError(
             self, returncode, cmd, output=stdout, stderr=stderr)
 
         base_exception.FossilError.__init__(
+            self,
             message=message or _.DefaultMessage.fossil_process,
             code=code or _.DefaultCode.fossil_process,
             details=details,
@@ -72,6 +73,7 @@ class FossilTimeoutError(
             self, cmd, timeout, output=stdout, stderr=stderr)
 
         base_exception.FossilError.__init__(
+            self,
             message=message or _.DefaultMessage.fossil_timeout,
             code=code or _.DefaultCode.fossil_timeout,
             details=details,
