@@ -5,7 +5,9 @@
 from typing import NamedTuple
 
 from quarryforge.config import fossil_config
+from quarryforge.config.exception_conf import base_exception_config
 from quarryforge.config.exception_conf import exception_config as msg
+from quarryforge.config import root
 from quarryforge.meta import immutable
 
 
@@ -80,33 +82,17 @@ class DefaultCode(metaclass=immutable.Namespace):
 
 class DefaultMessage(metaclass=immutable.Namespace):
     """The Default Exception Messages for Fossil Exceptions."""
-    fossil_process: str = (
-
+    base_message: str = (
+        f'{base_exception_config.DefaultMessage.unexpected_error}'
+        f'.{root.Module.fossil}'
     )
-    fossil_timeout: str = (
-
-    )
-    fossil_timeline: str = (
-
-    )
-    fossil_setup: str = (
-
-    )
-    fossil_info: str = (
-
-    )
-    fossila_diff: str = (
-
-    )
-    fossil_cat: str = (
-
-    )
-    fossil_branch: str = (
-
-    )
-    fossil_add: str = (
-
-    )
-    fossil_commit: str = (
-
-    )
+    fossil_process: str = f'{base_message}: CalledProcessError.'
+    fossil_timeout: str = f'{base_message}: TimeoutError.'
+    fossil_timeline: str = f'{base_message}.{root.FossilCommand.timeline}'
+    fossil_setup: str = f'{base_message}.{root.FossilCommand.setup}'
+    fossil_info: str = f'{base_message}.{root.FossilCommand.info}'
+    fossila_diff: str = f'{base_message}.{root.FossilCommand.diff}'
+    fossil_cat: str = f'{base_message}.{root.FossilCommand.cat}'
+    fossil_branch: str = f'{base_message}.{root.FossilCommand.branch}'
+    fossil_add: str = f'{base_message}.{root.FossilCommand.add}'
+    fossil_commit: str = f'{base_message}.{root.FossilCommand.commit}'
