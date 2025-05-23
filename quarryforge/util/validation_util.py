@@ -13,6 +13,7 @@ from typing import Any, List, Optional, Type, TypeVar
 
 from quarryforge.config.exception_conf import exception_config as msg
 from quarryforge.config.exception_conf import exception_data
+from quarryforge.config.exception_conf import model_exception_config
 from quarryforge.exception import base_exception
 
 
@@ -25,8 +26,8 @@ def is_type_str(
     exception: Type[_QFE],
     context: str,
     field: str,
-    error_code: str,
-    message: str,
+    error_code: Optional[str] = None,
+    message: Optional[str] = None,
     user_message: Optional[str] = None,
     exception_code: Optional[str] = None
 ) -> str:
@@ -57,10 +58,10 @@ def is_type_str(
             input_value=arg,
             context=context,
             field=field,
-            message=message,
             error_code=error_code,
+            message=message,
             user_message=user_message,
-            expected_desc=msg.DescType.string,
+            expected_desc=msg.DESC_TYPE.string,
             exception_code=exception_code
         )
         raise exception(**error_data.to_exception())
@@ -111,7 +112,7 @@ def is_str_not_empty(
             error_code=error_code,
             message=message,
             user_message=user_message,
-            expected_desc=msg.DescType.empty,
+            expected_desc=msg.DESC_TYPE.empty,
             exception_code=exception_code
         )
         raise exception(**error_data.to_exception())
@@ -154,15 +155,15 @@ def is_type_path(
     if not isinstance(arg, Path):
         error_data = exception_data.error_builder(
             input_value=arg,
-            context=context,
-            field=field,
-            error_code=error_code,
-            message=message,
-            user_message=user_message,
-            expected_desc=msg.DescType.path,
-            exception_code=exception_code
-        )
-        raise exception(**error_data.to_exception())
+                context=context,
+                field=field,
+                error_code=error_code,
+                message=message,
+                user_message=user_message,
+                expected_desc=msg.DESC_TYPE.path,
+                exception_code=exception_code
+            )
+            raise exception(**error_data.to_exception())
     return arg
 
 
@@ -216,7 +217,7 @@ def resolve_path_arg(
                 error_code=error_code,
                 message=message,
                 user_message=user_message,
-                expected_desc=msg.DescType.path,
+                expected_desc=msg.DESC_TYPE.path,
                 exception_code=exception_code
             ).to_exception()) from run_error
         except OSError as os_error:
@@ -227,7 +228,7 @@ def resolve_path_arg(
                 error_code=error_code,
                 message=message,
                 user_message=user_message,
-                expected_desc=msg.DescType.path,
+                expected_desc=msg.DESC_TYPE.path,
                 exception_code=exception_code
             ).to_exception()) from os_error
 
@@ -238,7 +239,7 @@ def resolve_path_arg(
         error_code=error_code,
         message=message,
         user_message=user_message,
-        expected_desc=msg.DescType.path,
+        expected_desc=msg.DESC_TYPE.path,
         exception_code=exception_code
     )
     raise exception(**error_data.to_exception())
@@ -285,7 +286,7 @@ def exists(
             error_code=error_code,
             message=message,
             user_message=user_message,
-            expected_desc=msg.DescType.exists,
+            expected_desc=msg.DESC_TYPE.exists,
             exception_code=exception_code
         )
         raise exception(**error_data.to_exception())
@@ -337,12 +338,12 @@ def is_file(
             error_code=error_code,
             message=message,
             user_message=user_message,
-            expected_desc=msg.DescType.is_file,
+            expected_desc=msg.DESC_TYPE.is_file,
             exception_code=exception_code
         )
         raise exception(**error_data.to_exception())
         #raise exception(message.PathMessage.not_a_file(path))
-    return arg
+    return path
 
 
 def is_dir(
@@ -389,7 +390,7 @@ def is_dir(
             error_code=error_code,
             message=message,
             user_message=user_message,
-            expected_desc=msg.DescType.is_dir,
+            expected_desc=msg.DESC_TYPE.is_dir,
             exception_code=exception_code
         )
         raise exception(**error_data.to_exception())
@@ -439,7 +440,7 @@ def is_read_ok(
             error_code=error_code,
             message=message,
             user_message=user_message,
-            expected_desc=msg.DescType.is_readable,
+            expected_desc=msg.DESC_TYPE.is_readable,
             exception_code=exception_code
         )
         raise exception(**error_data.to_exception())
@@ -492,7 +493,7 @@ def is_write_ok(
             error_code=error_code,
             message=message,
             user_message=user_message,
-            expected_desc=msg.DescType.is_writable,
+            expected_desc=msg.DESC_TYPE.is_writable,
             exception_code=exception_code
         )
         raise exception(**error_data.to_exception())
@@ -544,7 +545,7 @@ def check_list_type(
                 error_code=error_code,
                 message=message,
                 user_message=user_message,
-                expected_desc=msg.DescType.is_list,
+                expected_desc=msg.DESC_TYPE.is_list,
                 exception_code=exception_code
             )
             raise exception(**error_data.to_exception())
@@ -596,7 +597,7 @@ def content_type_error(
                 error_code=error_code,
                 message=message,
                 user_message=user_message,
-                expected_desc=msg.DescType.string_list_content,
+                expected_desc=msg.DESC_TYPE.string_list_content,
                 exception_code=exception_code
             )
             raise exception(**error_data.to_exception())
@@ -650,7 +651,7 @@ def content_empty_error(
                 error_code=error_code,
                 message=message,
                 user_message=user_message,
-                expected_desc=msg.DescType.non_empty_list_content,
+                expected_desc=msg.DESC_TYPE.non_empty_list_content,
                 exception_code=exception_code
             )
             raise exception(**error_data.to_exception())
