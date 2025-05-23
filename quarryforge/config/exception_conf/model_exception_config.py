@@ -52,16 +52,13 @@ class DefaultCode(metaclass=immutable.Namespace):
 
 class DefaultMessage(metaclass=immutable.Namespace):
     """The Default Exception Messages for Model Exceptions."""
-    fossil_repo: str = (
-        f'{base_exception_config.DefaultMessage.unexpected_error} '
-        f'{root.PACKAGE.name}.{root.Module.model}.{root.Model.fossil_repo}')
-    fossil_commit: str = (
-        f'{base_exception_config.DefaultMessage.unexpected_error} '
-        f'{root.PACKAGE.name}.{root.Module.model}.{root.Model.fossil_commit}')
-    fossil_timeline: str = (
-        f'{base_exception_config.DefaultMessage.unexpected_error} '
-        f'{root.PACKAGE.name}.{root.Module.model}.'
-        f'{root.Model.fossil_timeline}')
+    base_message: str = (
+        f'{base_exception_config.DefaultMessage.unexpected_error}'
+        f'.{root.Module.model}'
+    )
+    fossil_repo: str = f'{base_message}.{root.Model.fossil_repo}'
+    fossil_commit: str = f'{base_message}.{root.Model.fossil_commit}'
+    fossil_timeline: str = f'{base_message}.{root.Model.fossil_timeline}'
 
 
 class FossilRepoContext(metaclass=immutable.Namespace):
