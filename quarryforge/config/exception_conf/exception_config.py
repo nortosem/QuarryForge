@@ -6,19 +6,36 @@ from typing import NamedTuple
 
 
 __all__: list = [
-    'ERROR_TYPE', 'ARG', 'DEFAULT', 'IMMUTABLE', 'PATH_MSG', 'REQUIRED'
+    'DESC_TYPE', 'ERROR_TYPE', 'ARG',
+    'DEFAULT', 'IMMUTABLE', 'PATH_MSG', 'REQUIRED'
 ]
 
 
+class DescType(NamedTuple):
+    """Description strings for errors."""
+    string: str = 'str'
+    path: str = 'Path'
+    empty: str = 'empty_string'
+    exists: str = 'Path exists'
+    is_file: str = 'Path is file'
+    is_dir: str = 'Path is directory'
+    is_readable: str = 'Path is readable'
+    is_writable: str = 'Path is writable'
+    is_list: str = 'List'
+    str_list_content = 'List[str]'
+    non_empty_list_content = 'List[str] is not empty'
+
+
+DESC_TYPE: DescType = DescType()
+"""Global ..."""
+
+
 class ErrorType(NamedTuple):
-    """Strings for types of errors."""
-    STR: str = 'str'
-    PATH: str = 'Path'
-    EMPTY: str = 'empty_string'
+    """"""
+    type_error: str = 'TYPE_ERROR'
 
 
 ERROR_TYPE: ErrorType = ErrorType()
-"""Global ..."""
 
 
 class Argument(NamedTuple):
@@ -31,9 +48,14 @@ class Argument(NamedTuple):
     def invalid(self, name: str):
         return f'{self.INVALID} {name} {self.ARG}'
 
-    def missing(self, name: str, kind: str):
+    def missing(self, name: str, kind: str) -> str:
         return f'{self.MISSING} {self.ARG} {name} {self.TYPE} {kind}'
 
+    def message(self, arg: str, context: str, field: str) -> str:
+        return (
+            f'Type error in context "{context}" for field: {field}. '
+            f'String expected, but got type {type(arg).__name__} instead.'
+        )
 
 ARG: Argument = Argument()
 """Global ..."""
@@ -41,12 +63,8 @@ ARG: Argument = Argument()
 
 class Default(NamedTuple):
     """Default message parts"""
-    DOT: str = '.'
-    SPC: str = ' '
-    BAR: str = ' | '
-    NL: str = '\n'
     EMPTY: str = 'EMPTY'
-    ERROR: str = 'ERROR'
+    ERROR: str = 'DEFAULT_ERROR'
 
 
 DEFAULT: Default = Default()
@@ -79,7 +97,7 @@ class PathMessage(NamedTuple):
     NO_DIR: str = 'cannot write output to a directory.'
 
     def dir_not_allowed(self, path: str):
-        return f'{path} {self.NO_DIR.value}'
+        return f'{path} {self.NO_DIR}'
 
     def not_a_path(self, path: str) -> str:
         return f'{path} {self.NAP}'
