@@ -68,18 +68,15 @@ class DefaultCode(metaclass=immutable.Namespace):
 class DefaultMessage(metaclass=immutable.Namespace):
     """The default base_exception error messages."""
     unexpected_error: str = (
-        'An unexpected error occurred within the')
+        'An unexpected error occurred within the {root.PACKAGE.name}')
     quarryforge_error: str = (
-        f'{unexpected_error} {root.PACKAGE.name} package.')
+        f'{unexpected_error} package.')
     model_error: str = (
-        f'{unexpected_error}  {root.PACKAGE.name}.{root.Module.model} module.')
+        f'{unexpected_error}.{root.Module.model} module.')
     fossil_error: str = (
-        f'{unexpected_error} {root.PACKAGE.name}.{root.Module.model} module.')
-    main_error: str = (
-        f'{unexpected_error} {root.PACKAGE.name}.{root.Module.model} module.')
+        f'{unexpected_error}.{root.Module.fossil} module.')
+    main_error: str = ( f'{unexpected_error}.{root.Module.model} module.')
     meta_error: str = (
-        f'{unexpected_error} '
-        f'{root.PACKAGE.name}.{root.SubPackage.meta} subpackage.')
+        f'{unexpected_error}.{root.SubPackage.meta} subpackage.')
     util_error: str = (
-        f'{unexpected_error} '
-        f'{root.PACKAGE.name}.{root.SubPackage.util} subpackage.')
+        f'{unexpected_error}.{root.SubPackage.util} subpackage.')
