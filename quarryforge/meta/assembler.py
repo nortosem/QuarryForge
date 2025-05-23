@@ -46,14 +46,14 @@ class BuildError(abc.ABC):
         context: str,
         field: str,
         error_type: str,
-        message: str = None,
-        user_message: str = None,
-        input_value: Any = None,
+        message: Optional[str] = None,
+        user_message: Optional[str] = None,
+        input_value: Optional[Any] = None,
         expected_desc: Optional[str] = None,
         extra_details: Optional[Dict[str, Any]] = None
     ) -> error.ValidErrorData:
         """Create a valid error data object."""
-        code = ()
+        code = ''
 
         details = {
             error.BUILDER_FIELD.context: context,
