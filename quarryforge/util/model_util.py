@@ -12,10 +12,11 @@ from pathlib import Path
 from typing import List, TypeVar
 
 from quarryforge.config import model_config
-from quarryforge.config.exception_conf import exception_config as msg
+from quarryforge.config.exception_conf import exception_config
 from quarryforge.config.exception_conf import model_exception_config as config
 from quarryforge.exception import base_exception
 from quarryforge.exception import model_exception
+from quarryforge.util import model_error_util as error
 from quarryforge.util import validation_util
 
 _ModelError = TypeVar('_ModelError', bound=base_exception.ModelError)
@@ -53,38 +54,23 @@ def viable_fossil_repo(
 
     Raises:
         exception: With specific codes and messages for different failures.
-
-            error_data = exception_data.error_builder(
-            input_value=arg,
-            context=context,
-            field=field,
-            message=message,
-            error_code=error_code,
-            user_message=user_message,
-            exception_code=exception_code
-
-        raise exception(**error_data.to_exception())
     """
     file_path = validation_util.is_type_str(
         arg=file,
         exception=exception,
-        context=config.FossilRepoContext.init,
-        field=model_config.FOSSIL_REPO.field_name,
-        error_code=msg.ERROR_TYPE.type_error,
-        message=config.FossilRepoMessage.str_path_msg(arg),
-        user_message=config.FossilRepoMessage.str_path_usr_msg,
-        exception_code=config.FossilRepoCode.exception_code(
-            msg.ERROR_TYPE.type_error
+        error_builder=FossilRepoErrorBuilder(
+            error_context=config.FossilRepoContext.init,
+            error_code=exception_config.type_error,
+            input_value=file
         )
     )
     file_path = validation_util.is_str_not_empty(
         arg=file,
         exception=exception,
         context=config.FossilRepoContext.init,
-        field=model_config.FOSSIL_REPO.field_name,
-        error_code=msg.ERROR_TYPE.type_error,
-        message=config.FossilRepoMessage.str_path_msg(arg),
-        user_message=config.FossilRepoMessage.str_path_usr_msg,
+        error_code=exception_config.StringErrorType.empty,
+        message=config.FossilRepoMessage.empty_str_msg(arg),
+        user_message=config.FossilRepoMessage.empty_str_usr_msg,
         exception_code=config.FossilRepoCode.exception_code(
             msg.ERROR_TYPE.type_error
         )
@@ -94,6 +80,7 @@ def viable_fossil_repo(
         exception=exception,
         context=,
         field=model_config.FOSSIL_REPO.field_name,
+        error_code=msg.ERROR_TYPE.empty_string,
         message=,
         user_message=,
         exception_code=
@@ -103,6 +90,7 @@ def viable_fossil_repo(
         exception=exception,
         context=,
         field=model_config.FOSSIL_REPO.field_name,
+        error_code=msg.ERROR_TYPE.empty_string,
         message=,
         user_message=,
         exception_code=
@@ -116,6 +104,7 @@ def viable_fossil_repo(
                     exception=exception,
                     context=,
                     field=model_config.FOSSIL_REPO.field_name,
+                    error_code=msg.ERROR_TYPE.empty_string,
                     message=,
                     user_message=,
                     exception_code=
