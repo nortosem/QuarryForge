@@ -13,23 +13,19 @@ from typing import Any, List, Optional, Type, TypeVar
 
 from quarryforge.config.exception_conf import exception_config as msg
 from quarryforge.config.exception_conf import exception_data
-from quarryforge.config.exception_conf import model_exception_config
+#from quarryforge.config.exception_conf import model_exception_config
 from quarryforge.exception import base_exception
-
+from quarryforge.meta import assembler
 
 _QFE = TypeVar('_QFE', bound=base_exception.QuarryForgeError)
+_ERROR_BUILDER = TypeVar('_ERROR_BUILDER', bound=assembler.BuildError)
 
 
 def is_type_str(
     *,
     arg: Any,
     exception: Type[_QFE],
-    context: str,
-    field: str,
-    error_code: Optional[str] = None,
-    message: Optional[str] = None,
-    user_message: Optional[str] = None,
-    exception_code: Optional[str] = None
+    error_builder: Type[_ERROR_BUILDER]
 ) -> str:
     """Validates if the given argument is a string.
 
@@ -54,7 +50,7 @@ def is_type_str(
         exception: If the argument `arg` is not a string.
     """
     if not isinstance(arg, str):
-        error_data = exception_data.error_builder(
+        error_data = error_builder.data(
             input_value=arg,
             context=context,
             field=field,
@@ -73,11 +69,6 @@ def is_str_not_empty(
     arg: str,
     exception: Type[_QFE],
     context: str,
-    field: str,
-    error_code: str,
-    message: str,
-    user_message: Optional[str] = None,
-    exception_code: Optional[str] = None
 ) -> str:
     """Validates if the given string argument is not empty.
 
@@ -163,7 +154,7 @@ def is_type_path(
                 expected_desc=msg.DESC_TYPE.path,
                 exception_code=exception_code
             )
-            raise exception(**error_data.to_exception())
+        raise exception(**error_data.to_exception())
     return arg
 
 
@@ -343,7 +334,7 @@ def is_file(
         )
         raise exception(**error_data.to_exception())
         #raise exception(message.PathMessage.not_a_file(path))
-    return path
+    return arg
 
 
 def is_dir(
