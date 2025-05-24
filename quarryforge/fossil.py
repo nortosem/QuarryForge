@@ -2,9 +2,7 @@
 
 #todo
 """
-from pathlib import Path
 import subprocess
-from typing import Any
 
 from quarryforge import model
 from quarryforge.config import fossil_config
@@ -12,7 +10,6 @@ from quarryforge.config import model_config
 from quarryforge.config import util_config
 from quarryforge.config.util_config import TimelineData as TL_Data
 from quarryforge.exception import fossil_exception
-from quarryforge.exception import util_exception
 from quarryforge.meta import immutable
 from quarryforge.util import fossil_util
 
@@ -209,11 +206,18 @@ class Setup(metaclass=immutable.Namespace):
                 capture_output=True,
                 check=True,
                 timeout=fossil_config.ConfigFossil.default_timeout)
-        except fossil_exception.FossilSetupError as cpe:
+        except subprocess.CalledProcessError as error:
+            process_error = fossil_exception.FossilProcessError(
+                returncode=error.returncode,
+                cmd=error.cmd,
+                stdout=error.stdout,
+                stderr=error.stderr,
+                message=f'Failed to create new repo for {new_repo}'
+            )
             raise fossil_exception.FossilSetupError(
-                cpe.returncode, cpe.cmd, cpe.stdout,
-                f'Repo Creation Process Error: {cpe}'
-            ) from cpe
+                error.returncode, error.cmd, error.stdout,
+                f'Fossil Setup Process Error: {error}'
+            ) from process_error
 
         return init_repo.stdout.decode()
 
@@ -226,11 +230,18 @@ class Setup(metaclass=immutable.Namespace):
                 capture_output=True,
                 check=True,
                 timeout=fossil_config.ConfigFossil.default_timeout)
-        except subprocess.FossilSetupError as cpe:
-            raise subprocess.FossilSetupError(
-                cpe.returncode, cpe.cmd, cpe.stdout,
-                f'Repo Creation Process Error: {cpe}'
-            ) from cpe
+        except subprocess.CalledProcessError as error:
+            process_error = fossil_exception.FossilProcessError(
+                returncode=error.returncode,
+                cmd=error.cmd,
+                stdout=error.stdout,
+                stderr=error.stderr,
+                message=f'Failed to set default user for {new_repo}'
+            )
+            raise fossil_exception.FossilSetupError(
+                error.returncode, error.cmd, error.stdout,
+                f'Fossil Setup Process Error: {error}'
+            ) from process_error
 
         return default_user.stdout.decode()
 
@@ -242,41 +253,24 @@ class Setup(metaclass=immutable.Namespace):
         """Run the fossil user contact command"""
         try:
             user_contact = subprocess.run(
-                fossil_util.set_user_contact(args),
+                fossil_util.set_user_contact(username, email, source),
                 capture_output=True,
-                check=True
+                check=True,
                 timeout=fossil_config.ConfigFossil.default_timeout)
-        except fossil_exception.FossilSetupError as cpe:
+        except subprocess.CalledProcessError as error:
+            process_error = fossil_exception.FossilProcessError(
+                returncode=error.returncode,
+                cmd=error.cmd,
+                stdout=error.stdout,
+                stderr=error.stderr,
+                message=f'Failed to set user email for {source}'
+            )
             raise fossil_exception.FossilSetupError(
-                cpe.returncode, cpe.cmd, cpe.stdout,
-                f'Repo Creation Process Error: {cpe}'
-            ) from cpe
+                error.returncode, error.cmd, error.stdout,
+                f'Fossil Setup Process Error: {error}'
+            ) from process_error
 
         return user_contact.stdout.decode()
-
-    @staticmethod
-    def create_target_repo(
-        username: str,
-        email: str,
-        date_override: str,
-        new_repo: model.FossilRepo,
-        template: model.FossilRepo = None,
-        project_name: str = None,
-        project_desc: str = None) -> str:
-        """Run the new repo command sequence to configure new repo."""
-        try:
-            target_init = cls.new_repo()
-            target_user_default = cls.default_user()
-            target_user_default = cls.user_contact()
-        except fossil_exception.FossilSetupError as cpe:
-            raise fossil_exception.FossilSetupError(
-                cpe.returncode, cpe.cmd, cpe.stdout,
-                f'Repo Creation Process Error: {cpe}'
-            ) from cpe
-
-        return (target_init,
-                target_user_default,
-                target_user_contact.stdout.decode())
 
 
 class Info(metaclass=immutable.Namespace):
@@ -302,10 +296,18 @@ class Info(metaclass=immutable.Namespace):
                 capture_output=True,
                 check=True,
                 timeout=fossil_config.ConfigFossil.default_timeout)
-        except fossil_exception.FossilInfoError as cpe:
+        except subprocess.CalledProcessError as error:
+            process_error = fossil_exception.FossilProcessError(
+                returncode=error.returncode,
+                cmd=error.cmd,
+                stdout=error.stdout,
+                stderr=error.stderr,
+                message=f'Failed to fetch info from {source}'
+            )
             raise fossil_exception.FossilInfoError(
-                cpe.returncode, cpe.cmd, cpe.stdout,
-                f'Fossil Info Process Exception: {cpe}') from cpe
+                error.returncode, error.cmd, error.stdout,
+                f'Fossil Info Process Error: {error}'
+            ) from process_error
         raw_parent_hash = info_process.stdout.decode()
         initial_commit = util_config.INFO_DATA.init_pattern()
         commit_parent = util_config.INFO_DATA.parent_pattern()
@@ -316,7 +318,7 @@ class Info(metaclass=immutable.Namespace):
         if match_init:
             return None
         else:
-            raise model_exception.CommitError('unexpected error')
+            raise fossil_exception.FossilInfoError()
 
 
 class Diff(metaclass=immutable.Namespace):
@@ -336,11 +338,18 @@ class Diff(metaclass=immutable.Namespace):
                 capture_output=True,
                 check=True,
                 timeout=fossil_config.ConfigFossil.default_timeout)
-        except fossil_exception.FossilDiffError as cpe:
+        except subprocess.CalledProcessError as error:
+            process_error = fossil_exception.FossilProcessError(
+                returncode=error.returncode,
+                cmd=error.cmd,
+                stdout=error.stdout,
+                stderr=error.stderr,
+                message=f'Failed to fetch Diff from {source}'
+            )
             raise fossil_exception.FossilDiffError(
-                cpe.returncode, cpe.cmd, cpe.stdout,
-                f'Fossil Diff Process Exception: {cpe}'
-            ) from cpe
+                error.returncode, error.cmd, error.stdout,
+                f'Fossil Diff Process Error: {error}'
+            ) from process_error
         raw_changes = diff_process.stdout.decode()
         return raw_changes
 
@@ -370,11 +379,18 @@ class Cat(metaclass=immutable.Namespace):
                 capture_output=True,
                 check=True,
                 timeout=fossil_config.ConfigFossil.default_timeout)
-        except fossil_exception.FossilCatError as cpe:
+        except subprocess.CalledProcessError as error:
+            process_error = fossil_exception.FossilProcessError(
+                returncode=error.returncode,
+                cmd=error.cmd,
+                stdout=error.stdout,
+                stderr=error.stderr,
+                message=f'Failed to fetch Cat from {source}'
+            )
             raise fossil_exception.FossilCatError(
-                cpe.returncode, cpe.cmd, cpe.stdout,
-                f'Fossil Cat Process Exception: {cpe}'
-            ) from cpe
+                error.returncode, error.cmd, error.stdout,
+                f'Fossil Cat Process Error: {error}'
+            ) from process_error
         content_changes = cat_process.stdout.decode()
         return content_changes
 
@@ -394,8 +410,18 @@ class Branch(metaclass=immutable.Namespace):
                 check=True,
                 timeout=fossil_config.ConfigFossil.default_timeout)
             return list_process.stdout.decode()
-        except Exception as e:
-            raise Exception
+        except subprocess.CalledProcessError as error:
+            process_error = fossil_exception.FossilProcessError(
+                returncode=error.returncode,
+                cmd=error.cmd,
+                stdout=error.stdout,
+                stderr=error.stderr,
+                message=f'Failed to fetch Branch from {source}'
+            )
+            raise fossil_exception.FossilBranchError(
+                error.returncode, error.cmd, error.stdout,
+                f'Fossil Branch Process Error: {error}'
+            ) from process_error
 
 
 class Add(metaclass=immutable.Namespace):
