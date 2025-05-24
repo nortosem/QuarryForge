@@ -62,8 +62,9 @@ class TimelineData(NamedTuple):
     BRANCH: str = '^(?P<label>Branch):\\s+(?P<branch>.+)$'
     TAGS: str = '^(?P<label>Tags):\\s+(?P<tags>.+)$'
     TAG: str = '?P<tag>[\\w-]+'
-    PHASE = \
+    PHASE: str = (
         '^(?P<label>Phase):\\s+\\*?(?P<phase>LEAF|PUBLISHED|FROZEN)?\\*?'
+    )
     CHANGE: str = '^\\s+(?P<change>ADDED|EDITED|DELETED)\\s(?P<filename>.+)$'
     PATH: str = '^(?P<path>.*[\\/])?(?P<file>[^/\\\\]+$)'
 
