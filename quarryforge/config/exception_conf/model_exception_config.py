@@ -13,18 +13,20 @@ mst be path or path from string.
 file does not exist.
 is parent dir exist and writeable?
 """
-from typing import List
+from typing import List, Tuple
 
 from quarryforge.config import model_config
 from quarryforge.config import root
 from quarryforge.config.exception_conf import base_exception_config
-from quarryforge.config.exception_conf import exception_config as msg
+from quarryforge.config.exception_conf import exception_config
 from quarryforge.meta import immutable
 
 
 __all__: List[str] = [
     'DefaultCode',
     'DefaultMessage',
+    'FossilRepoError',
+    'FossilRepoContext',
 ]
 
 
@@ -37,7 +39,7 @@ class ModelErrorContext(metaclass=immutable.Namespace):
     @staticmethod
     def default_error(context: str):
         """Default Exception Context Code"""
-        return f'{context}.{msg.Default.ERROR}'
+        return f'{context}.{exception_config.Default.ERROR}'
 
 
 class DefaultCode(metaclass=immutable.Namespace):
@@ -61,27 +63,76 @@ class DefaultMessage(metaclass=immutable.Namespace):
     fossil_timeline: str = f'{base_message}.{root.Model.fossil_timeline}'
 
 
+class FossilRepoError(metaclass=immutable.Namespace):
+    """Defined FossilRepo Errors"""
+    init = 'init'
+    immutable = 'immutable'
+    not_implemented = 'not_implemented'
+
+
 class FossilRepoContext(metaclass=immutable.Namespace):
     """FossilRepo Context
 
     Messages for FossilRepo.
     """
-    EMPTY_STR_MSG: str = ''
-  #  msg.Argument.missing(
-  #      ConfigFossilRepo.FILE, (msg.Default.SPC).join(
-  #          msg.ErrorKind.STR,
-  #          msg.Default.BAR,
-  #          msg.ErrorKind.PATH)
-  #      )
-  #  EMPTY_STR_USER_MSG: str = msg.Required.field_empty(
-  #      ConfigFossilRepo.file(), str
-  #  )
-  #  INVALID: str = (msg.Default.NL).join(
-  #      [msg.Argument.invalid(
-  #          ConfigFossilRepo.file()),
-  #       msg.Required.field_type(ConfigFossilRepo.file())]
-  #  )
-    NOT_EXIST: str = ('')
-    NOT_FILE: str = ('')
-    NOT_READ: str = ('')
-    DIR_WRITE: str = ('')
+    _fields: Tuple[str] = (
+        FossilRepoError.init,
+        FossilRepoError.immutable,
+        FossilRepoError.not_implemented,
+    )
+    init: str = f'{ModelErrorContext.FOSSIL_REPO}.__init__'
+    immutable: str = f'{ModelErrorContext.FOSSIL_REPO}.immutable'
+    not_implemented: str = f'{ModelErrorContext.FOSSIL_REPO}.not_implemented'
+
+
+class FossilRepoDesc(metaclass=immutable.Namespace):
+    """Find the Desc from the Error Type name."""
+    _fields: Tuple[str] = (
+        'type_error', 'value_error', 'empty_string', 'invalid_string',
+        'non_path_object', 'invalid_path_string', 'path_resolution',
+        'path_nonexistent', 'path_parent_nonexistent', 'path_file_error',
+        'path_dir_error', 'path_unreadable', 'path_unwritable',
+        'path_unexecutable'
+    )
+    type_error: str = exception_config.DESC_TYPE.string
+    value_error: str = exception_config.DESC_TYPE.string
+    empty_string: str = exception_config.DESC_TYPE.string
+    invalid_string: str = exception_config.DESC_TYPE.string
+    non_path_object: str = exception_config.DESC_TYPE.path
+    non_path_object: str = exception_config.DESC_TYPE.path
+    path_resolution: str = exception_config.DESC_TYPE.path
+    path_nonexistent: str = exception_config.DESC_TYPE.path
+    path_parent_nonexistent: str = exception_config.DESC_TYPE.path
+    path_file_error: str = exception_config.DESC_TYPE.path
+    path_dir_error: str = exception_config.DESC_TYPE.path
+    path_unreadable: str = exception_config.DESC_TYPE.path
+    path_unwritable: str = exception_config.DESC_TYPE.path
+    path_unexecutable: str = exception_config.DESC_TYPE.path
+
+
+class FossilRepoMessage(metaclass=immutable.Namespace):
+    """"""
+    str_path_usr_exception_config: str = (
+        exception_config.Required.field_type(
+            model_config.ConfigFossilRepo.field_name(), exception_config.DescType.string
+        )
+    )
+    empty_str_user_exception_config: str = (
+        exception_config.Required.field_type(
+            model_config.ConfigFossilRepo.field_name(), exception_config.DescType.empty
+        )
+    )
+
+    @staticmethod
+    def str_path_exception_config(arg: str) -> str:
+        return exception_config.Argument.message(
+            FossilRepoContext.init,
+            model_config.ConfigFossilRepo.field_name(),
+            arg
+        )
+
+    @staticmethod
+    def empty_str_exception_config(arg: str) -> str:
+        return (
+
+        )
