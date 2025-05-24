@@ -36,7 +36,7 @@ class FossilRepo(
         object.__setattr__(self, model_config.FOSSIL_REPO.file, file)
 
     @property
-    def get_path(self) -> Path:
+    def file(self) -> Path:
         """The path to the fossil repository file.
 
         This property provides read-only access to the repository's file path.
