@@ -4,6 +4,8 @@
 """
 from typing import NamedTuple
 
+from quarryforge.meta import immutable
+
 
 __all__: list = [
     'DESC_TYPE', 'ERROR_TYPE', 'ARG',
@@ -13,29 +15,50 @@ __all__: list = [
 
 class DescType(NamedTuple):
     """Description strings for errors."""
+    unknown: str = 'Unknown'
     string: str = 'str'
     path: str = 'Path'
     empty: str = 'empty_string'
-    exists: str = 'Path exists'
-    is_file: str = 'Path is file'
-    is_dir: str = 'Path is directory'
-    is_readable: str = 'Path is readable'
-    is_writable: str = 'Path is writable'
+    exists: str = 'Path_exists'
+    is_file: str = 'File_Path'
+    is_dir: str = 'Directory_Path'
+    is_readable: str = 'readable_Path'
+    is_writable: str = 'writable_Path'
+    is_executable: str = 'executable_Path'
     is_list: str = 'List'
     str_list_content = 'List[str]'
-    non_empty_list_content = 'List[str] is not empty'
+    non_empty_list_content = 'non-empty_List[str]'
 
 
 DESC_TYPE: DescType = DescType()
 """Global ..."""
 
 
-class ErrorType(NamedTuple):
-    """"""
+class GenericErrorType(NamedTuple):
+    """A collection of constants for generic types of errors."""
     type_error: str = 'TYPE_ERROR'
+    unexpected_error: str = 'UNEXPECTED_ERROR'
+    value_error: str = 'VALUE_ERROR'
 
 
-ERROR_TYPE: ErrorType = ErrorType()
+class StringErrorType(NamedTuple):
+    """A collection of constants for errors involving strings."""
+    empty: str = 'EMPTY_STRING_ERROR'
+    invalid: str = 'INVALID_STRING_ERROR'
+
+
+class PathErrorType(NamedTuple):
+    """A collection of constants for error involving Path objects."""
+    non_path_object: str = 'NON_PATH_OBJECT_ERROR'
+    invalid_path_string: str = 'INVALID_PATH_STRING_ERROR'
+    resolution: str = 'PATH_RESOLUTION_ERROR'
+    nonexistent: str = 'NONEXISTENT_PATH_ERROR'
+    parent_nonexistent: str = 'NONEXISTENT_PATH_PARENT_ERROR'
+    file_error: str = 'PATH_NOT_A_FILE_ERROR'
+    dir_error: str = 'PATH_NOT_A_DIRECTORY_ERROR'
+    unreadable: str = 'PATH_NOT_READABLE_ERROR'
+    unwritable: str = 'PATH_NOT_WRITABLE_ERROR'
+    unexecutable: str = 'PATH_NOT_EXECUTABLE_ERROR'
 
 
 class Argument(NamedTuple):
@@ -51,10 +74,17 @@ class Argument(NamedTuple):
     def missing(self, name: str, kind: str) -> str:
         return f'{self.MISSING} {self.ARG} {name} {self.TYPE} {kind}'
 
-    def message(self, arg: str, context: str, field: str) -> str:
+    def type_message(
+        self,
+        arg: str,
+        error: str,
+        context: str,
+        field: str,
+        type_: str,
+    ) -> str:
         return (
-            f'Type error in context "{context}" for field: {field}. '
-            f'String expected, but got type {type(arg).__name__} instead.'
+            f'{error} in context "{context}" for field: {field}. '
+            f'{type_} expected, but got type {type(arg).__name__} instead.'
         )
 
 ARG: Argument = Argument()
@@ -140,3 +170,11 @@ class Required(NamedTuple):
 
 REQUIRED: Required = Required()
 """Global ..."""
+
+
+class ErrorMessageMaker(metaclass=immutable.Namespace):
+    """ErrorMessageMaker creates error messages.
+
+    ErrorTypes and context information determine which messages are produced.
+    """
+
