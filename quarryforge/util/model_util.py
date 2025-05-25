@@ -57,8 +57,8 @@ def viable_fossil_repo(
     """
     # first check if string or path
     file = validation_util.is_type_path(
-        file,
-        exception,
+        arg=file,
+        exception=exception,
         error_builder=FossilRepoErrorBuilder(
             error_context=config.FossilRepoContext.init,
             error_code=exception_config.GenericErrorType.type_error,
@@ -67,8 +67,8 @@ def viable_fossil_repo(
     )
     # second ensure path object
     file = validation_util.resolve_path_arg(
-        file,
-        exception,
+        arg=file,
+        exception=exception,
         error_builder=FossilRepoErrorBuilder(
             error_context=config.FossilRepoContext.init,
             error_code=exception_config.GenericErrorType.resolution,
@@ -78,8 +78,8 @@ def viable_fossil_repo(
     # third is_new or not?
     if new: # new is the target repo
         file = validation_util.not_exist(
-            file,
-            exception,
+            arg=file,
+            exception=exception,
             error_builder=FossilRepoErrorBuilder(
                 error_context=config.FossilRepoContext.init,
                 error_code=exception_config.GenericErrorType.existing,
@@ -87,8 +87,8 @@ def viable_fossil_repo(
                 )
         )
         parent_dir = validation_util.exist(
-            file.parent,
-            exception,
+            arg=file.parent,
+            exception=exception,
             error_builder=FossilRepoErrorBuilder(
                 error_context=config.FossilRepoContext.init,
                 error_code=exception_config.GenericErrorType.nonexistent,
@@ -96,8 +96,8 @@ def viable_fossil_repo(
                 )
         )
         parent_dir = validation_util.is_dir(
-            file.parent,
-            exception,
+            arg=file.parent,
+            exception=exception,
             error_builder=FossilRepoErrorBuilder(
                 error_context=config.FossilRepoContext.init,
                 error_code=exception_config.GenericErrorType.dir_error,
@@ -105,8 +105,8 @@ def viable_fossil_repo(
                 )
         )
         parent_dir = validation_util.is_write_ok(
-            file.parent,
-            exception,
+            arg=file.parent,
+            exception=exception,
             error_builder=FossilRepoErrorBuilder(
                 error_context=config.FossilRepoContext.init,
                 error_code=exception_config.GenericErrorType.unwritable,
@@ -117,8 +117,8 @@ def viable_fossil_repo(
     # not new means source repo
     else:
         file = validation_util.exist(
-            file,
-            exception,
+            arg=file,
+            exception=exception,
             error_builder=FossilRepoErrorBuilder(
                 error_context=config.FossilRepoContext.init,
                 error_code=exception_config.GenericErrorType.nonexistent,
@@ -126,8 +126,8 @@ def viable_fossil_repo(
                 )
         )
         file = validation_util.is_dir(
-            file,
-            exception,
+            arg=file,
+            exception=exception,
             error_builder=FossilRepoErrorBuilder(
                 error_context=config.FossilRepoContext.init,
                 error_code=exception_config.GenericErrorType.file_error,
@@ -135,8 +135,8 @@ def viable_fossil_repo(
                 )
         )
         file = validation_util.is_read_ok(
-            file,
-            exception,
+            arg=file,
+            exception=exception,
             error_builder=FossilRepoErrorBuilder(
                 error_context=config.FossilRepoContext.init,
                 error_code=exception_config.GenericErrorType.unreadable,
