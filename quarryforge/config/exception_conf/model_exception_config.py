@@ -96,18 +96,19 @@ class FossilRepoDesc(metaclass=immutable.Namespace):
     )
     type_error: str = exception_config.DESC_TYPE.string
     value_error: str = exception_config.DESC_TYPE.string
-    empty_string: str = exception_config.DESC_TYPE.string
-    invalid_string: str = exception_config.DESC_TYPE.string
+    empty: str = exception_config.DESC_TYPE.string
+    invalid: str = exception_config.DESC_TYPE.string
     non_path_object: str = exception_config.DESC_TYPE.path
-    non_path_object: str = exception_config.DESC_TYPE.path
-    path_resolution: str = exception_config.DESC_TYPE.path
-    path_nonexistent: str = exception_config.DESC_TYPE.path
-    path_parent_nonexistent: str = exception_config.DESC_TYPE.path
-    path_file_error: str = exception_config.DESC_TYPE.path
-    path_dir_error: str = exception_config.DESC_TYPE.path
-    path_unreadable: str = exception_config.DESC_TYPE.path
-    path_unwritable: str = exception_config.DESC_TYPE.path
-    path_unexecutable: str = exception_config.DESC_TYPE.path
+    invalid_path_string: str = exception_config.DESC_TYPE.path
+    resolution: str = exception_config.DESC_TYPE.path
+    existing: str = exception_config.DESC_TYPE.path
+    nonexistent: str = exception_config.DESC_TYPE.path
+    parent_nonexistent: str = exception_config.DESC_TYPE.path
+    file_error: str = exception_config.DESC_TYPE.path
+    dir_error: str = exception_config.DESC_TYPE.path
+    unreadable: str = exception_config.DESC_TYPE.path
+    unwritable: str = exception_config.DESC_TYPE.path
+    unexecutable: str = exception_config.DESC_TYPE.path
 
 
 class FossilRepoMessage(metaclass=immutable.Namespace):
