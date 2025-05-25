@@ -19,11 +19,11 @@ from quarryforge.exception import model_exception
 from quarryforge.util import model_error_util as error
 from quarryforge.util import validation_util
 
+
 _ModelError = TypeVar('_ModelError', bound=base_exception.ModelError)
 
 
 def viable_fossil_repo(
-    self,
     file: Path | str,
     is_new: bool,
     exception: Type[_ModelError]
@@ -55,69 +55,95 @@ def viable_fossil_repo(
     Raises:
         exception: With specific codes and messages for different failures.
     """
-    file_path = validation_util.is_type_str(
-        arg=file,
-        exception=exception,
+    # first check if string or path
+    file = validation_util.is_type_path(
+        file,
+        exception,
         error_builder=FossilRepoErrorBuilder(
             error_context=config.FossilRepoContext.init,
-            error_code=exception_config.type_error,
+            error_code=exception_config.GenericErrorType.type_error,
             input_value=file
         )
     )
-    file_path = validation_util.is_str_not_empty(
-        arg=file,
-        exception=exception,
-        context=config.FossilRepoContext.init,
-        error_code=exception_config.StringErrorType.empty,
-        message=config.FossilRepoMessage.empty_str_msg(arg),
-        user_message=config.FossilRepoMessage.empty_str_usr_msg,
-        exception_code=config.FossilRepoCode.exception_code(
-            msg.ERROR_TYPE.type_error
+    # second ensure path object
+    file = validation_util.resolve_path_arg(
+        file,
+        exception,
+        error_builder=FossilRepoErrorBuilder(
+            error_context=config.FossilRepoContext.init,
+            error_code=exception_config.GenericErrorType.resolution,
+            input_value=file
         )
     )
-    file_path = validation_util.is_type_path(
-        arg=file,
-        exception=exception,
-        context=,
-        field=model_config.FOSSIL_REPO.field_name,
-        error_code=msg.ERROR_TYPE.empty_string,
-        message=,
-        user_message=,
-        exception_code=
-    )
-    file_path = validation_util.resolve_path_arg(
-        arg=file,
-        exception=exception,
-        context=,
-        field=model_config.FOSSIL_REPO.field_name,
-        error_code=msg.ERROR_TYPE.empty_string,
-        message=,
-        user_message=,
-        exception_code=
-    )
-
-    if is_new:
-        if not file_path.exists():
-            if file_path.parent.exists():
-                file_path = validation_util.is_write_ok(
-                    arg=file_path,
-                    exception=exception,
-                    context=,
-                    field=model_config.FOSSIL_REPO.field_name,
-                    error_code=msg.ERROR_TYPE.empty_string,
-                    message=,
-                    user_message=,
-                    exception_code=
+    # third is_new or not?
+    if new: # new is the target repo
+        file = validation_util.not_exist(
+            file,
+            exception,
+            error_builder=FossilRepoErrorBuilder(
+                error_context=config.FossilRepoContext.init,
+                error_code=exception_config.GenericErrorType.existing,
+                input_value=file
                 )
-            else:
-                error_data = {}
-        else:
-            error_data = {}
-    file_path = validation_util.is_file()
-    file_path = validation_util.is_read_ok()
-    #TODO fossil repo file type check
-
-    return file_path
+        )
+        parent_dir = validation_util.exist(
+            file.parent,
+            exception,
+            error_builder=FossilRepoErrorBuilder(
+                error_context=config.FossilRepoContext.init,
+                error_code=exception_config.GenericErrorType.nonexistent,
+                input_value=file
+                )
+        )
+        parent_dir = validation_util.is_dir(
+            file.parent,
+            exception,
+            error_builder=FossilRepoErrorBuilder(
+                error_context=config.FossilRepoContext.init,
+                error_code=exception_config.GenericErrorType.dir_error,
+                input_value=file
+                )
+        )
+        parent_dir = validation_util.is_write_ok(
+            file.parent,
+            exception,
+            error_builder=FossilRepoErrorBuilder(
+                error_context=config.FossilRepoContext.init,
+                error_code=exception_config.GenericErrorType.unwritable,
+                input_value=file
+                )
+        )
+        return file
+    # not new means source repo
+    else:
+        file = validation_util.exist(
+            file,
+            exception,
+            error_builder=FossilRepoErrorBuilder(
+                error_context=config.FossilRepoContext.init,
+                error_code=exception_config.GenericErrorType.nonexistent,
+                input_value=file
+                )
+        )
+        file = validation_util.is_dir(
+            file,
+            exception,
+            error_builder=FossilRepoErrorBuilder(
+                error_context=config.FossilRepoContext.init,
+                error_code=exception_config.GenericErrorType.file_error,
+                input_value=file
+                )
+        )
+        file = validation_util.is_read_ok(
+            file,
+            exception,
+            error_builder=FossilRepoErrorBuilder(
+                error_context=config.FossilRepoContext.init,
+                error_code=exception_config.GenericErrorType.unreadable,
+                input_value=file
+                )
+        )
+    return file
 
 
 def viable_update_repo() -> Path:
