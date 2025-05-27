@@ -19,6 +19,7 @@ __all__: list = [
     'PACKAGE',
     'MODULE',
     'SUB_PACKAGE',
+    'META_MODULE',
     'MODEL',
     'FOSSIL_COMMAND',
     'UTIL_MODULE'
@@ -73,6 +74,24 @@ class SubPackage(NamedTuple):
 SUB_PACKAGE: SubPackage = SubPackage()
 """Global constant for sub-package name configurations."""
 
+
+class MetaModule(NamedTuple):
+    """Defines names for modules within the utility sub-package (`meta`).
+
+    These strings represent the file names (without the `.py` extension)
+    of modules located under the `quarryforge/util/` directory.
+
+    Attributes:
+        assembler: The assembler module for package error handling.
+        immutable: The immutable module defines the metaclasses for immutable
+            class creation.
+    """
+    assembler: str = 'assembler'
+    immutable: str = 'immutable'
+
+
+META_MODULE: MetaModule = MetaModule()
+"""Global constant for meta subpackage modules."""
 
 class Model(NamedTuple):
     """Defines names for quarryforge data models.
