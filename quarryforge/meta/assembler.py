@@ -3,14 +3,16 @@
 
 """
 import abc
-from typing import Any, Dict, Generic, Optional
+from typing import Any, Dict, Optional, TypeVar
 
 from quarryforge.config import meta_config
-from quarryforge.config.exception_conf import exception_config
 from quarryforge.config.exception_conf import exception_data as error
 
 
-class ErrorMessageBuilder(Generic[exception_config.ERROR_TYPE], abc.ABC):
+_ERROR = TypeVar('_ERROR')
+
+
+class ErrorMessageBuilder(abc.ABC):
     """Build error message Abstract Base Class.
 
     Attributes:
@@ -20,20 +22,20 @@ class ErrorMessageBuilder(Generic[exception_config.ERROR_TYPE], abc.ABC):
     """
     __slots__ = meta_config.ErrorMessageBuilderConfig._fields
 
-    def __init__(self, error_type: exception_config.ERROR_TYPE):
-        self.error_type: exception_config.ERROR_TYPE = error_type
+    def __init__(self, error_type: _ERROR):
+        self.error_type: _ERROR = error_type
 
     def prefix_message(
         self,
         error_context: str,
-        error_code: str,
+        error_code_suffix: str,
         field: str
     ) -> str:
         """Common error message prefix."""
-        return f'{error_code} in `{error_context}` for field: {field}'
+        return f'{error_code_suffix} in `{error_context}` for field: {field}'
 
 
-class BuildError(abc.ABC):
+class ErrorBuilder(abc.ABC):
     """Build Error Abstract Base Class.
 
     Attributes:
@@ -42,7 +44,7 @@ class BuildError(abc.ABC):
         input_value:
         extra_details:
     """
-    __slots__ = meta_config.BuildErrorConfig._fields
+    __slots__ = meta_config.ErrorBuilderConfig._fields
 
     def __init__(
         self,
@@ -110,7 +112,7 @@ class BuildError(abc.ABC):
         usr_msg = user_message if user_message is not None else message
 
         return error.ValidErrorData(
-            code=exception_code,
+            error_code=exception_code,
             message=message,
             user_message=usr_msg,
             details=details,

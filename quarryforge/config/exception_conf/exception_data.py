@@ -49,8 +49,8 @@ class ValidErrorData(_.ImmutableInstance, metaclass=_.ImmutableMetaClass):
 
     def __init__(self,
         *,
-        error_code: str,
-        message: str,
+        error_code: Optional[str] = None,
+        message: Optional[str] = None,
         user_message: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None
     ):
