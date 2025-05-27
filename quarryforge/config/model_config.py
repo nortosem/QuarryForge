@@ -11,12 +11,12 @@ Attributes:
     FOSSIL_COMMIT_CONFIG (ConfigFossilCommit):
         Configuration specific to the FossilCommit model.
 """
-from typing import NamedTuple, Tuple
+from typing import List, NamedTuple
 
 from quarryforge.config import root
 
 
-__all__: list = ['FOSSIL_REPO','FOSSIL_COMMIT', 'FOSSIL_TIMELINE']
+__all__: List = ['FOSSIL_REPO','FOSSIL_COMMIT', 'FOSSIL_TIMELINE']
 
 
 class BaseModelConfig(NamedTuple):
@@ -26,7 +26,7 @@ class BaseModelConfig(NamedTuple):
     application and provides a utility method to construct full Python
     dot-paths to specific model modules.
 
-    Class Attributes:
+    Attributes:
         PATH (str): The base Python module path for all models, constructed from
             `root.PACKAGE.name` and `root.MODULE.model`. For example,
             'quarryforge.model'.
