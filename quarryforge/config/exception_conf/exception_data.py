@@ -79,7 +79,7 @@ def error_builder(
     user_message: Optional[str] = None,
     expected_desc: Optional[str] = None,
     exception_code: Optional[str] = None,
-    extra_details: Optional[str] = None
+    extra_details: Optional[Dict[str, Any]] = None
 ) -> ValidErrorData:
     """Construct a ValidErrorData object from the provided details."""
     details = {
