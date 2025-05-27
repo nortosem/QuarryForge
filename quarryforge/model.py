@@ -22,7 +22,7 @@ class FossilRepo(
     Attributes:
         file (Path): A read-only property providing the path to the Fossil
                      repository file.    """
-    __slots__ = model_config.FOSSIL_REPO.slots()
+    __slots__ = model_config.FOSSIL_REPO._fields
 
     def __init__(self, file: Path | str, is_new: bool) -> None:
         """Initializes a new FossilRepo instance.
@@ -125,7 +125,7 @@ class FossilCommit(
 
     #todo
     """
-    __slots__ = model_config.FOSSIL_COMMIT.slots()
+    __slots__ = model_config.FOSSIL_COMMIT._fields
 
     def __init__(self,
                  uuid: str,
