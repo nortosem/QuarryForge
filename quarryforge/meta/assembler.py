@@ -3,14 +3,14 @@
 
 """
 import abc
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Generic, Optional
 
 from quarryforge.config import meta_config
+from quarryforge.config.exception_conf import exception_config
 from quarryforge.config.exception_conf import exception_data as error
-from quarryforge.util.decorator import ERROR_TYPE
 
 
-class ErrorMessageBuilder(abc.ABC):
+class ErrorMessageBuilder(Generic[exception_config.ERROR_TYPE], abc.ABC):
     """Build error message Abstract Base Class.
 
     Attributes:
@@ -20,9 +20,8 @@ class ErrorMessageBuilder(abc.ABC):
     """
     __slots__ = meta_config.ErrorMessageBuilderConfig._fields
 
-    def __init__(self, error_types: ERROR_TYPE):
-        """"""
-        self.error_types = error_types
+    def __init__(self, error_type: exception_config.ERROR_TYPE):
+        self.error_type: exception_config.ERROR_TYPE = error_type
 
     def prefix_message(
         self,
