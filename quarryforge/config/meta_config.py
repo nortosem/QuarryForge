@@ -25,7 +25,7 @@ class BuildErrorConfig(NamedTuple):
     input_value: str = 'input_value'
 
 
-class ErrorMessageBuilder(NamedTuple):
+class ErrorMessageBuilderConfig(NamedTuple):
     """The meta.assembler.ErrorMessageBuilder configuration.
 
     Define the default slots for all BuildErrorMessage instances.

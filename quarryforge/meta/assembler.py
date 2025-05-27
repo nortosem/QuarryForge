@@ -7,6 +7,31 @@ from typing import Any, Dict, Optional
 
 from quarryforge.config import meta_config
 from quarryforge.config.exception_conf import exception_data as error
+from quarryforge.util.decorator import ERROR_TYPE
+
+
+class ErrorMessageBuilder(abc.ABC):
+    """Build error message Abstract Base Class.
+
+    Attributes:
+        error_types:
+    Methods:
+
+    """
+    __slots__ = meta_config.ErrorMessageBuilderConfig._fields
+
+    def __init__(self, error_types: ERROR_TYPE):
+        """"""
+        self.error_types = error_types
+
+    def prefix_message(
+        self,
+        error_context: str,
+        error_code: str,
+        field: str
+    ) -> str:
+        """Common error message prefix."""
+        return f'{error_code} in `{error_context}` for field: {field}'
 
 
 class BuildError(abc.ABC):
@@ -28,6 +53,7 @@ class BuildError(abc.ABC):
         input_value: Optional[Any] = None,
         extra_details: Optional[Dict[str, Any]] = None
     ):
+        """Default exception constructor initializaiton."""
         self.error_context = error_context
         self.error_code = error_code
         self.input_value = input_value
@@ -36,17 +62,21 @@ class BuildError(abc.ABC):
     @abc.abstractmethod
     def code(
         self,
-        error_context: Optional[str] = None,
-        error_code: Optional[str] = None
+        *,
+        error_context: Optional[str],
+        error_code: Optional[str]
     ) -> str:
-        """The unique exception code for an error."""
+        """The unique exception code for an error.
+
+        Build the error code from the full package path context and error type.
+        """
 
     @abc.abstractmethod
-    def message(self, arg: Optional[str]) -> str:
+    def message(self, builder: ErrorMessageBuilder) -> str:
         """Generate and return a message for a defined exception."""
 
     @abc.abstractmethod
-    def user_message(self, arg: Optional[str], desc: Optional[str]) -> str:
+    def user_message(self, builder: ErrorMessageBuilder) -> str:
         """Generate and return a user_message for a defined exception."""
 
     @abc.abstractmethod
