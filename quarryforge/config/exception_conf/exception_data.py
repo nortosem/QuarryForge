@@ -48,12 +48,13 @@ class ValidErrorData(_.ImmutableInstance, metaclass=_.ImmutableMetaClass):
     details: Optional[Dict[str, Any]]
 
     def __init__(self,
-                 code: Optional[str] = None,
-                 message: Optional[str] = None,
-                 user_message: Optional[str] = None,
-                 details: Optional[Dict[str, Any]] = None
+        *,
+        error_code: str,
+        message: str,
+        user_message: Optional[str] = None,
+        details: Optional[Dict[str, Any]] = None
     ):
-        object.__setattr__(self, ERROR_FIELD.code, code)
+        object.__setattr__(self, ERROR_FIELD.code, error_code)
         object.__setattr__(self, ERROR_FIELD.message, message)
         object.__setattr__(self, ERROR_FIELD.user_message, user_message)
         object.__setattr__(self, ERROR_FIELD.details, details)
@@ -67,38 +68,3 @@ class ValidErrorData(_.ImmutableInstance, metaclass=_.ImmutableMetaClass):
             ERROR_FIELD.user_message: self.user_message,
             ERROR_FIELD.details: self.details
         }
-
-
-def error_builder(
-    *,
-    input_value: Any,
-    context: str,
-    field: str,
-    error_code: str,
-    message: str,
-    user_message: Optional[str] = None,
-    expected_desc: Optional[str] = None,
-    exception_code: Optional[str] = None,
-    extra_details: Optional[Dict[str, Any]] = None
-) -> ValidErrorData:
-    """Construct a ValidErrorData object from the provided details."""
-    details = {
-        BUILDER_FIELD.input_value: input_value,
-        BUILDER_FIELD.context: context,
-        BUILDER_FIELD.field: field,
-        BUILDER_FIELD.error_code: error_code,
-        BUILDER_FIELD.message: message,
-        BUILDER_FIELD.user_message: user_message,
-        BUILDER_FIELD.expected_desc: expected_desc
-    }
-    if extra_details:
-        details.update(extra_details)
-
-    usr_msg = user_message if user_message is not None else message
-
-    return ValidErrorData(
-        code=exception_code,
-        message=message,
-        user_message=usr_msg,
-        details=details
-    )
