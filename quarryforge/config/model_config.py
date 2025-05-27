@@ -65,15 +65,6 @@ class ConfigFossilRepo(NamedTuple):
     """
     file: str = '_file'
 
-    def slots(self) -> Tuple[str, ...]:
-        """Returns the field names defined in this NamedTuple.
-
-        Returns:
-            Tuple[str, ...]:
-            A tuple containing the names of the fields
-        """
-        return tuple(getattr(self, field) for field in self._fields)
-
     def field_name(self) -> str:
         """Get public property field name.
 
@@ -119,16 +110,6 @@ class ConfigFossilCommit(NamedTuple):
     tags: str = 'tags'
     phase: str = 'phase'
     changes: str = 'changes'
-
-    def slots(self) -> Tuple[str, ...]:
-        """Returns the field names defined in this NamedTuple.
-
-        Returns:
-            Tuple[str, ...]:
-                A tuple containing the names of all fields
-        """
-        return tuple(getattr(self, field) for field in self._fields)
-
 
     def path(self):
         """Returns the full Python module path for the FossilCommit model.
