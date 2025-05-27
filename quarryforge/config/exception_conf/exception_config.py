@@ -50,3 +50,16 @@ class PathErrorType(NamedTuple):
 
 PATH_ERROR: PathErrorType = PathErrorType()
 """Global instance for path error types."""
+
+
+class DescType(NamedTuple):
+    """Basic description partials."""
+    must_be: str = 'must be'
+    string: str = 'a valid string'
+    path: str = 'a valid path'
+    unempty: str = 'a non-empty string'
+    unknown: str = 'is an unknown error'
+
+
+DESC_TYPE = DescType()
+"""Global instance for description parts."""
