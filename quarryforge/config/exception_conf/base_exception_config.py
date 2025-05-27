@@ -5,7 +5,7 @@ The configuraiton for the exception base class of quarryforge errors.
 from typing import List
 
 from quarryforge.config import root
-from quarryforge.config.exception_conf import exception_config as msg
+from quarryforge.config.exception_conf import exception_config as config
 from quarryforge.meta import immutable
 
 
@@ -21,6 +21,11 @@ class BaseConfig(metaclass=immutable.Namespace):
 
     @classmethod
     def path(cls, module_name: str) -> str:
+        if not isinstance(module_name, str):
+            raise TypeError
+        else:
+            raise ValueError
+
         return f'{cls.PACKAGE}.{module_name}'
 
 
@@ -35,19 +40,21 @@ class BaseErrorContext(metaclass=immutable.Namespace):
 
     @classmethod
     def package_error(cls):
-        return f'{cls.QUARRY_FORGE}.{msg.Default.ERROR}'
+        return f'{cls.QUARRY_FORGE}.{config.GENERIC_ERROR.unexpected_error}'
 
     @classmethod
     def default_error(cls, context: str):
         """Default Exception Context Code"""
         if not isinstance(context, str):
             raise TypeError('todo')
+        else:
+            raise ValueError('todo')
 
         if context is BaseErrorContext.QUARRY_FORGE:
             return cls.package_error()
 
         return (
-            f'{context}.{msg.Default.ERROR}')
+            f'{context}.{config.GENERIC_ERROR.unexpected_error}')
 
 
 class DefaultCode(metaclass=immutable.Namespace):
@@ -69,14 +76,9 @@ class DefaultMessage(metaclass=immutable.Namespace):
     """The default base_exception error messages."""
     unexpected_error: str = (
         'An unexpected error occurred within the {root.PACKAGE.name}')
-    quarryforge_error: str = (
-        f'{unexpected_error} package.')
-    model_error: str = (
-        f'{unexpected_error}.{root.Module.model} module.')
-    fossil_error: str = (
-        f'{unexpected_error}.{root.Module.fossil} module.')
-    main_error: str = ( f'{unexpected_error}.{root.Module.model} module.')
-    meta_error: str = (
-        f'{unexpected_error}.{root.SubPackage.meta} subpackage.')
-    util_error: str = (
-        f'{unexpected_error}.{root.SubPackage.util} subpackage.')
+    quarryforge_error: str = f'{unexpected_error} package.'
+    model_error: str =  f'{unexpected_error}.{root.Module.model} module.'
+    fossil_error: str = f'{unexpected_error}.{root.Module.fossil} module.'
+    main_error: str = f'{unexpected_error}.{root.Module.model} module.'
+    meta_error: str = f'{unexpected_error}.{root.SubPackage.meta} subpackage.'
+    util_error: str = f'{unexpected_error}.{root.SubPackage.util} subpackage.'
