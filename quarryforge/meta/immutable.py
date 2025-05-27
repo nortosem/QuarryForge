@@ -30,7 +30,7 @@ class Namespace(ImmutableMetaClass):
             attrs: Dict[str, Any]
     ):
         """"""
-        def _uninstantiable(self, *args, **kwargs):
+        def _uninstantiable(self, *args, **kwargs) -> None:
             raise TypeError('Class has no instances.')
 
         attrs['__init__'] = _uninstantiable
