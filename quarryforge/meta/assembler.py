@@ -3,22 +3,30 @@
 
 """
 import abc
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
+from quarryforge.config import meta_config
 from quarryforge.config.exception_conf import exception_data as error
 
 
 class BuildError(abc.ABC):
-    """Build Error Abstract Base Class."""
-    __slots__ = ('error_context', 'error_code', 'input_value', 'extra_details')
+    """Build Error Abstract Base Class.
+
+    Attributes:
+        error_context:
+        error_code:
+        input_value:
+        extra_details:
+    """
+    __slots__ = meta_config.BuildErrorConfig._fields
 
     def __init__(
         self,
         *,
-        error_context: str = None,
-        error_code: str = None,
-        input_value: Any = None,
-        extra_details: Dict[str, Any] = None
+        error_context: Optional[str] = None,
+        error_code: Optional[str] = None,
+        input_value: Optional[Any] = None,
+        extra_details: Optional[Dict[str, Any]] = None
     ):
         self.error_context = error_context
         self.error_code = error_code
@@ -43,11 +51,11 @@ class BuildError(abc.ABC):
 
     @abc.abstractmethod
     def details(self):
-        """"""
+        """Generate and return the error details."""
 
     def data(
         self,
-i       input_value: Any,
+        input_value: Any,
         context: str,
         field: str,
         error_code: str,
@@ -59,13 +67,13 @@ i       input_value: Any,
     ) -> error.ValidErrorData:
         """Construct a ValidErrorData object from the provided details."""
         details = {
-            BUILDER_FIELD.input_value: input_value,
-            BUILDER_FIELD.context: context,
-            BUILDER_FIELD.field: field,
-            BUILDER_FIELD.error_code: error_code,
-            BUILDER_FIELD.message: message,
-            BUILDER_FIELD.user_message: user_message,
-            BUILDER_FIELD.expected_desc: expected_desc
+            error.BUILDER_FIELD.input_value: input_value,
+            error.BUILDER_FIELD.context: context,
+            error.BUILDER_FIELD.field: field,
+            error.BUILDER_FIELD.error_code: error_code,
+            error.BUILDER_FIELD.message: message,
+            error.BUILDER_FIELD.user_message: user_message,
+            error.BUILDER_FIELD.expected_desc: expected_desc
         }
         if extra_details:
             details.update(extra_details)
