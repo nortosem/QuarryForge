@@ -8,7 +8,7 @@ from typing import List, NamedTuple
 __all__: List = []
 
 
-class BuildErrorConfig(NamedTuple):
+class ErrorBuilderConfig(NamedTuple):
     """The meta.assembler.BuildError configuration.
 
     Define the default slots for all BuildError instances.
@@ -25,12 +25,20 @@ class BuildErrorConfig(NamedTuple):
     input_value: str = 'input_value'
 
 
+BUILDER_CONFIG: ErrorBuilderConfig = ErrorBuilderConfig()
+
+
 class ErrorMessageBuilderConfig(NamedTuple):
     """The meta.assembler.ErrorMessageBuilder configuration.
 
     Define the default slots for all BuildErrorMessage instances.
 
     Attributes:
-        error_types: The error types that messages are built for.
+        error_context:
+        error_code:
     """
-    error_types: str = 'error_types'
+    error_context: str = BUILDER_CONFIG.error_context
+    error_code: str = BUILDER_CONFIG.error_code
+
+
+MESSAGE_BUILDER_CONFIG: ErrorMessageBuilderConfig = ErrorMessageBuilderConfig()
