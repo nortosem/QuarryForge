@@ -18,9 +18,9 @@ _FUNC = TypeVar('_FUNC')
 def validate_str_parameters(
     method: Callable[_PARAM, _FUNC]
 ) -> Callable[_PARAM, _FUNC]:
-    """Decorator for staticmethods of namespaces.
+    """Decorator for functions with all string arguments.
 
-    The decorator validates a staticmethod with a string argument.
+    The decorator validates all arguments are non-empty strings.
 
     Args:
         method: The method being decorated.
@@ -35,11 +35,6 @@ def validate_str_parameters(
     """
     @wraps(method)
     def wrapper(*args: _PARAM.args, **kwargs: _PARAM.kwargs) -> _FUNC:
-        if len(args) > 10:
-            raise TypeError(
-                f'This decorator supports a maximum of ten arguments. '
-                f'Got {len(args)}.'
-            )
         if kwargs:
             raise TypeError(
                 f'Function {method.__name__}: keyword arguments not supported.'
