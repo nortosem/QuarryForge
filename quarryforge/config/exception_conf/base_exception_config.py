@@ -11,7 +11,7 @@ from quarryforge.meta import immutable
 from quarryforge.util.decorator import validate_str_parameters
 
 
-__all__: List[str] = []
+__all__: List[str] = ['BaseErrorBuilder']
 
 
 class BaseConfig(metaclass=immutable.Namespace):
