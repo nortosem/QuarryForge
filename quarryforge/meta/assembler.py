@@ -25,8 +25,8 @@ def _valid_str_type(value: str) -> str:
     """
     if not isinstance(value, str):
         raise TypeError(
-            f'{value!r} {config.DESC_TYPE.must_be}'
-            f' {config.DESC_TYPE.string}'
+            f'{value!r} {config.DESC_MSG.must_be}'
+            f' {config.DESC_MSG.string}'
         )
     return value
 
@@ -45,8 +45,8 @@ def _valid_str_value(value: str) -> str:
     """
     if not value:
         raise ValueError(
-            f'{value!r} {config.DESC_TYPE.must_be}'
-            f' {config.DESC_TYPE.unempty}'
+            f'{value!r} {config.DESC_MSG.must_be}'
+            f' {config.DESC_MSG.unempty}'
         )
     return value
 
@@ -55,7 +55,7 @@ def _validate_init(
     context_value: Any,
     code_value: Any,
     field_value: Any = None,
-    expected_type_value: Any = None
+    info_value: Any = None
 ) -> Tuple[str, str, str | None, str | None]:
     """Applies type and non-empty validation to two string values.
 
@@ -65,8 +65,8 @@ def _validate_init(
         context_value: The first string value (e.g., error context).
         code_value: The second string value (e.g., error type or code).
         field: The specific field name related to the error (optional).
-        expected_type: The name of the type that was expected (optional)
-        (e.g., 'str', 'int', 'Path').
+        info_value: error specific info hints (optional)
+        (e.g., 'str', 'int', 'Path', 'action: state etc.').
     Returns:
         A tuple containing the validated context_value and type_value.
 
@@ -80,11 +80,11 @@ def _validate_init(
     if field_value:
         field_value = _valid_str_value(_valid_str_type(field_value))
 
-    if expected_type_value:
-        expected_type_value = _valid_str_value(
-            _valid_str_type(expected_type_value))
+    if info_value:
+        info_value = _valid_str_value(
+            _valid_str_type(info_value))
 
-    return (context_value, code_value, field_value, expected_type_value)
+    return (context_value, code_value, field_value, info_value)
 
 
 class ErrorBuilder(abc.ABC):
@@ -101,7 +101,7 @@ class ErrorBuilder(abc.ABC):
             The argument value associated with the error.
         extra_details (Optional[Dict[str, Any]]):
             A dictionary for additional error details.
-        expected_type (str): The expected type of object or value.
+        info (str): The error info associated with an error.
         field (str): The class field or attribute affected by the error.
     """
     __slots__ = meta_config.BUILDER_CONFIG._fields
@@ -113,7 +113,7 @@ class ErrorBuilder(abc.ABC):
         error_code: str,
         arg: Optional[Any] = None,
         field: Optional[str] = None,
-        expected_type: Optional[str] = None,
+        info: Optional[str] = None,
         extra_details: Optional[Dict[str, Any]] = None,
     ):
         """Default exception constructor initialization.
@@ -123,7 +123,7 @@ class ErrorBuilder(abc.ABC):
             error_code: The specific type or code of the error.
             arg: The argument/value that caused the error (optional).
             field: The specific field name related to the error (optional).
-            expected_type: The name of the type that was expected
+            info_type: The name of the type that was info
              (e.g., 'str', 'int', 'Path')
             extra_details:
                 A dictionary of additional context or details for the error
@@ -135,19 +135,22 @@ class ErrorBuilder(abc.ABC):
         """
         self.arg = arg
 
-        error_context, error_code, field, expected_type = _validate_init(
-                error_context, error_code)
-
+        error_context, error_code, field, info = _validate_init(
+            error_context,
+            error_code,
+            field,
+            info
+        )
         self.error_context = error_context
         self.error_code = error_code
         self.field = field
-        self.expected_type = expected_type
+        self.info = info
 
         if extra_details:
             if not isinstance(extra_details, dict):
                 raise TypeError(
-                    f'{extra_details!r} {config.DESC_TYPE.must_be}'
-                    f' {config.DESC_TYPE.dictionary}'
+                    f'{extra_details!r} {config.DESC_MSG.must_be}'
+                    f' {config.DESC_MSG.dictionary}'
                 )
         self.extra_details = extra_details
 
@@ -196,7 +199,7 @@ class ErrorBuilder(abc.ABC):
         """
         field: str = f' for field "{self.field}"' if self.field else ''
         message = f'{self.error_code} in `{self.error_context}` {field}'
-        value = f' for argument: {self.arg!r}' if self.arg else ''
+        value = f' for argument: {self.arg!r}.' if self.arg else '.'
         return message + value
 
     def details(self) -> Dict[str, Any]:
@@ -219,8 +222,8 @@ class ErrorBuilder(abc.ABC):
             details[error.BUILDER_FIELD.arg] = self.arg
         if self.field:
             details[error.BUILDER_FIELD.field] = self.field
-        if self.expected_type:
-            details[error.BUILDER_FIELD.expected_type] = self.expected_type
+        if self.info:
+            details[error.BUILDER_FIELD.info] = self.info
         if self.extra_details:
             details.update(self.extra_details)
 
