@@ -19,7 +19,7 @@ class ErrorBuilderConfig(NamedTuple):
     error_code: str = BUILDER_FIELD.error_code
     arg: str = BUILDER_FIELD.arg
     extra_details: str = BUILDER_FIELD.extra_details
-    expected_type: str = BUILDER_FIELD.expected_type
+    info: str = BUILDER_FIELD.info
     field: str = BUILDER_FIELD.field
 
 
