@@ -13,43 +13,8 @@ Attributes:
 """
 from typing import List, NamedTuple
 
-from quarryforge.config import root
-
 
 __all__: List = ['FOSSIL_REPO','FOSSIL_COMMIT', 'FOSSIL_TIMELINE']
-
-
-class BaseModelConfig(NamedTuple):
-    """Base configuration for model module paths.
-
-    This class defines a standard base path for all model modules within the
-    application and provides a utility method to construct full Python
-    dot-paths to specific model modules.
-
-    Attributes:
-        PATH (str): The base Python module path for all models, constructed from
-            `root.PACKAGE.name` and `root.MODULE.model`. For example,
-            'quarryforge.model'.
-    """
-    PATH: str = f'{root.PACKAGE.name}.{root.MODULE.model}'
-
-    def path(self, sub_path: str) -> str:
-        """Constructs the full Python path to a model module.
-
-        Appends a given model's name to the base `self.PATH`.
-
-        Args:
-            sub_path (str): The specific model module name or sub-path
-                (e.g., 'FossilRepo').
-
-        Returns:
-            str: The full Python dot-path to the model module
-                 (e.g., 'quarryforge.model.FossilRepo').
-        """
-        return f'{self.PATH}.{sub_path}'
-
-BASE_MODEL: BaseModelConfig = BaseModelConfig()
-"""Instance of ModelConfig, providing access to model path utilities."""
 
 
 class ConfigFossilRepo(NamedTuple):
@@ -74,17 +39,9 @@ class ConfigFossilRepo(NamedTuple):
         return str(self.file)[1:]
 
 
-    def path(self) -> str:
-        """Returns the full Python module path for the FossilRepo model.
-
-        Returns:
-            str: The full Python dot-path 'quarryforge.model.FossilRepo'.
-        """
-        return BASE_MODEL.path(root.MODEL.fossil_repo)
-
-
 FOSSIL_REPO: ConfigFossilRepo = ConfigFossilRepo()
 """Global constant for FossilRepo configuration."""
+
 
 class ConfigFossilCommit(NamedTuple):
     """Configuration for the FossilCommit model.
@@ -111,14 +68,6 @@ class ConfigFossilCommit(NamedTuple):
     phase: str = 'phase'
     changes: str = 'changes'
 
-    def path(self):
-        """Returns the full Python module path for the FossilCommit model.
-
-        Returns:
-            str: The full Python dot-path 'quarryforge.model.FossilCommit'.
-        """
-        return BASE_MODEL.path(root.MODEL.fossil_commit)
-
 
 FOSSIL_COMMIT: ConfigFossilCommit = ConfigFossilCommit()
 """Global constant for FossilCommit configuration."""
@@ -127,14 +76,6 @@ FOSSIL_COMMIT: ConfigFossilCommit = ConfigFossilCommit()
 class ConfigFossilTimeline(NamedTuple):
     """Configuration for the FossilTimeline model"""
     commits: str = 'commits'
-
-    def path(self):
-        """Returns the full Python module path for the FossilTimeline model.
-
-        Returns:
-            str: The full Python dot-path 'quarryforge.model.FossilCommit'.
-        """
-        return BASE_MODEL.path(root.MODEL.fossil_timeline)
 
 
 FOSSIL_TIMELINE: ConfigFossilTimeline = ConfigFossilTimeline()
