@@ -210,12 +210,20 @@ class ErrorBuilder(abc.ABC):
         """
 
         details = {
-            error.BUILDER_FIELD.arg: self.arg,
             error.BUILDER_FIELD.error_context: self.error_context,
             error.BUILDER_FIELD.error_code: self.error_code,
             error.BUILDER_FIELD.message: self.message(),
             error.BUILDER_FIELD.user_message: self.user_message(),
         }
+        if self.arg:
+            details[error.BUILDER_FIELD.arg] = self.arg
+        if self.field:
+            details[error.BUILDER_FIELD.field] = self.field
+        if self.expected_type:
+            details[error.BUILDER_FIELD.expected_type] = self.expected_type
+        if self.extra_details:
+            details.update(self.extra_details)
+
         return details
 
     def data(self) -> error.ValidErrorData:
