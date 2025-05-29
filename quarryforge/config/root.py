@@ -106,7 +106,7 @@ class Model(NamedTuple):
     """
     fossil_commit: str = 'FossilCommit'
     fossil_repo: str = 'FossilRepo'
-    fossil_timeline:str = 'FossilTimeline'
+    fossil_timeline: str = 'FossilTimeline'
 
 
 MODEL: Model = Model()
