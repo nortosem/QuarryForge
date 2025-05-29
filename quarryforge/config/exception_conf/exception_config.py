@@ -10,7 +10,7 @@ __all__: List = [
     'GENERIC_ERROR',
     'STRING_ERROR',
     'PATH_ERROR',
-    'DESC_TYPE',
+    'DESC_MSG',
 ]
 
 
@@ -98,15 +98,18 @@ PATH_ERROR: PathErrorType = PathErrorType()
 """Global instance for path error types."""
 
 
-class DescType(NamedTuple):
+class DescMsg(NamedTuple):
     """Basic description partials."""
-    must_be: str = 'must be'
+    dependency: str = 'dependency'
     dictionary: str = 'a valid dictionary'
-    string: str = 'a valid string'
+    must_be: str = 'must be'
     path: str = 'a valid path'
+    reason: str = 'reason'
+    string: str = 'a valid string'
     unempty: str = 'a non-empty string'
-    unknown: str = 'is an unknown error'
+    unexpected_error: str = 'is an unexpected error'
+    unknown: str = 'unknown'
 
 
-DESC_TYPE = DescType()
+DESC_MSG = DescMsg()
 """Global instance for description parts."""
