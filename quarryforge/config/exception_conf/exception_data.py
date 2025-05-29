@@ -24,14 +24,14 @@ ERROR_FIELD: ConfigErrorData = ConfigErrorData()
 
 class ConfigBuilder(NamedTuple):
     """BuildError Data fields"""
-    context: str = 'context'
-    field: str = 'field'
+    arg: str = 'arg'
     error_code: str = 'error_code'
-    message: str = 'message'
-    user_message: str = 'user_message'
-    input_value: str = 'input_value'
-    expected_desc: str = 'expected_desc'
+    error_context: str = 'error_context'
     extra_details: str = 'extra_details'
+    expected_type: str = 'expected_type'
+    field: str = 'field'
+    message: str = ERROR_FIELD.message
+    user_message: str = ERROR_FIELD.user_message
 
 
 BUILDER_FIELD: ConfigBuilder = ConfigBuilder()
@@ -49,12 +49,12 @@ class ValidErrorData(_.ImmutableInstance, metaclass=_.ImmutableMetaClass):
 
     def __init__(self,
         *,
-        error_code: Optional[str] = None,
+        code: Optional[str] = None,
         message: Optional[str] = None,
         user_message: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None
     ):
-        object.__setattr__(self, ERROR_FIELD.code, error_code)
+        object.__setattr__(self, ERROR_FIELD.code, code)
         object.__setattr__(self, ERROR_FIELD.message, message)
         object.__setattr__(self, ERROR_FIELD.user_message, user_message)
         object.__setattr__(self, ERROR_FIELD.details, details)
