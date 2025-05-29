@@ -101,6 +101,7 @@ PATH_ERROR: PathErrorType = PathErrorType()
 class DescType(NamedTuple):
     """Basic description partials."""
     must_be: str = 'must be'
+    dictionary: str = 'a valid dictionary'
     string: str = 'a valid string'
     path: str = 'a valid path'
     unempty: str = 'a non-empty string'
