@@ -28,7 +28,7 @@ class ConfigBuilder(NamedTuple):
     error_code: str = 'error_code'
     error_context: str = 'error_context'
     extra_details: str = 'extra_details'
-    expected_type: str = 'expected_type'
+    info: str = 'info'
     field: str = 'field'
     message: str = ERROR_FIELD.message
     user_message: str = ERROR_FIELD.user_message
