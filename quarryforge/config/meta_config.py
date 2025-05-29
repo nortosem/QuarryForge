@@ -12,17 +12,13 @@ class ErrorBuilderConfig(NamedTuple):
     """The meta.assembler.BuildError configuration.
 
     Define the default slots for all BuildError instances.
-
-    Attributes:
-        error_context:
-        error_code:
-        extra_details:
-        input_value:
     """
     error_context: str = 'error_context'
     error_code: str = 'error_code'
+    arg: str = 'arg'
     extra_details: str = 'extra_details'
-    input_value: str = 'input_value'
+    expected_type: str = 'expected_type'
+    field: str = 'field'
 
 
 BUILDER_CONFIG: ErrorBuilderConfig = ErrorBuilderConfig()
@@ -32,13 +28,12 @@ class ErrorMessageBuilderConfig(NamedTuple):
     """The meta.assembler.ErrorMessageBuilder configuration.
 
     Define the default slots for all BuildErrorMessage instances.
-
-    Attributes:
-        error_context:
-        error_code:
     """
     error_context: str = BUILDER_CONFIG.error_context
     error_code: str = BUILDER_CONFIG.error_code
+    arg: str = BUILDER_CONFIG.arg
+    expected_type: str = BUILDER_CONFIG.expected_type
+    field: str = BUILDER_CONFIG.field
 
 
 MESSAGE_BUILDER_CONFIG: ErrorMessageBuilderConfig = ErrorMessageBuilderConfig()
