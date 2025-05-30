@@ -103,6 +103,7 @@ class DescMsg(NamedTuple):
     dependency: str = 'dependency'
     dictionary: str = 'a valid dictionary'
     must_be: str = 'must be'
+    none: str = 'None'
     path: str = 'a valid path'
     reason: str = 'reason'
     string: str = 'a valid string'
