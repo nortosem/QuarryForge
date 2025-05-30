@@ -2,13 +2,12 @@
 
 This module defines the custom exception hierarchy for the quarryforge package.
 It includes a base exception class and specific exceptions for different
-modules within the package.
+modules & subpackages within the QuarryForge package.
 """
 import datetime
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
-from quarryforge.config.exception_conf import base_exception_config as _
-from quarryforge.config.exception_conf.exception_data import ERROR_FIELD
+from quarryforge.config.exception_conf import exception_data as _
 
 
 class QuarryForgeError(Exception):
@@ -33,29 +32,40 @@ class QuarryForgeError(Exception):
         __str__(): Returns a formatted string representation of the exception.
     """
     def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
-        """Initialize default exception for the QuarryForge package"""
-        error_message = message or _.DefaultMessage.quarryforge_error
-        super().__init__(error_message)
-        self.code = code or _.DefaultCode.package_error,
+                 message: str,
+                 code: str,
+                 user_message: str,
+                 details: Optional[Dict[str, Any]] = None):
+        """Initialize a new QuarryForgeError instance.
+
+        This constructor expects pre-built error information, typically from an
+        `ErrorBuilder`'s `data().to_exception()` method.
+
+        Args:
+            code: The unique error code identifier.
+            message: The detailed technical error message.
+            user_message: A user-friendly message for display.
+            details:
+                An optional dictionary containing more detailed error
+                information.
+        """
+        super().__init__(message)
+        self.code = code
         self.details = details or {}
         self.timestamp = datetime.datetime.now(datetime.UTC)
-        self.user_message = user_message or error_message
+        self.user_message = user_message
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         """Returns a dictionary representation of the exception."""
         return {
-            ERROR_FIELD.message: super().__str__(),
-            ERROR_FIELD.code: self.code,
-            ERROR_FIELD.details: self.details,
-            ERROR_FIELD.timestamp: self.timestamp.isoformat(),
-            ERROR_FIELD.user_message: self.user_message,
+            _.ERROR_FIELD.message: str(self),
+            _.ERROR_FIELD.code: self.code,
+            _.ERROR_FIELD.details: self.details,
+            _.ERROR_FIELD.timestamp: self.timestamp.isoformat(),
+            _.ERROR_FIELD.user_message: self.user_message,
         }
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns a formatted string representation of the exception."""
         message = super().__str__()
         parts = []
@@ -65,10 +75,21 @@ class QuarryForgeError(Exception):
             parts.append(message)
 
         if self.details:
-            detail_str = ', '.join(
-                [f'{key}: {value}' for key, value in self.details.items()]
-            )
-            parts.append(f'({detail_str})')
+            filtered_details = {}
+            for key, value in self.details.items():
+                if key not in [_.ERROR_FIELD.code,
+                    _.ERROR_FIELD.message,
+                    _.ERROR_FIELD.user_message
+                ]:
+                    filtered_details[key] = value
+
+            if filtered_details:
+                detail_str = ', '.join(
+                    [f'{key}: {value}' for key, value in (
+                        filtered_details.items()
+                    )]
+                )
+                parts.append(f'({detail_str})')
         return (' ').join(parts)
 
 
@@ -77,17 +98,7 @@ class ModelError(QuarryForgeError):
 
     Base exception class for all exceptions in the model module.
     """
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
-        """Intialize a QuarryForge.ModelError"""
-        super().__init__(
-            message=message or _.DefaultMessage.model_error,
-            code=code or _.DefaultCode.model_error,
-            details=details,
-            user_message=user_message)
+    pass
 
 
 class FossilError(QuarryForgeError):
@@ -95,17 +106,7 @@ class FossilError(QuarryForgeError):
 
     Base exception class for all exceptions for the fossil module.
     """
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
-        """Initialize the QuarryForge.FossilError"""
-        super().__init__(
-            message=message or _.DefaultMessage.fossil_error,
-            code=code or _.DefaultCode.fossil_error,
-            details=details,
-            user_message=user_message)
+    pass
 
 
 class MainError(QuarryForgeError):
@@ -113,17 +114,7 @@ class MainError(QuarryForgeError):
 
     Base exception class for all exceptions in the main module.
     """
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
-        """Initialize the QuarryForge.MainError"""
-        super().__init__(
-            message=message or _.DefaultMessage.main_error,
-            code=code or _.DefaultCode.main_error,
-            details=details,
-            user_message=user_message)
+    pass
 
 
 class MetaError(QuarryForgeError):
@@ -131,17 +122,7 @@ class MetaError(QuarryForgeError):
 
     Base exception class for all exceptions for the meta subpackage.
     """
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
-        """Initialize the QuarryForge.MetaError"""
-        super().__init__(
-            message=message or _.DefaultMessage.meta_error,
-            code=code or _.DefaultCode.meta_error,
-            details=details,
-            user_message=user_message)
+    pass
 
 
 class UtilError(QuarryForgeError):
@@ -149,14 +130,4 @@ class UtilError(QuarryForgeError):
 
     Base exception class for all exceptions for the util subpackage.
     """
-    def __init__(self,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
-        """Initialize the QuarryForge.UtilError"""
-        super().__init__(
-            message=message or _.DefaultMessage.meta_error,
-            code=code or _.DefaultCode.meta_error,
-            details=details,
-            user_message=user_message)
+    pass
