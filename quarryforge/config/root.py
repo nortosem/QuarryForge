@@ -21,7 +21,7 @@ __all__: list = [
     'SUB_PACKAGE',
     'META_MODULE',
     'MODEL',
-    'FOSSIL_COMMAND',
+    'FOSSIL',
     'UTIL_MODULE'
 ]
 
@@ -129,6 +129,8 @@ class FossilCommand(NamedTuple):
         add (str): Identifier for the Fossil 'add' command.
         commit (str): Identifier for the Fossil 'commit' command.
     """
+    process: str = 'FossilProcess'
+    timeout: str = 'FossilTimeoutExpired'
     timeline: str = 'Timeline'
     setup: str = 'Setup'
     info: str = 'Info'
@@ -139,7 +141,7 @@ class FossilCommand(NamedTuple):
     commit: str = 'Commit'
 
 
-FOSSIL_COMMAND: FossilCommand = FossilCommand()
+FOSSIL: FossilCommand = FossilCommand()
 """Global constant for Fossil SCM command names."""
 
 
@@ -159,7 +161,6 @@ class UtilModule(NamedTuple):
         model_util (str):
             Name of the utility module for model-related helpers.
     """
-    error_data_util: str = 'error_data_util'
     fossil_util: str = 'fossil_util'
     main_util: str = 'main_util'
     model_util: str = 'model_util'
