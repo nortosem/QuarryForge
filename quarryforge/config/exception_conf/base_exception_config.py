@@ -194,7 +194,7 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         """
         error_message = ''
 
-        match self.code:
+        match self.error_code:
             case config.GENERIC_ERROR.type_error:
                 error_message = self._type_message()
 
@@ -235,7 +235,7 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         """
         error_message = ''
 
-        match self.code:
+        match self.error_code:
             case config.GENERIC_ERROR.type_error:
                 error_message = (
                     'An input was provided in an incorrect format.'
