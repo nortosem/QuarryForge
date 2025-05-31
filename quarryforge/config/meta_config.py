@@ -7,7 +7,7 @@ from typing import List, NamedTuple
 from quarryforge.config.exception_conf.exception_data import BUILDER_FIELD
 
 
-__all__: List = []
+__all__: List[str] = []
 
 
 class ErrorBuilderConfig(NamedTuple):

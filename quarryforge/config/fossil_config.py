@@ -4,13 +4,13 @@ This module defines configurations specific to Fossil SCM operations,
 including default timeouts, command structures, and output parsing patterns.
 It centralizes all Fossil-related constant definitions.
 """
-from typing import NamedTuple
+from typing import List, NamedTuple
 import re
 
 from quarryforge.meta import immutable
 
 
-__all__: list = [
+__all__: List[str] = [
     'COMMAND',
     'TIMELINE_DATA',
     'INFO_DATA',
@@ -88,39 +88,39 @@ class ConfigTimelineData(NamedTuple):
     )
     PATH_PATTERN: str = '^(?P<path>.*[\\/])?(?P<file>[^/\\\\]+$)'
 
-    def commit_pattern(self) -> re.Pattern:
+    def commit_pattern(self) -> re.Pattern[str]:
         """Regex pattern to split timeline output into individual commits."""
         return re.compile(f'{self.COMMIT_SEP}')
 
-    def hash_pattern(self) -> re.Pattern:
+    def hash_pattern(self) -> re.Pattern[str]:
         """Regex pattern for extracting commit hash (UUID)."""
         return re.compile(f'{self.HASH_PATTERN}')
 
-    def date_pattern(self) -> re.Pattern:
+    def date_pattern(self) -> re.Pattern[str]:
         """Regex pattern for extracting commit date."""
         return re.compile(f'{self.DATE_PATTERN}')
 
-    def author_pattern(self) -> re.Pattern:
+    def author_pattern(self) -> re.Pattern[str]:
         """Regex pattern for extracting commit author."""
         return re.compile(f'{self.AUTHOR_PATTERN}')
 
-    def comment_pattern(self) -> re.Pattern:
+    def comment_pattern(self) -> re.Pattern[str]:
         """Regex pattern for extracting commit comment."""
         return re.compile(f'{self.COMMENT_PATTERN}')
 
-    def branch_pattern(self) -> re.Pattern:
+    def branch_pattern(self) -> re.Pattern[str]:
         """Regex pattern for extracting commit branch."""
         return re.compile(f'{self.BRANCH_PATTERN}')
 
-    def tags_pattern(self) -> re.Pattern:
+    def tags_pattern(self) -> re.Pattern[str]:
         """Regex pattern for extracting commit tags."""
         return re.compile(f'{self.TAGS_PATTERN}')
 
-    def phase_pattern(self) -> re.Pattern:
+    def phase_pattern(self) -> re.Pattern[str]:
         """Regex pattern for extracting commit phase."""
         return re.compile(f'{self.PHASE_PATTERN}')
 
-    def change_pattern(self) -> re.Pattern:
+    def change_pattern(self) -> re.Pattern[str]:
         """Regex pattern for extracting file changes."""
         return re.compile(f'{self.CHANGE_PATTERN}')
 
@@ -135,11 +135,11 @@ class ConfigInfoData(NamedTuple):
     PARENT_KEY: str = 'parent'
     PARENT_DATA_PATTERN: str = '^parent:\\s+(?P<uuid>.+?)\\s.+\\n'
 
-    def init_pattern(self) -> re.Pattern:
+    def init_pattern(self) -> re.Pattern[str]:
         """Regex pattern for identifying initial commit info output."""
         return re.compile(self.INIT_HASH)
 
-    def parent_pattern(self) -> re.Pattern:
+    def parent_pattern(self) -> re.Pattern[str]:
         """Regex pattern for extracting parent commit hash from info output."""
         return re.compile(self.PARENT_DATA_PATTERN)
 

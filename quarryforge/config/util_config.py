@@ -2,12 +2,12 @@
 
 #TODO
 """
-from typing import NamedTuple
+from typing import List, NamedTuple
 
 import re
 
 
-__all__: list = ['COMMAND', 'TIMELINE_DATA', 'INFO_DATA']
+__all__: List[str] = ['COMMAND', 'TIMELINE_DATA', 'INFO_DATA']
 
 
 class Command(NamedTuple):
@@ -68,40 +68,40 @@ class TimelineData(NamedTuple):
     CHANGE: str = '^\\s+(?P<change>ADDED|EDITED|DELETED)\\s(?P<filename>.+)$'
     PATH: str = '^(?P<path>.*[\\/])?(?P<file>[^/\\\\]+$)'
 
-    def commit_pattern(self) -> re.Pattern:
-        pattern = re.compile(f'{self.COMMIT}')
+    def commit_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(f'{self.COMMIT}')
         return pattern
 
-    def hash_pattern(self) -> re.Pattern:
-        pattern = re.compile(f'{self.HASH}')
+    def hash_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(f'{self.HASH}')
         return pattern
 
-    def date_pattern(self) -> re.Pattern:
-        pattern = re.compile(f'{self.DATE}')
+    def date_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(f'{self.DATE}')
         return pattern
 
-    def author_pattern(self) -> re.Pattern:
-        pattern = re.compile(f'{self.AUTHOR}')
+    def author_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(f'{self.AUTHOR}')
         return pattern
 
-    def comment_pattern(self) -> re.Pattern:
-        pattern = re.compile(f'{self.COMMENT}')
+    def comment_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(f'{self.COMMENT}')
         return pattern
 
-    def branch_pattern(self) -> re.Pattern:
-        pattern = re.compile(f'{self.BRANCH}')
+    def branch_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(f'{self.BRANCH}')
         return pattern
 
-    def tags_pattern(self) -> re.Pattern:
-        pattern = re.compile(f'{self.TAGS}')
+    def tags_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(f'{self.TAGS}')
         return pattern
 
-    def phase_pattern(self) -> re.Pattern:
-        pattern = re.compile(f'{self.PHASE}')
+    def phase_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(f'{self.PHASE}')
         return pattern
 
-    def change_pattern(self) -> re.Pattern:
-        pattern = re.compile(f'{self.CHANGE}')
+    def change_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(f'{self.CHANGE}')
         return pattern
 
 
@@ -115,12 +115,12 @@ class InfoData(NamedTuple):
     PARENT: str = 'parent'
     PARENT_DATA: str = '^parent:\\s+(?P<uuid>.+?)\\s.+\\n'
 
-    def init_pattern(self) -> re.Pattern:
-        pattern = re.compile(self.INIT_HASH)
+    def init_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(self.INIT_HASH)
         return pattern
 
-    def parent_pattern(self) -> re.Pattern:
-        pattern = re.compile(self.PARENT_DATA)
+    def parent_pattern(self) -> re.Pattern[str]:
+        pattern: re.Pattern[str] = re.compile(self.PARENT_DATA)
         return pattern
 
 

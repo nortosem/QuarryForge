@@ -14,7 +14,7 @@ Attributes:
 from typing import List, NamedTuple
 
 
-__all__: List = ['FOSSIL_REPO','FOSSIL_COMMIT', 'FOSSIL_TIMELINE']
+__all__: List[str] = ['FOSSIL_REPO','FOSSIL_COMMIT', 'FOSSIL_TIMELINE']
 
 
 class ConfigFossilRepo(NamedTuple):

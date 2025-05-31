@@ -12,10 +12,10 @@ Attributes:
     FOSSIL_COMMAND (FossilCommand): Fossil SCM command names.
     UTIL_MODULE (UtilModule): Utility module names.
 """
-from typing import NamedTuple
+from typing import List, NamedTuple
 
 
-__all__: list = [
+__all__: List[str] = [
     'PACKAGE',
     'MODULE',
     'SUB_PACKAGE',
