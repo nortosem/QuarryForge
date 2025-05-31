@@ -2,11 +2,11 @@
 
 
 """
-from typing import Any, Dict, NamedTuple, Optional
+from typing import Any, Dict, List, NamedTuple, Optional
 
 from quarryforge.meta import immutable as _
 
-__all__: list = ['ERROR_FIELD', 'BUILDER_FIELD', 'ValidErrorData']
+__all__: List[str] = ['ERROR_FIELD', 'BUILDER_FIELD', 'ValidErrorData']
 
 
 class ConfigErrorData(NamedTuple):

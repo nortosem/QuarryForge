@@ -6,7 +6,7 @@ and common descriptive phrases used across the application's exception handling.
 from typing import List, NamedTuple
 
 
-__all__: List = [
+__all__: List[str] = [
     'GENERIC_ERROR',
     'STRING_ERROR',
     'PATH_ERROR',
