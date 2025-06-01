@@ -28,8 +28,6 @@ class TestMetaConfig:
         assert cfg.extra_details == exception_data.BUILDER_FIELD.extra_details
         assert cfg.info == exception_data.BUILDER_FIELD.info
         assert cfg.field == exception_data.BUILDER_FIELD.field
-        assert cfg.message == exception_data.BUILDER_FIELD.message
-        assert cfg.user_message == exception_data.BUILDER_FIELD.user_message
 
         assert cfg.error_context == 'error_context'
         assert cfg.error_code == 'error_code'
@@ -37,12 +35,10 @@ class TestMetaConfig:
         assert cfg.extra_details == 'extra_details'
         assert cfg.info == 'info'
         assert cfg.field == 'field'
-        assert cfg.message == 'message'
-        assert cfg.user_message == 'user_message'
 
         expected_fields = [
             'error_context', 'error_code', 'arg', 'extra_details',
-            'info', 'field', 'message', 'user_message'
+            'info', 'field'
         ]
         assert sorted(
             get_namedtuple_fields(
