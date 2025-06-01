@@ -21,16 +21,30 @@ class ImmutableMetaClass(type):
 class Namespace(ImmutableMetaClass):
     """Namespace
 
-    Prevent function namespace classes from instantiation.
+    Namespaces provide immutable structures with types and methods.
+
+    Example of a class using this metaclass:
+    ```
+        class MyNamespace(metaclass=Namespace):
+            CONSTANT = "some_value"
+
+            @staticmethod
+            def utility_function() -> str:
+                ...
+    ```
     """
     def __new__(
-            mcs,
-            name: str,
-            bases: Tuple[type, ...],
-            attrs: Dict[str, Any]
-    ):
+        mcs: type['Namespace'],
+        name: str,
+        bases: Tuple[type, ...],
+        attrs: Dict[str, Any]
+    ) -> 'Namespace':
         """"""
-        def _uninstantiable(self, *args, **kwargs) -> None:
+        def _uninstantiable(
+            self: Any,
+            *args: Any,
+            **kwargs: Dict[str,Any]
+        ) -> None:
             raise TypeError('Class has no instances.')
 
         attrs['__init__'] = _uninstantiable
