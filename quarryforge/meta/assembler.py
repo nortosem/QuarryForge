@@ -4,11 +4,14 @@ This module provides abstract base classes and utility functions for
 constructing structured error messages and comprehensive error data objects.
 """
 import abc
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from quarryforge.config import meta_config
 from quarryforge.config.exception_conf import exception_config as config
 from quarryforge.config.exception_conf import exception_data as error
+
+
+__all__: List[str] = ['ErrorBuilder']
 
 
 def _valid_str_type(value: str) -> str:

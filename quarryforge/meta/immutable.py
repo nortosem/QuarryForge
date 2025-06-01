@@ -2,7 +2,10 @@
 
 
 """
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
+
+
+__all__: List[str] = ['Namespace', 'ImmutableInstance']
 
 
 class ImmutableMetaClass(type):
