@@ -7,8 +7,6 @@ It centralizes all Fossil-related constant definitions.
 from typing import List, NamedTuple
 import re
 
-from quarryforge.meta import immutable
-
 
 __all__: List[str] = [
     'COMMAND',
@@ -148,7 +146,7 @@ INFO_DATA: ConfigInfoData = ConfigInfoData()
 """Global constant for info data parsing patterns."""
 
 
-class ConfigFossil(metaclass=immutable.Namespace):
+class ConfigFossil(NamedTuple):
     """Config Fossil
 
     Define the constants used with fossil commands and exceptions.
