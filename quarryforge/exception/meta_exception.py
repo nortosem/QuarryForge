@@ -1,42 +1,30 @@
-"""Meta Exception Module
+"""Meta Exception Module"""
+from typing import Any, Dict, Optional
 
-
-"""
-from typing import Dict, Optional
-
+from quarryforge.config.exception_conf.exception_data import BUILDER_FIELD
 from quarryforge.exception import base_exception
 
 
-class ImmutableClassError(base_exception.MetaError, AttributeError):
-    """Immutable Class Error
-
-
-    """
-    CODE = ''#get.ModelNames.FOSSIL_REPO.value + Message.Default.ERROR.value
-
+class ImmutableError(base_exception.MetaError, AttributeError):
+    """Error raised when an immutable class or instance modification occurs."""
     def __init__(self,
-                 name: str,
-                 obj: object,
-                 message: Optional[str] = None,
-                 code: Optional[str] = None,
-                 details: Optional[Dict] = None,
-                 user_message: Optional[str] = None):
+                 code: str,
+                 message: str,
+                 user_message: str,
+                 details: Optional[Dict[str, Any]] = None):
 
-        if message is None:
-            ae = AttributeError(name, obj)
-            message = str(ae)
+        name: Optional[str] = None
+        obj: Optional[Any] = None
 
-        effective_code = code if code is not None else self.__class_.CODE
+        if details is not None:
+            name = details.get(BUILDER_FIELD.field)
+            obj = details.get(BUILDER_FIELD.arg)
 
-        super().__init__(
+        AttributeError.__init__(self, name=name, obj=obj)
+
+        base_exception.MetaError.__init__(self,
             message=message,
-            code=effective_code,
+            code=code,
             details=details,
             user_message=user_message
         )
-
-        self.name = name
-        self.obj = obj
-
-        if self.details is None:
-            self.details = {}
