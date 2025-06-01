@@ -51,12 +51,11 @@ def _valid_str_value(value: str) -> str:
     return value
 
 
-def _validate_init(
-    context_value: Any,
-    code_value: Any,
-    field_value: Any = None,
-    info_value: Any = None
-) -> Tuple[str, str, str | None, str | None]:
+def _validate_init(context_value: Any,
+                   code_value: Any,
+                   field_value: Any = None,
+                   info_value: Any = None
+                   ) -> Tuple[str, str, str | None, str | None]:
     """Applies type and non-empty validation to two string values.
 
     This helper is used in __init__ methods for common string arguments.
@@ -106,16 +105,14 @@ class ErrorBuilder(abc.ABC):
     """
     __slots__ = meta_config.BUILDER_CONFIG._fields
 
-    def __init__(
-        self,
-        *,
-        error_context: str,
-        error_code: str,
-        arg: Optional[Any] = None,
-        field: Optional[str] = None,
-        info: Optional[str] = None,
-        extra_details: Optional[Dict[str, Any]] = None,
-    ):
+    def __init__(self,
+                 *,
+                 error_context: str,
+                 error_code: str,
+                 arg: Optional[Any] = None,
+                 field: Optional[str] = None,
+                 info: Optional[str] = None,
+                 extra_details: Optional[Dict[str, Any]] = None):
         """Default exception constructor initialization.
 
         Args:
