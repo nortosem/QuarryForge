@@ -8,7 +8,7 @@ from typing import Callable, List, ParamSpec, TypeVar
 from quarryforge.config.exception_conf import exception_config as config
 
 
-__all__: List = ['validate_str_parameters']
+__all__: List[str] = ['validate_str_parameters']
 
 
 _PARAM = ParamSpec('_PARAM')
@@ -42,13 +42,13 @@ def validate_str_parameters(
         for parameter in args:
             if not isinstance(parameter, str):
                 raise TypeError(
-                    f'{parameter!r} {config.DESC_TYPE.must_be}'
-                    f' {config.DESC_TYPE.string}'
+                    f'{parameter!r} {config.DESC_MSG.must_be}'
+                    f' {config.DESC_MSG.string}'
                 )
             if not parameter:
                 raise ValueError(
-                    f'{parameter!r} {config.DESC_TYPE.must_be}'
-                    f' {config.DESC_TYPE.unempty}'
+                    f'{parameter!r} {config.DESC_MSG.must_be}'
+                    f' {config.DESC_MSG.unempty}'
                 )
         return method(*args, **kwargs)
     return wrapper
