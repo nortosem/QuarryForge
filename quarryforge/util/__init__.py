@@ -2,4 +2,5 @@
 
 These modules serve as support for the primary modules of the package.
 """
-__all__: list = []
+from typing import List
+__all__: List[str] = []
