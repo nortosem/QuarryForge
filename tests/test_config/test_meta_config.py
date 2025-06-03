@@ -4,10 +4,8 @@ from typing import NamedTuple
 from quarryforge.config import meta_config
 from quarryforge.config.exception_conf import exception_data
 
+from tests.test_config.test_root import get_namedtuple_fields
 
-def get_namedtuple_fields(nt_class):
-    """Get all fields from a NamedTuple class"""
-    return nt_class._fields
 
 class TestMetaConfig:
     """Tests for quarryforge.config.meta_config"""

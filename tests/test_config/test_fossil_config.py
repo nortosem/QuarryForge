@@ -4,10 +4,8 @@ from typing import NamedTuple
 
 from quarryforge.config import fossil_config
 
+from tests.test_config.test_root import get_namedtuple_fields
 
-def get_namedtuple_fields(nt_class):
-    """Get all fields from a namedtuple."""
-    return nt_class._fields
 
 class TestFossilConfig:
     """Tests for quarryforge.config.fossil_config"""
