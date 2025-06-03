@@ -1,50 +1,38 @@
-"""Utility Module
+"""Fossil Command Utility Module
 
 This module provides functions for rebuilding a Fossil repository.
 It includes functions to generate commands (as lists of strings) for use with
 `subprocess.run` to perform various Fossil operations.
 """
-from typing import List
+from pathlib import Path
+from typing import List, Optional
 
 from quarryforge import model
-from quarryforge.config import util_config
-from quarryforge.config import model_config
-from quarryforge.exception import util_exception
+from quarryforge.config import fossil_config
+
+
+__all__: List[str] = []
 
 
 def get_raw_timeline(source: model.FossilRepo) -> List[str]:
-    """Get Raw Timeline
-
-    Creates a command to retrieve the raw timeline data from a Fossil
-    repository.
+    """Creates a command to retrieve timeline data from a fossil repo.
 
     Args:
-        repo: GetTimelineArg containing the repository path.
+        source: GetTimelineArg containing the repository path.
 
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
-
-    Raises:
-        ArgumentError: If any required argument in args is missing.
-        InvalidArgumentError: If any argument in args is invalid.
     """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [source]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.TIMELINE.value,
-           util_conf.Command.VERBOSE.value,
-           util_conf.Command.FULL.value,
-           util_conf.Command.LIMIT.value,
-           util_conf.Command.NO_LIMIT.value,
-           util_conf.Command.TYPE.value,
-           util_conf.Command.CI.value,
-           util_conf.Command.REPO.value,
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.TIMELINE,
+           fossil_config.COMMAND.VERBOSE,
+           fossil_config.COMMAND.FULL,
+           fossil_config.COMMAND.LIMIT,
+           fossil_config.COMMAND.NO_LIMIT,
+           fossil_config.COMMAND.TYPE,
+           fossil_config.COMMAND.CI,
+           fossil_config.COMMAND.REPO,
            str(source)]
     return cmd
 
@@ -57,10 +45,7 @@ def rebuild_init(
     project_name: str,
     project_desc: str,
 ) -> List[str]:
-    """Initialize Rebuild Repo
-
-    Creates a command to initialize a new empty repository for rebuilding
-    a source repository.
+    """Creates command to initialize the target repo to rebuild a source repo.
 
     Args:
         username: Primary username for the new repo
@@ -73,38 +58,25 @@ def rebuild_init(
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
-
-    Raises:
-        ArgumentError: If any required argument in args is missing.
-        InvalidArgumentError: If any argument in args is invalid.
     """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [
-            username, date_override, new_repo,
-            template, project_name, project_desc]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.NEW.value,
-           util_conf.Command.TEMPLATE.value,
-           args.template,
-           util_conf.Command.ADMIN_USER.value,
-           args.user,
-           util_conf.Command.PROJECT_NAME.value,
-           args.project_name,
-           util_conf.Command.PROJECT_DESC.value,
-           args.project_desc,
-           args.rebuild_repo]
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.NEW,
+           fossil_config.COMMAND.TEMPLATE,
+           str(template),
+           fossil_config.COMMAND.ADMIN_USER,
+           username,
+           fossil_config.COMMAND.DATE_OVERRIDE,
+           date_override,
+           fossil_config.COMMAND.PROJECT_NAME,
+           project_name,
+           fossil_config.COMMAND.PROJECT_DESC,
+           project_desc,
+           str(new_repo)]
     return cmd
 
 
 def set_default_user(username: str, new_repo: model.FossilRepo) -> List[str]:
-    """Set Default User
-
-    Creates a command to set the default user for a Fossil repository.
+    """Creates a command to set the default user for a Fossil repository.
 
     Args:
         username: Primary username for the new repo.
@@ -113,24 +85,12 @@ def set_default_user(username: str, new_repo: model.FossilRepo) -> List[str]:
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
-
-    Raises:
-        ArgumentError: If any required argument in args is missing.
-        InvalidArgumentError: If any argument in args is invalid.
     """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [
-            username, new_repo]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.USER.value,
-           util_conf.Command.DEFAULT.value,
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.USER,
+           fossil_config.COMMAND.DEFAULT,
            username,
-           util_conf.Command.REPO.value,
+           fossil_config.COMMAND.REPO,
            str(new_repo)]
     return cmd
 
@@ -140,9 +100,7 @@ def set_user_contact(
     email: str,
     source: model.FossilRepo
 ) -> List[str]:
-    """Set User Contact
-
-    Creates a command to set the user's contact information (email)
+    """Creates a command to set the user's contact information (email)
     in a Fossil repository.
 
     Args:
@@ -153,53 +111,51 @@ def set_user_contact(
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
-
-    Raises:
-        ArgumentError: If any required argument in args is missing.
-        InvalidArgumentError: If any argument in args is invalid.
     """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [
-            username, email, source]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.USER.value,
-           util_conf.Command.CONTACT.value,
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.USER,
+           fossil_config.COMMAND.CONTACT,
            username,
            email,
-           util_conf.Command.REPO.value,
+           fossil_config.COMMAND.REPO,
            str(source)]
     return cmd
 
 
-def get_parent_hash(version: str, source: model.FossilRepo) -> List[str]:
-    """Get Parent Hash ID
+def open_rebuild_dir(new_repo: model.FossilRepo, workdir: Path) -> List[str]:
+    """Creates a command to open a Fossil repository.
 
-    Creates a command to get the parent hash of a specific commit
+    Args:
+        new_repo (model.FossilRepo): The Fossil repository file to open.
+        workdir (Path): The path opened as the working directory .
+
+    Returns:
+        A list of strings representing the command.
+    """
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.OPEN,
+           str(new_repo),
+           fossil_config.COMMAND.WORKDIR,
+           str(workdir)]
+    return cmd
+
+
+def get_parent_hash(version: str, source: model.FossilRepo) -> List[str]:
+    """Creates a command to get the parent hash of a specific commit
     in a Fossil repository.
 
     Args:
-        args: InfoArgs containing the commit version and repository path.
-
+        version (str): provide info about the object in the repository.
+        source (model.FossilRepo):
+            The source repository being used for the target rebuild repo.
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [version, str(source)]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.INFO.value,
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.INFO,
            version,
-           util_conf.Command.REPO.value,
+           fossil_config.COMMAND.REPO,
            str(source)]
     return cmd
 
@@ -209,34 +165,28 @@ def get_file_changes(
         to_arg: str,
         source: model.FossilRepo
 ) -> List[str]:
-    """Get File Changes
-
-    Creates a command to retrieve the list of files changed in a
+    """Creates a command to retrieve the list of files changed in a
     specific commit.
 
     Args:
-        args: DiffArgs containing the parent and child commit hashes
-            and the repository path.
+        from_arg (str): the source check-in, or the parent version.
+        to_arg (str): the check-in for the secon version of hte file.
+        source (model.FossilRepo):
+            The source repository to perform the diff command on.
 
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [from_arg, to_arg, str(source)]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.DIFF.value,
-           util_conf.Command.BRIEF.value,
-           util_conf.Command.FROM.value,
-           args.parent, util_conf.Command.TO.value,
-           args.child,
-           util_conf.Command.REPO.value,
-           args.src_repo]
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.DIFF,
+           fossil_config.COMMAND.BRIEF,
+           fossil_config.COMMAND.FROM,
+           from_arg,
+           fossil_config.COMMAND.TO,
+           to_arg,
+           fossil_config.COMMAND.REPO,
+           str(source)]
     return cmd
 
 
@@ -246,97 +196,121 @@ def get_file_content(
     version: str,
     source: model.FossilRepo
 ) -> List[str]:
-    """Get File Content
-
-    Creates a command to retrieve the content of a file at a specific
+    """Creates a command to retrieve the content of a file at a specific
     version in a Fossil repository.
 
     Args:
-        args: CatArgs containing the file path, version, and repository path.
+        filename (str): Source file to extract the content from.
+        outfile (str): for one filename, write the output to the outfile.
+        version (str): The specific check-in containing the source file.
+        source (model.FossilRepo):
+            The repository to extract artifacts from.
 
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [filename, outfile, version, str(source)]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.CAT.value,
-           args.file,
-           util_conf.Command.VERSION.value,
-           args.version,
-           util_conf.Command.REPO.value,
-           args.src_repo]
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.CAT,
+           filename,
+           fossil_config.COMMAND.OUTFILE,
+           outfile,
+           fossil_config.COMMAND.VERSION,
+           version,
+           fossil_config.COMMAND.REPO,
+           str(source)]
     return cmd
 
 
 def ls_branches(source: model.FossilRepo) -> List[str]:
-    """List Branches
-
-    Creates a command to list all branches in a Fossil timeline.
+    """Creates a command to list all branches in a Fossil timeline.
 
     Args:
-        src: GetTimelineArg containing the source repository path.
+        source (model.FossilRepo):
+            GetTimelineArg containing the source repository path.
 
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [str(source)]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.BRANCH.value,
-           util_conf.Command.LIST.value,
-           util_conf.Command.ALL.value,
-           util_conf.Command.REPO.value,
-           src]
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.BRANCH,
+           fossil_config.COMMAND.LIST,
+           fossil_config.COMMAND.ALL,
+           fossil_config.COMMAND.REPO,
+           str(source)]
     return cmd
 
 
 def closed_branches(source: model.FossilRepo) -> List[str]:
-    """Closed Branches
-
-    Creates a command to list all closed branches in a Fossil timeline.
+    """Creates a command to list all closed branches in a Fossil timeline.
 
     Args:
-        src: GetTimelineArg containing the source repository path.
+        source (model.FossilRepo):
+            GetTimelineArg containing the source repository path.
 
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    if not all(
-        model_util.is_valid_str_type(
-            arg, util_exception.FossilUtilError
-        ) and model_util.is_not_empty(
-            arg, util_exception.FossilUtilError
-        ) for arg in [str(source)]):
-        raise ArgumentError('#TODO is missing required attributes.')
-    cmd = [util_conf.Command.FOSSIL.value,
-           util_conf.Command.BRANCH.value,
-           util_conf.Command.LIST.value,
-           util_conf.Command.CLOSED.value,
-           util_conf.Command.REPO.value,
-           src]
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.BRANCH,
+           fossil_config.COMMAND.LIST,
+           fossil_config.COMMAND.CLOSED,
+           fossil_config.COMMAND.REPO,
+           str(source)]
     return cmd
 
 
-def add_files(target: model.FossilRepo, *files):
-    """Add Files"""
-    pass
+def add_files(*files) -> List[str]:
+    """Creates a command to add files to an open fossil target repository.
+
+    The fossil module caller handles running this command in the target repo
+    working directory.
+
+    Returns:
+        A list of strings representing the command and its arguments for use
+        with `subprocess.run`.
+    """
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.ADD]
+    cmd.extend(files)
+    return cmd
 
 
+def commit(
+    date_override: str,
+    user_override: str,
+    comment: str,
+    branch: Optional[str],
+    tag: Optional[str],
+    *files) -> List[str]:
+    """Creaes a commnad to commit changes to an open fossil targe repository.
 
-def commit(target: model.FossilRepo, *files):
-    """Commit file changes"""
-    pass
+    The fossil module caller handles running this command in the target repo
+    working directory.
+
+    Returns:
+        A list of strings representing the command and its arguments for use
+        with `subprocess.run`.
+    """
+    cmd = [fossil_config.COMMAND.FOSSIL,
+           fossil_config.COMMAND.COMMIT,
+           fossil_config.COMMAND.HASH,
+           fossil_config.COMMAND.DATE_OVERRIDE,
+           date_override,
+           fossil_config.COMMAND.USER_OVERRIDE,
+           user_override,
+           fossil_config.COMMAND.COMMENT,
+           comment]
+
+    if branch:
+        cmd.extend([''.join(['--',fossil_config.COMMAND.BRANCH]),
+                    branch])
+
+    if tag:
+        cmd.extend([fossil_config.COMMAND.TAG,
+                    tag])
+
+    cmd.extend(files)
+    return cmd
