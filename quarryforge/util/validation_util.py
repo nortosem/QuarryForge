@@ -9,23 +9,19 @@ detailed error information.
 """
 import os
 from pathlib import Path
-from typing import Any, List, Optional, Type, TypeVar
+from typing import Any, List, Type, TypeVar
 
-from quarryforge.config.exception_conf import exception_config as msg
-from quarryforge.config.exception_conf import exception_data
 from quarryforge.exception import base_exception
 from quarryforge.meta import assembler
 
 _QFE = TypeVar('_QFE', bound=base_exception.QuarryForgeError)
-_ERROR_BUILDER = TypeVar('_ERROR_BUILDER', bound=assembler.BuildError)
+_EB = TypeVar('_EB', bound=assembler.ErrorBuilder)
 
 
-def is_type_str(
-    *,
-    arg: Any,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> str:
+def is_type_str(*,
+                arg: Any,
+                exception: Type[_QFE],
+                error_builder: Type[_EB]) -> str:
     """Validates if the given argument is a string.
 
     Args:
@@ -47,12 +43,10 @@ def is_type_str(
     return arg
 
 
-def is_str_not_empty(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> str:
+def is_str_not_empty(*,
+                     arg: str,
+                     exception: Type[_QFE],
+                     error_builder: Type[_EB]) -> str:
     """Validates if the given string argument is not empty.
 
     This function checks if the string is not empty after stripping leading
@@ -75,12 +69,10 @@ def is_str_not_empty(
     return arg
 
 
-def is_type_path(
-    *,
-    arg: Path | str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> Path:
+def is_type_path(*,
+                 arg: Path | str,
+                 exception: Type[_QFE],
+                 error_builder: Type[_EB]) -> Path:
     """Validates if the given argument is a pathlib.Path object.
 
     Args:
@@ -95,7 +87,9 @@ def is_type_path(
         exception: If the argument `arg` is not a `pathlib.Path` object.
     """
     if isinstance(arg, str):
-        arg = is_str_not_empty(arg, exception, error_builder)
+        arg = is_str_not_empty(arg=arg,
+                               exception=exception,
+                               error_builder=error_builder)
         arg = Path(arg)
 
     elif not isinstance(arg, Path):
@@ -105,12 +99,10 @@ def is_type_path(
     return arg
 
 
-def resolve_path_arg(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> Path:
+def resolve_path_arg(*,
+                     arg: str,
+                     exception: Type[_QFE],
+                     error_builder: Type[_EB]) -> Path:
     """Resolves a path argument to an absolute path, expanding uservars.
 
     Checks if the argument is a `pathlib.Path` object, then attempts to
@@ -144,11 +136,10 @@ def resolve_path_arg(
     raise exception(**error_data.to_exception())
 
 
-def exist(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
+def exist(*,
+          arg: str,
+          exception: Type[_QFE],
+          error_builder: Type[_EB]
 ) -> Path:
     """Validates if the path specified exists.
 
@@ -166,16 +157,13 @@ def exist(
     if not arg.exists():
         error_data = error_builder.data()
         raise exception(**error_data.to_exception())
-        #exception(message.PathMessage.does_not_exist(str(arg)))
     return arg
 
 
-def not_exist(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> Path:
+def not_exist(*,
+              arg: str,
+              exception: Type[_QFE],
+              error_builder: Type[_EB]) -> Path:
     """Validates if the path specified exists.
 
     Args:
@@ -192,16 +180,13 @@ def not_exist(
     if arg.exists():
         error_data = error_builder.data()
         raise exception(**error_data.to_exception())
-        #exception(message.PathMessage.does_exist(str(arg)))
     return arg
 
 
-def is_file(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> Path:
+def is_file(*,
+            arg: str,
+            exception: Type[_QFE],
+            error_builder: Type[_EB]) -> Path:
     """Validates if the path specified is a file.
 
     Assumes `arg` is already a `pathlib.Path` object and exists.
@@ -221,16 +206,12 @@ def is_file(
     if not arg.is_file():
         error_data = error_builder.data()
         raise exception(**error_data.to_exception())
-        #raise exception(message.PathMessage.not_a_file(path))
     return arg
 
 
-def is_dir(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> Path:
+def is_dir(*,
+           arg: str,exception: Type[_QFE],
+           error_builder: Type[_EB]) -> Path:
     """Validates if the path specified is a directory.
 
     Assumes `arg` is already a `pathlib.Path` object and exists.
@@ -250,16 +231,13 @@ def is_dir(
     if not arg.is_dir():
         error_data = error_builder.data()
         raise exception(**error_data.to_exception())
-        #raise exception(message.PathMessage.not_a_directory(str(arg)))
     return arg
 
 
-def is_read_ok(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> Path:
+def is_read_ok(*,
+            arg: str,
+            exception: Type[_QFE],
+            error_builder: Type[_EB]) -> Path:
     """Validates if the path specified has read permissions.
 
     Args:
@@ -277,16 +255,12 @@ def is_read_ok(
     if not os.access(arg, os.R_OK):
         error_data = error_builder.data()
         raise exception(**error_data.to_exception())
-        #raise exception(message.PathMessage.no_read_permission(str(arg)))
     return arg
 
 
-def is_write_ok(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> Path:
+def is_write_ok(*,
+                arg: str, exception: Type[_QFE],
+    error_builder: Type[_EB]) -> Path:
     """Validates if the path specified has write permissions.
 
     For directories, this checks if files can be created in them.
@@ -311,12 +285,10 @@ def is_write_ok(
     return arg
 
 
-def check_list_type(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> List:
+def check_list_type(*,
+                    arg: str,
+                    exception: Type[_QFE],
+                    error_builder: Type[_EB]) -> List:
     """Validates if the given argument is a list, or None.
 
     Args:
@@ -349,12 +321,10 @@ def check_list_type(
     return final_list
 
 
-def content_type_error(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> List[str]:
+def content_type_error(*,
+                       arg: str,
+                       exception: Type[_QFE],
+                       error_builder: Type[_EB]) -> List[str]:
     """Validates if all elements within the given list are strings.
 
     Args:
@@ -379,19 +349,17 @@ def content_type_error(
     Raises:
         exception: If any element in `arg_list` is not a string.
     """
-    for item in arg_list:
+    for item in arg:
         if not isinstance(item, str):
             error_data = error_builder.data()
             raise exception(**error_data.to_exception())
-    return arg_list
+    return arg
 
 
-def content_empty_error(
-    *,
-    arg: str,
-    exception: Type[_QFE],
-    error_builder: Type[_ERROR_BUILDER]
-) -> List[str]:
+def content_empty_error(*,
+                        arg: str,
+                        exception: Type[_QFE],
+                        error_builder: Type[_EB]) -> List[str]:
     """Validates if all string elements within the given list are not empty.
 
     This function checks if each string in the list is not empty after
@@ -420,8 +388,8 @@ def content_empty_error(
         exception: If any string in `args_list` is empty after stripping
             whitespace.
     """
-    for item in args_list:
+    for item in arg:
         if not item.strip():
             error_data = error_builder.data()
             raise exception(**error_data.to_exception())
-    return args_list
+    return arg
