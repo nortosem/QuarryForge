@@ -152,8 +152,6 @@ class UtilModule(NamedTuple):
     of modules located under the `quarryforge/util/` directory.
 
     Attributes:
-        error_data_util (str):
-            Name of the utility module for handling error data.
         fossil_util (str):
             Name of the utility module for Fossil-specific helpers.
         main_util (str):
