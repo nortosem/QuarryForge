@@ -47,12 +47,8 @@ class FossilRepoPath(metaclass=immutable.Namespace):
 
     Attributes:
         INIT: Full model error path with `__init__` context.
-        IMMUTABLE: Full model error path with immutable context.
-        NOT_IMPLEMENTED: Full model error path with NotImplemented context.
     """
     INIT: str = f'{ModelErrorPath.FOSSIL_REPO}.__init__'
-    IMMUTABLE: str = f'{ModelErrorPath.FOSSIL_REPO}.immutable'
-    NOT_IMPLEMENTED: str = f'{ModelErrorPath.FOSSIL_REPO}.not_implemented'
 
 
 class FossilCommitPath(metaclass=immutable.Namespace):
