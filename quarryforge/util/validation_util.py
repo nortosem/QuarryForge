@@ -18,10 +18,12 @@ _QFE = TypeVar('_QFE', bound=base_exception.QuarryForgeError)
 _EB = TypeVar('_EB', bound=assembler.ErrorBuilder)
 
 
-def is_type_str(*,
-                arg: Any,
-                exception: Type[_QFE],
-                error_builder: Type[_EB]) -> str:
+def is_type_str(
+    *,
+    arg: Any,
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> str:
     """Validates if the given argument is a string.
 
     Args:
@@ -43,10 +45,12 @@ def is_type_str(*,
     return arg
 
 
-def is_str_not_empty(*,
-                     arg: str,
-                     exception: Type[_QFE],
-                     error_builder: Type[_EB]) -> str:
+def is_str_not_empty(
+    *,
+    arg: str,
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> str:
     """Validates if the given string argument is not empty.
 
     This function checks if the string is not empty after stripping leading
@@ -56,6 +60,7 @@ def is_str_not_empty(*,
         arg: The string argument to check.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated string argument if it is not empty.
@@ -69,16 +74,19 @@ def is_str_not_empty(*,
     return arg
 
 
-def is_type_path(*,
-                 arg: Path | str,
-                 exception: Type[_QFE],
-                 error_builder: Type[_EB]) -> Path:
+def is_type_path(
+    *,
+    arg: Path | str,
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> Path:
     """Validates if the given argument is a pathlib.Path object.
 
     Args:
         arg: The argument to check.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated Path object if `arg` is a `pathlib.Path`.
@@ -99,10 +107,12 @@ def is_type_path(*,
     return arg
 
 
-def resolve_path_arg(*,
-                     arg: str,
-                     exception: Type[_QFE],
-                     error_builder: Type[_EB]) -> Path:
+def resolve_path_arg(
+    *,
+    arg: str,
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> Path:
     """Resolves a path argument to an absolute path, expanding uservars.
 
     Checks if the argument is a `pathlib.Path` object, then attempts to
@@ -112,6 +122,7 @@ def resolve_path_arg(*,
         arg: The path argument (expected to be a `pathlib.Path` object).
         exception: The specific type of QuarryForgeError to raise on
             validation or resolution failure.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The resolved, absolute `pathlib.Path` object.
@@ -136,10 +147,11 @@ def resolve_path_arg(*,
     raise exception(**error_data.to_exception())
 
 
-def exist(*,
-          arg: str,
-          exception: Type[_QFE],
-          error_builder: Type[_EB]
+def exist(
+    *,
+    arg: str,
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
 ) -> Path:
     """Validates if the path specified exists.
 
@@ -147,6 +159,7 @@ def exist(*,
         arg: The `pathlib.Path` object to check.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated `pathlib.Path` object if the path exists.
@@ -160,16 +173,19 @@ def exist(*,
     return arg
 
 
-def not_exist(*,
-              arg: str,
-              exception: Type[_QFE],
-              error_builder: Type[_EB]) -> Path:
+def not_exist(
+    *,
+    arg: str,
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> Path:
     """Validates if the path specified exists.
 
     Args:
         arg: The `pathlib.Path` object to check.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated `pathlib.Path` object if the path exists.
@@ -183,10 +199,12 @@ def not_exist(*,
     return arg
 
 
-def is_file(*,
-            arg: str,
-            exception: Type[_QFE],
-            error_builder: Type[_EB]) -> Path:
+def is_file(
+    *,
+    arg: str,
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> Path:
     """Validates if the path specified is a file.
 
     Assumes `arg` is already a `pathlib.Path` object and exists.
@@ -196,6 +214,7 @@ def is_file(*,
         arg: The `pathlib.Path` object to check.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated `pathlib.Path` object if it points to a file.
@@ -209,9 +228,11 @@ def is_file(*,
     return arg
 
 
-def is_dir(*,
-           arg: str,exception: Type[_QFE],
-           error_builder: Type[_EB]) -> Path:
+def is_dir(
+    *,
+    arg: str,exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> Path:
     """Validates if the path specified is a directory.
 
     Assumes `arg` is already a `pathlib.Path` object and exists.
@@ -221,6 +242,7 @@ def is_dir(*,
         arg: The `pathlib.Path` object to check.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated `pathlib.Path` object if it points to a directory.
@@ -234,16 +256,19 @@ def is_dir(*,
     return arg
 
 
-def is_read_ok(*,
-            arg: str,
-            exception: Type[_QFE],
-            error_builder: Type[_EB]) -> Path:
+def is_read_ok(
+    *,
+    arg: str,
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> Path:
     """Validates if the path specified has read permissions.
 
     Args:
         arg: The `pathlib.Path` object to check for read permissions.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated `pathlib.Path` object if it has read permissions.
@@ -258,9 +283,11 @@ def is_read_ok(*,
     return arg
 
 
-def is_write_ok(*,
-                arg: str, exception: Type[_QFE],
-    error_builder: Type[_EB]) -> Path:
+def is_write_ok(
+    *,
+    arg: str, exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> Path:
     """Validates if the path specified has write permissions.
 
     For directories, this checks if files can be created in them.
@@ -270,6 +297,7 @@ def is_write_ok(*,
         arg: The `pathlib.Path` object to check for write permissions.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated `pathlib.Path` object if it has write permissions.
@@ -281,29 +309,22 @@ def is_write_ok(*,
     if not os.access(arg, os.W_OK):
         error_data = error_builder.data()
         raise exception(**error_data.to_exception())
-        #raise exception(message.PathMessage.no_write_permission(str(arg)))
     return arg
 
 
-def check_list_type(*,
-                    arg: str,
-                    exception: Type[_QFE],
-                    error_builder: Type[_EB]) -> List:
+def check_list_type(
+    *,
+    arg: str,
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> List:
     """Validates if the given argument is a list, or None.
 
     Args:
         arg: The argument to check.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
-        context: Contextual information (e.g., 'ClassName.method_name')
-            where the validation is performed.
-        field: The name of the field or argument being validated.
-        error_code: A specific error code for this validation failure.
-        message: A developer-facing message for the exception.
-        user_message (Optional[str]): A user-friendly message for the
-            exception. Defaults to None.
-        exception_code (Optional[str]): An optional code to associate with the
-            exception. Defaults to None.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated list argument if `arg` is a list. Returns an empty list
@@ -321,30 +342,22 @@ def check_list_type(*,
     return final_list
 
 
-def content_type_error(*,
-                       arg: str,
-                       exception: Type[_QFE],
-                       error_builder: Type[_EB]) -> List[str]:
+def content_type_error(
+    *,
+    arg: List[str],
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> List[str]:
     """Validates if all elements within the given list are strings.
 
     Args:
-        arg_list: The list of items to check.
+        arg: The list of items to check.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
-        context: Contextual information (e.g., 'ClassName.method_name')
-            where the validation is performed.
-        field: The name of the field or argument being validated (referring
-            to the list itself or its conceptual content).
-        error_code: A specific error code for this validation failure.
-        message: A developer-facing message for the exception.
-        user_message (Optional[str]): A user-friendly message for the
-            exception. Defaults to None.
-        exception_code (Optional[str]): An optional code to associate with the
-            exception. Defaults to None.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated list, guaranteed to contain only strings if successful.
-        The type hint `List[str]` implies this, but the check ensures it.
 
     Raises:
         exception: If any element in `arg_list` is not a string.
@@ -356,10 +369,12 @@ def content_type_error(*,
     return arg
 
 
-def content_empty_error(*,
-                        arg: str,
-                        exception: Type[_QFE],
-                        error_builder: Type[_EB]) -> List[str]:
+def content_empty_error(
+    *,
+    arg: List[str],
+    exception: Type[_QFE],
+    error_builder: Type[_EB],
+) -> List[str]:
     """Validates if all string elements within the given list are not empty.
 
     This function checks if each string in the list is not empty after
@@ -367,19 +382,10 @@ def content_empty_error(*,
     only strings (e.g., after `content_type_error` validation).
 
     Args:
-        args_list: The list of strings to check.
+        arg: The list of strings to check.
         exception: The specific type of QuarryForgeError to raise on
             validation failure.
-        context: Contextual information (e.g., 'ClassName.method_name')
-            where the validation is performed.
-        field: The name of the field or argument being validated (referring
-            to the list itself or its conceptual content).
-        error_code: A specific error code for this validation failure.
-        message: A developer-facing message for the exception.
-        user_message (Optional[str]): A user-friendly message for the
-            exception. Defaults to None.
-        exception_code (Optional[str]): An optional code to associate with the
-            exception. Defaults to None.
+        error_builder: The builder used to assemble data for an exception.
 
     Returns:
         The validated list of non-empty strings.
