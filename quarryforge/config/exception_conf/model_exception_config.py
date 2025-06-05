@@ -167,6 +167,12 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
                 return (
                     f'{base_msg} Path "{self.arg!r}" lacks execute permissions.'
                 )
+            case config.PATH_ERROR.same_dir:
+                return (
+                    f'{base_msg} Fossil repository directory matches the '
+                    f'working directory.'
+                )
+
             case _:
                 return (
                     f'{base_msg} An unhandled path error for "{self.arg!r}". '
@@ -195,7 +201,8 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
                 config.PATH_ERROR.dir_error |
                 config.PATH_ERROR.unreadable |
                 config.PATH_ERROR.unwritable |
-                config.PATH_ERROR.unexecutable
+                config.PATH_ERROR.unexecutable |
+                config.PATH_ERROR.same_dir
             ):
                 return self._path_error_message()
 
@@ -248,6 +255,11 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
                 )
             case config.PATH_ERROR.unexecutable:
                 return 'Permission denied: Cannot execute the specified file.'
+            case config.PATH_ERROR.same_dir:
+                return (
+                    'The fossil repository parent directory is the same '
+                    'directory as the workdir.'
+                )
             case _:
                 return super().user_message()
 
