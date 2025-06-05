@@ -11,7 +11,7 @@ Attributes:
     FOSSIL_COMMIT_CONFIG (ConfigFossilCommit):
         Configuration specific to the FossilCommit model.
 """
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Tuple
 
 
 __all__: List[str] = ['FOSSIL_REPO','FOSSIL_COMMIT', 'FOSSIL_TIMELINE']
@@ -29,14 +29,16 @@ class ConfigFossilRepo(NamedTuple):
         name for the immutable FossilRepo class.
     """
     file: str = '_file'
+    is_new: str = '_is_new'
+    workdir: str = '_workdir'
 
-    def field_name(self) -> str:
-        """Get public property field name.
+    def slots(self) -> Tuple[str]:
+        """Get field values to define FossilRepo slots.
 
         Returns:
-            str: The public field name 'file' from the internal '_file' slot.
+            tuple: Returns the internal field names for FossilRepo class.
         """
-        return str(self.file)[1:]
+        return tuple(getattr(self, field) for field in self._fields)
 
 
 FOSSIL_REPO: ConfigFossilRepo = ConfigFossilRepo()
@@ -59,14 +61,22 @@ class ConfigFossilCommit(NamedTuple):
         phase (str): Field name for the commit's phase
         changes (str): Field name for the summary of changes in the commit.
     """
-    uuid: str = 'uuid'
-    date: str = 'date'
-    author: str = 'author'
-    comment: str = 'comment'
-    branch: str = 'branch'
-    tags: str = 'tags'
-    phase: str = 'phase'
-    changes: str = 'changes'
+    uuid: str = '_uuid'
+    date: str = '_date'
+    author: str = '_author'
+    comment: str = '_comment'
+    branch: str = '_branch'
+    tags: str = '_tags'
+    phase: str = '_phase'
+    changes: str = '_changes'
+
+    def slots(self) -> Tuple[str]:
+        """Get field values to define FossilCommit slots.
+
+        Returns:
+            tuple: Returns the internal field names for FossilCommit class.
+        """
+        return tuple(getattr(self, field) for field in self._fields)
 
 
 FOSSIL_COMMIT: ConfigFossilCommit = ConfigFossilCommit()
