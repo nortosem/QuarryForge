@@ -43,9 +43,9 @@ def rebuild_init(
     username: str,
     date_override: str,
     new_repo: model.FossilRepo,
-    template: model.FossilRepo,
-    project_name: str,
-    project_desc: str,
+    template: Optional[model.FossilRepo],
+    project_name: Optional[str],
+    project_desc: Optional[str],
 ) -> List[str]:
     """Creates command to initialize the target repo to rebuild a source repo.
 
@@ -64,18 +64,27 @@ def rebuild_init(
     cmd = [
         fossil_config.COMMAND.FOSSIL,
         fossil_config.COMMAND.NEW,
-        fossil_config.COMMAND.TEMPLATE
-        ,str(template),
         fossil_config.COMMAND.ADMIN_USER,
         username,
         fossil_config.COMMAND.DATE_OVERRIDE,
         date_override,
-        fossil_config.COMMAND.PROJECT_NAME,
-        project_name,
-        fossil_config.COMMAND.PROJECT_DESC,
-        project_desc,
-        str(new_repo),
     ]
+    if template:
+        cmd.extend([
+            fossil_config.COMMAND.TEMPLATE,
+            str(template),
+        ])
+    if project_name:
+        cmd.extend([
+            fossil_config.COMMAND.PROJECT_NAME,
+            project_name,
+        ])
+    if project_desc:
+        cmd.extend([
+            fossil_config.COMMAND.PROJECT_DESC,
+            project_desc,
+        ])
+    cmd.append(str(new_repo))
     return cmd
 
 
