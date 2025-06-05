@@ -170,6 +170,11 @@ class ConfigFossil(NamedTuple):
     default_return_code: int = 1
     stderr: str = 'stderr'
     timeout: str = 'timeout'
+    step: str = 'step'
+    init: str = 'New repository initialization'
+    username_setup: str = 'username_setup'
+    user_contact: str = 'user_contact'
+
 
 FOSSIL: ConfigFossil = ConfigFossil()
 """Global instance of the default fossil configuration."""
