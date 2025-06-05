@@ -92,6 +92,7 @@ class PathErrorType(NamedTuple):
     unreadable: str = 'PATH_NOT_READABLE_ERROR'
     unwritable: str = 'PATH_NOT_WRITABLE_ERROR'
     unexecutable: str = 'PATH_NOT_EXECUTABLE_ERROR'
+    same_dir: str = 'SAME_REPO_DIR_AND_WORK_DIR'
 
 
 PATH_ERROR: PathErrorType = PathErrorType()
