@@ -7,16 +7,13 @@ directories), and readable/writable paths. It also includes functions for
 validating list types and the content of lists based on specific error
 conditions.
 """
-import os
 from pathlib import Path
-from typing import List, TypeVar
+from typing import List, Optional, Tuple, Type, TypeVar
 
 from quarryforge.config import model_config
-from quarryforge.config.exception_conf import exception_config
-from quarryforge.config.exception_conf import model_exception_config as config
+from quarryforge.config.exception_conf import exception_config as ec
+from quarryforge.config.exception_conf import model_exception_config as model_ec
 from quarryforge.exception import base_exception
-from quarryforge.exception import model_exception
-from quarryforge.util import model_error_util as error
 from quarryforge.util import validation_util
 
 
@@ -25,9 +22,10 @@ _ModelError = TypeVar('_ModelError', bound=base_exception.ModelError)
 
 def viable_fossil_repo(
     file: Path | str,
+    workdir: Path | str,
     is_new: bool,
     exception: Type[_ModelError]
-) -> Path:
+) -> Tuple[Path, Path]:
     """Validates if the path points to a viable Fossil repository.
 
     For an existing repository (is_new=False):
@@ -43,8 +41,11 @@ def viable_fossil_repo(
     - Parent directory must exist and be writable.
 
     Args:
-        arg:
+        file:
             The path (Path object or string) to the Fossil repository.
+        workdir:
+            The path (Path object or string) to the working directory of the
+            repository.
         is_new:
             If True, validates for creating a new repository.
             If False (default), validates an existing repository.
@@ -59,208 +60,331 @@ def viable_fossil_repo(
     file = validation_util.is_type_path(
         arg=file,
         exception=exception,
-        error_builder=FossilRepoErrorBuilder(
-            error_context=config.FossilRepoContext.init,
-            error_code=exception_config.GenericErrorType.type_error,
-            input_value=file
+        error_builder=model_ec.FossilRepoErrorBuilder(
+            error_context=model_ec.FossilCommitPath.INIT,
+            error_code=ec.GENERIC_ERROR.type_error,
+            arg=file,
+            field=model_config.FOSSIL_REPO._fields[0],
+            info=str(type(file)),
+        )
+    )
+    workdir = validation_util.is_type_path(
+        arg=workdir,
+        exception=exception,
+        error_builder=model_ec.FossilRepoErrorBuilder(
+            error_context=model_ec.FossilCommitPath.INIT,
+            error_code=ec.GENERIC_ERROR.type_error,
+            arg=workdir,
+            field=model_config.FOSSIL_REPO._fields[2],
+            info=str(type(workdir))
         )
     )
     # second ensure path object
     file = validation_util.resolve_path_arg(
         arg=file,
         exception=exception,
-        error_builder=FossilRepoErrorBuilder(
-            error_context=config.FossilRepoContext.init,
-            error_code=exception_config.GenericErrorType.resolution,
-            input_value=file
+        error_builder=model_ec.FossilRepoErrorBuilder(
+            error_context=model_ec.FossilCommitPath.INIT,
+            error_code=ec.PATH_ERROR.resolution,
+            arg=file,
+            field=model_config.FOSSIL_REPO._fields[0],
+            info=str(type(file)),
+        )
+    )
+    workdir = validation_util.resolve_path_arg(
+        arg=workdir,
+        exception=exception,
+        error_builder=model_ec.FossilRepoErrorBuilder(
+            error_context=model_ec.FossilCommitPath.INIT,
+            error_code=ec.PATH_ERROR.resolution,
+            arg=workdir,
+            field=model_config.FOSSIL_REPO._fields[2],
+            info=str(type(workdir)),
         )
     )
     # third is_new or not?
-    if new: # new is the target repo
+    if is_new: # new is the target repo
         file = validation_util.not_exist(
             arg=file,
             exception=exception,
-            error_builder=FossilRepoErrorBuilder(
-                error_context=config.FossilRepoContext.init,
-                error_code=exception_config.GenericErrorType.existing,
-                input_value=file
+            error_builder=model_ec.FossilRepoErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.PATH_ERROR.existing,
+                arg=file,
+                field=model_config.FOSSIL_REPO._fields[0],
+                info=str(type(file)),
                 )
         )
         parent_dir = validation_util.exist(
             arg=file.parent,
             exception=exception,
-            error_builder=FossilRepoErrorBuilder(
-                error_context=config.FossilRepoContext.init,
-                error_code=exception_config.GenericErrorType.nonexistent,
-                input_value=file
+            error_builder=model_ec.FossilRepoErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.PATH_ERROR.nonexistent,
+                arg=file.parent,
+                field=model_config.FOSSIL_REPO._fields[0],
+                info=str(type(file.parent)),
                 )
         )
         parent_dir = validation_util.is_dir(
             arg=file.parent,
             exception=exception,
-            error_builder=FossilRepoErrorBuilder(
-                error_context=config.FossilRepoContext.init,
-                error_code=exception_config.GenericErrorType.dir_error,
-                input_value=file
+            error_builder=model_ec.FossilRepoErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.PATH_ERROR.dir_error,
+                arg=file.parent,
+                field=model_config.FOSSIL_REPO._fields[0],
+                info=str(type(file.parent)),
                 )
         )
         parent_dir = validation_util.is_write_ok(
             arg=file.parent,
             exception=exception,
-            error_builder=FossilRepoErrorBuilder(
-                error_context=config.FossilRepoContext.init,
-                error_code=exception_config.GenericErrorType.unwritable,
-                input_value=file
+            error_builder=model_ec.FossilRepoErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.PATH_ERROR.unwritable,
+                arg=file.parent,
+                field=model_config.FOSSIL_REPO._fields[0],
+                info=str(type(file.parent)),
                 )
         )
-        return file
+        if parent_dir == workdir:
+            error_builder=model_ec.FossilRepoErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.PATH_ERROR.same_dir,
+                arg=file.parent,
+                field=str(
+                    f'{model_config.FOSSIL_REPO._fields[0]},'
+                    f'{model_config.FOSSIL_REPO._fields[2]}'
+                ),
+                info=(
+                    f'repo dir: {str(file.parent)}'
+                    f'workdir: {str(workdir)}'
+                ),
+                extra_details={ec.DESC_MSG.reason: 'todo'}
+            )
+            error_data = error_builder.data()
+            raise exception(**error_data.to_exception())
     # not new means source repo
     else:
         file = validation_util.exist(
             arg=file,
             exception=exception,
-            error_builder=FossilRepoErrorBuilder(
-                error_context=config.FossilRepoContext.init,
-                error_code=exception_config.GenericErrorType.nonexistent,
-                input_value=file
+            error_builder=model_ec.FossilRepoErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.PATH_ERROR.nonexistent,
+                field=model_config.FOSSIL_REPO._fields[0]
                 )
         )
         file = validation_util.is_dir(
             arg=file,
             exception=exception,
-            error_builder=FossilRepoErrorBuilder(
-                error_context=config.FossilRepoContext.init,
-                error_code=exception_config.GenericErrorType.file_error,
-                input_value=file
+            error_builder=model_ec.FossilRepoErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.PATH_ERROR.file_error,
+                field=model_config.FOSSIL_REPO._fields[0]
                 )
         )
         file = validation_util.is_read_ok(
             arg=file,
             exception=exception,
-            error_builder=FossilRepoErrorBuilder(
-                error_context=config.FossilRepoContext.init,
-                error_code=exception_config.GenericErrorType.unreadable,
-                input_value=file
+            error_builder=model_ec.FossilRepoErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.PATH_ERROR.unreadable,
+                field=model_config.FOSSIL_REPO._fields[0]
                 )
         )
-    return file
+    # validate the working directory
+    workdir = validation_util.exist(
+            arg=workdir,
+            exception=exception,
+            error_builder=model_ec.FossilRepoErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.PATH_ERROR.nonexistent,
+                field=model_config.FOSSIL_REPO._fields[2]
+                )
+        )
+    workdir = validation_util.is_dir(
+        arg=workdir,
+        exception=exception,
+        error_builder=model_ec.FossilRepoErrorBuilder(
+            error_context=model_ec.FossilCommitPath.INIT,
+            error_code=ec.PATH_ERROR.dir_error,
+            field=model_config.FOSSIL_REPO._fields[2]
+        )
+    )
+    workdir = validation_util.is_write_ok(
+        arg=workdir,
+        exception=exception,
+        error_builder=model_ec.FossilRepoErrorBuilder(
+            error_context=model_ec.FossilCommitPath.INIT,
+            error_code=ec.PATH_ERROR.unwritable,
+            field=model_config.FOSSIL_REPO._fields[2]
+        )
+    )
+    return file, workdir
 
 
-def viable_update_repo() -> Path:
-    pass
-
-
-def viable_infile(arg: Path, exception: type[_ModelError]) -> Path:
-    """Validates if the path is an existing, readable file.
-
-    Args:
-        arg: The path argument to check.
-        exception: The specific type of exception to raise.
-
-    Returns:
-        The validated Path object.
-
-    Raises:
-        exception: If the path does not exist, is not a file, or is not
-        readable.
-    """
-    path = exists(arg, exception)
-    path = is_file(path, exception)
-    path = is_read_ok(path, exception)
-    return path
-
-
-def viable_source(arg: Path, exception: type[_ModelError]) -> Path:
-    """Validates if the path is an existing, readable file.
-
-    This is an alias for `viable_infile`.
-
-    Args:
-        arg: The path argument to check.
-        exception: The specific type of exception to raise.
-
-    Returns:
-        The validated Path object.
-
-    Raises:
-        exception: If the path does not exist, is not a file, or is not
-        readable.
-    """
-    return viable_infile(arg, exception)
-
-
-def viable_output(arg: Path, exception: type[_ModelError]) -> Path:
-    """Validates if the path is an existing, writable file.
-
-    Args:
-        arg: The path argument to check.
-        exception: The specific type of exception to raise.
-
-    Returns:
-        The validated Path object.
-
-    Raises:
-        exception: If the path does not exist, is not a file, or is not
-        writable.
-    """
-    path = exists(arg, exception)
-    path = is_file(path, exception)
-    path = is_write_ok(path, exception)
-    return path
-
-
-def viable_update_dir(arg: Path, exception: type[_ModelError]) -> Path:
-    """Validates if the path is an existing, writable directory.
-
-    Args:
-        arg: The path argument to check.
-        exception: The specific type of exception to raise.
-
-    Returns:
-        The validated Path object.
-
-    Raises:
-        exception: If the path does not exist, is not a directory, or is not
-        writable.
-    """
-    path = exists(arg, exception)
-    path = is_dir(path, exception)
-    path = is_write_ok(path, exception)
-    return path
-
-
-def check_list_content(
-    arg: List[str],
-    exception: type[_ModelError]
-) -> List[str]:
-    """Validates the content of a list of strings based on the exception type.
-
-    This function provides specific validation for lists of strings used in
-    different contexts (e.g., tags or changes in a commit).
-
-    Args:
-        arg: The list of strings to check.
-        exception: The specific type of exception to raise for content errors.
-
-    Returns:
-        The validated list of strings.
-
-    Raises:
-        commit_exception.TagTypeError: If any tag is not a string.
-        commit_exception.TagValueError: If any tag is empty or contains spaces.
-        commit_exception.ChangeTypeError: If any change is not a string.
-        commit_exception.ChangeValueError: If any change is empty.
-    """
-    items = arg
-    if exception is commit_exception.TagsCommitError:
-        items = content_type_error(items, commit_exception.TagTypeError)
-        items = content_empty_error(items, commit_exception.TagValueError)
-        for tag in items:
-            if ' ' in tag:
-                raise commit_exception.TagValueError()
-
-    if exception is commit_exception.ChangesCommitError:
-        items = content_type_error(items, commit_exception.ChangeTypeError)
-        items = content_empty_error(items, commit_exception.ChangeValueError)
-
-    return items
+def viable_fossil_commit(
+    *,
+    uuid: str,
+    date: str,
+    author: str,
+    comment: str,
+    branch: Optional[str] = None,
+    tags: Optional[List[str]] = None,
+    phase: Optional[str] = None,
+    changes: Optional[List[str]] = None,
+    exception: Type[_ModelError],
+) -> Tuple[
+    str,
+    str,
+    str,
+    str,
+    Optional[str],
+    Optional[List[str]],
+    Optional[str],
+    Optional[List[str]],
+]:
+    """Validates the arguements fields for FossilCommit on Initialization."""
+    uuid = validation_util.is_str_not_empty(
+        arg=validation_util.is_type_str(
+            arg=uuid,
+            exception=exception,
+            error_builder=model_ec.FossilCommitErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.GENERIC_ERROR.type_error,
+                field=uuid
+            )
+        ),
+        exception=exception,
+        error_builder=model_ec.FossilCommitErrorBuilder(
+            error_context=model_ec.FossilCommitPath.INIT,
+            error_code=ec.STRING_ERROR.empty,
+            field=uuid
+        )
+    )
+    date = validation_util.is_str_not_empty(
+        arg=validation_util.is_type_str(
+            arg=date,
+            exception=exception,
+            error_builder=model_ec.FossilCommitErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.GENERIC_ERROR.type_error,
+                field=date
+            )
+        ),
+        exception=exception,
+        error_builder=model_ec.FossilCommitErrorBuilder(
+            error_context=model_ec.FossilCommitPath.INIT,
+            error_code=ec.STRING_ERROR.empty,
+            field=date
+        )
+    )
+    author = validation_util.is_str_not_empty(
+        arg=validation_util.is_type_str(
+            arg=author,
+            exception=exception,
+            error_builder=model_ec.FossilCommitErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.GENERIC_ERROR.type_error,
+                field=author
+            )
+        ),
+        exception=exception,
+        error_builder=model_ec.FossilCommitErrorBuilder(
+            error_context=model_ec.FossilCommitPath.INIT,
+            error_code=ec.STRING_ERROR.empty,
+            field=author
+        )
+    )
+    comment = validation_util.is_str_not_empty(
+        arg=validation_util.is_type_str(
+            arg=comment,
+            exception=exception,
+            error_builder=model_ec.FossilCommitErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.GENERIC_ERROR.type_error,
+                field=comment
+            )
+        ),
+        exception=exception,
+        error_builder=model_ec.FossilCommitErrorBuilder(
+            error_context=model_ec.FossilCommitPath.INIT,
+            error_code=ec.STRING_ERROR.empty,
+            field=comment
+        )
+    )
+    if branch:
+        branch = validation_util.is_str_not_empty(
+            arg=validation_util.is_type_str(
+                arg=branch,
+                exception=exception,
+                error_builder=model_ec.FossilCommitErrorBuilder(
+                    error_context=model_ec.FossilCommitPath.INIT,
+                    error_code=ec.GENERIC_ERROR.type_error,
+                    field=branch
+                )
+            ),
+            exception=exception,
+            error_builder=model_ec.FossilCommitErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.STRING_ERROR.empty,
+                field=branch
+            )
+        )
+    if tags:
+        tags = validation_util.content_empty_error(
+            arg=validation_util.content_type_error(
+                arg=tags,
+                exception=exception,
+                error_builder=model_ec.FossilCommitErrorBuilder(
+                    error_context=model_ec.FossilCommitPath.INIT,
+                    error_code=ec.GENERIC_ERROR.type_error,
+                    field=f'{[tag for tag in tags]}'
+                ),
+            ),
+            exception=exception,
+            error_builder=model_ec.FossilCommitErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.STRING_ERROR.empty,
+                field=f'{[tag for tag in tags]}'
+            )
+        )
+    if phase:
+        phase  = validation_util.is_str_not_empty(
+            arg=validation_util.is_type_str(
+                arg=phase,
+                exception=exception,
+                error_builder=model_ec.FossilCommitErrorBuilder(
+                    error_context=model_ec.FossilCommitPath.INIT,
+                    error_code=ec.GENERIC_ERROR.type_error,
+                    field=phase
+                )
+            ),
+            exception=exception,
+            error_builder=model_ec.FossilCommitErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.STRING_ERROR.empty,
+                field=phase
+            )
+        )
+    if changes:
+        changes = validation_util.content_empty_error(
+            arg=validation_util.content_type_error(
+                arg=changes,
+                exception=exception,
+                error_builder=model_ec.FossilCommitErrorBuilder(
+                    error_context=model_ec.FossilCommitPath.INIT,
+                    error_code=ec.GENERIC_ERROR.type_error,
+                    field=f'{[change for change in changes]}'
+                )
+            ),
+            exception=exception,
+            error_builder=model_ec.FossilCommitErrorBuilder(
+                error_context=model_ec.FossilCommitPath.INIT,
+                error_code=ec.STRING_ERROR.empty,
+                field=f'{[change for change in changes]}'
+            )
+        )
+    return (uuid, date, author, comment, branch, tags, phase, changes)
