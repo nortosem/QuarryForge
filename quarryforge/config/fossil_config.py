@@ -40,6 +40,7 @@ class ConfigCommand(NamedTuple):
     LIST: str = 'list'
     ALL: str = '--all'
     OPEN: str = 'open'
+    CLOSE: str = 'close'
     WORKDIR: str = '--workdir'
     CLOSED: str = '--closed'
     INFO: str = 'info'
