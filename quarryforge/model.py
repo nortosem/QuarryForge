@@ -1,14 +1,26 @@
 """model
 
-#todo
+This module defines the core data models for the QuarryForge application,
+including representations for Fossil repositories, individual commits, and
+repository timelines. All data models are designed to be immutable once created,
+enforcing data integrity.
 """
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, cast, List, Optional, Tuple, TypeVar
 
+from quarryforge.config import meta_config
 from quarryforge.config import model_config
+from quarryforge.config.exception_conf import meta_exception_config as meta_ec
+from quarryforge.exception import meta_exception
 from quarryforge.exception import model_exception
 from quarryforge.meta import immutable
 from quarryforge.util import model_util
+
+
+_ImmutableModel = TypeVar(
+    '_ImmutableModel',
+    bound='immutable.ImmutableInstance'
+)
 
 
 class FossilRepo(
@@ -20,31 +32,79 @@ class FossilRepo(
     It is designed to be immutable.
 
     Attributes:
-        file (Path): A read-only property providing the path to the Fossil
-                     repository file.    """
-    __slots__ = model_config.FOSSIL_REPO._fields
+        _file (Path):
+            Internal attribute storing the path to the Fossil repository file.
+        _workdir (Path):
+            Internal attribute storing the path to the working directory
+            associated with the repository.
+        _is_new (bool):
+            Internal attribute indicating if this represents a newly created
+            repository or an existing one.
+    """
+    __slots__ = model_config.FOSSIL_REPO.slots()
 
-    def __init__(self, file: Path | str, is_new: bool) -> None:
+    def __init__(
+        self,
+        file: Path | str,
+        workdir: Path | str,
+        is_new: bool
+    ) -> None:
         """Initializes a new FossilRepo instance.
 
         Args:
-            file: A `pathlib.Path` object representing the full path to the
-                  Fossil repository file.
+            file (Path | str):
+                A `pathlib.Path` object or string representing the full path to
+                the Fossil repository file.
+            workdir (Path | str):
+                A `pathlib.Path` object or string representing the working
+                directory associated with this repository.
+            is_new (bool):
+                A boolean indicating if this is a new repository to be created
+                (True) or an existing one (False).
+
+        Raises:
+            model_exception.FossilRepoError:
+                If any of the provided paths are invalid or do not meet the
+                criteria (e.g., non-existent for existing repo, already exists
+                for new repo).
         """
-        file = model_util.viable_fossil_repo(
-            file, is_new, model_exception.FossilRepoError)
-        object.__setattr__(self, model_config.FOSSIL_REPO.file, file)
+        file_path, workdir_path = model_util.viable_fossil_repo(
+            file, workdir, is_new, model_exception.FossilRepoError)
+        object.__setattr__(self, model_config.FOSSIL_REPO.file, file_path)
+        object.__setattr__(self, model_config.FOSSIL_REPO.is_new, is_new)
+        object.__setattr__(
+            self,
+            model_config.FOSSIL_REPO.workdir,
+            workdir_path
+        )
 
     @property
     def file(self) -> Path:
         """The path to the fossil repository file.
 
-        This property provides read-only access to the repository's file path.
-
         Returns:
             pathlib.Path: The path object representing the repository file.
         """
-        return getattr(self, model_config.FOSSIL_REPO.file)
+        return cast(Path, getattr(self, model_config.FOSSIL_REPO.file))
+
+    @property
+    def is_new(self) -> bool:
+        """Indicates if the repository is a newly created one.
+
+        Returns:
+            bool: True if the repository is new, False otherwise.
+        """
+        return cast(bool, getattr(self, model_config.FOSSIL_REPO.is_new))
+
+    @property
+    def workdir(self) -> Path:
+        """The path to the working directory for the fossil repository.
+
+        Returns:
+            pathlib.Path: The path object representing the working directory of
+                the fossil repository from the file attribute.
+        """
+        return cast(Path, getattr(self, model_config.FOSSIL_REPO.workdir))
 
     def __setattr__(self, name: str, value: Any) -> None:
         """Prevents attribute modification, enforcing immutability.
@@ -57,38 +117,61 @@ class FossilRepo(
             value: The value to set for the attribute.
 
         Raises:
-            fossil_rebuild_exception.ImmutableFossilRepoError: Always, as
-                FossilRepo instances are immutable.
+            meta_exception.ImmutableError: Always, as FossilRepo instances
+            are immutable.
         """
-        raise fossil_repo.ImmutableError()
+        builder = meta_ec.MetaErrorBuilder(
+            error_context=meta_ec.MetaErrorPath.IMMUTABLE_INSTANCE,
+            error_code=meta_ec.META_ERROR_CODE.IMMUTABILITY_VIOLATION,
+            arg=self,
+            field= name,
+            info=meta_config.MOD_TYPE.set_attribute
+        )
+        error_data = builder.data()
+        raise meta_exception.ImmutableError(**error_data.to_exception())
 
     def __delattr__(self, name: Any) -> None:
         """Prevents attribute deletion, enforcing immutability.
 
         Attempting to delete any attribute on a `FossilRepo` instance
-        will raise an `ImmutableFossilRepoError`.
+        will raise an `ImmutableError`.
 
         Args:
-            name: The name of the attribute to delete.
+            name (Any): The name of the attribute to delete.
 
         Raises:
-            fossil_rebuild_exception.ImmutableFossilRepoError: Always, as
-                FossilRepo instances are immutable.
+            meta_exception.ImmutableError: Always, as FossilRepo instances
+                are immutable.
         """
-        raise fossil_repo.ImmutableError()
+        builder = meta_ec.MetaErrorBuilder(
+            error_context=meta_ec.MetaErrorPath.IMMUTABLE_INSTANCE,
+            error_code=meta_ec.META_ERROR_CODE.IMMUTABILITY_VIOLATION,
+            arg=self,
+            field= name,
+            info=meta_config.MOD_TYPE.delete_attribute
+        )
+        error_data = builder.data()
+        raise meta_exception.ImmutableError(**error_data.to_exception())
 
     def __str__(self) -> str:
-        """The string for the fossil repository's file path.
+        """Returns a user-friendly string representation of a Fossil repository.
 
         Returns:
-            str: The string form of the repository's `Path` object.
+            str: A string showing the repository file and working directory.
         """
-        return str(getattr(self, model_config.FOSSIL_REPO.file))
+        return (
+            f'Fossil Repository File: {self.file}\n'
+            f'Working Directory: {self.workdir}'
+        )
 
     def __repr__(self) -> str:
         """The representation of a FossilRepo instance for logging/debugging.
         """
-        return f'{self.__class__.__name__}(file={self.file!r})'
+        return (
+            f'{self.__class__.__name__}(file={self.file!r}, '
+            f'is_new={self.is_new!r}, '
+            f'workdir={self.workdir!r})'
+        )
 
     def __eq__(self, obj: object) -> bool:
         """Checks if this FossilRepo instance is equal to another object.
@@ -102,7 +185,7 @@ class FossilRepo(
 
         Returns:
             bool: `True` if the other object is a `FossilRepo` instance and
-                  their `file` attributes are equal, `False` otherwise.
+                  their attributes are equal, `False` otherwise.
             NotImplemented:
                 If the `other` object is not a `FossilRepo` instance,
                 allowing for the comparison to be handled by the other
@@ -110,125 +193,380 @@ class FossilRepo(
         """
         if not isinstance(obj, FossilRepo):
             return NotImplemented
-        return getattr(
-            self, model_config.FOSSIL_REPO.file) == obj.file
+
+        return self.file == obj.file and self.workdir == obj.workdir
 
     def __hash__(self) -> int:
-        """Returns a hash for this reposiory Path instance."""
-        return hash(getattr(self, model_config.FOSSIL_REPO.file))
+        """Returns a hash for this repository Path instance.
+
+        The hash is based on the immutable properties of the repository,
+        ensuring that equal objects have the same hash.
+
+        Returns:
+            int: The hash value of the object.
+        """
+        return hash((self.file, self.is_new, self.workdir))
 
 
 class FossilCommit(
     immutable.ImmutableInstance,
     metaclass=immutable.ImmutableMetaClass):
-    """Commit
+    """ Represents an immutable Fossil commit object, encapsulating all its
+        metadata and associated changes.
 
-    #todo
+    Attributes:
+        _uuid (str):
+            Internal attribute storing the unique identifier (hash)
+            of the commit.
+        _date (str):
+            Internal attribute storing the date and time of the commit.
+        _author (str):
+            Internal attribute storing the author of the commit.
+        _comment (str):
+            Internal attribute storing the commit message.
+        _branch (Optional[str]):
+            Internal attribute storing the branch name associated with the
+            commit.
+        _tags (List[str]):
+            Internal attribute storing a list of tags applied to the commit.
+        _phase (Optional[str]):
+            Internal attribute storing the commit phase
+            (e.g., 'PUBLISHED', 'FROZEN', 'LEAF').
+        _changes (List[Tuple[str, str]]):
+            Internal attribute storing a list of tuples,
+            where each tuple represents a file change: (status, filename).
     """
-    __slots__ = model_config.FOSSIL_COMMIT._fields
+    __slots__ = model_config.FOSSIL_COMMIT.slots()
 
-    def __init__(self,
-                 uuid: str,
-                 date: str,
-                 author: str,
-                 comment: str,
-                 branch: str,
-                 tags: Optional[List[str]] = None,
-                 phase: str = None,
-                 changes: Optional[List[str]] = None):
-
-        uuid = model_util.is_valid_str_type(
-            uuid, commit_exception.UuidTypeError)
-        uuid = model_util.is_not_empty(uuid, commit_exception.UuidValueError)
-
-        date = model_util.is_valid_str_type(
-            date, commit_exception.DateTypeError)
-        date = model_util.is_not_empty(date, commit_exception.DateValueError)
-
-        author = model_util.is_valid_str_type(
-            author, commit_exception.AuthorTypeError)
-        author = model_util.is_not_empty(
-            author, commit_exception.AuthorValueError)
-
-        comment = model_util.is_valid_str_type(
-            comment, commit_exception.CommentTypeError)
-        comment = model_util.is_not_empty(
-            comment, commit_exception.CommentValueError)
-
-        branch = model_util.is_valid_str_type(
-            branch, commit_exception.BranchTypeError)
-        branch = model_util.is_not_empty(
-            uuid, commit_exception.BranchValueError)
-
-        object.__setattr__(self, model_config.ConfigCommit.HASH.value, uuid)
-        object.__setattr__(self, model_config.ConfigCommit.DATE.value, date)
+    def __init__(
+        self,
+        uuid: str,
+        date: str,
+        author: str,
+        comment: str,
+        branch: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+        phase: Optional[str] = None,
+        changes: Optional[List[Tuple[str,str]]] = None
+    ):
+        (uuid_val, date_val, author_val, comment_val, branch_val, tags_val,
+         phase_val, changes_val) = (
+            model_util.viable_fossil_commit(
+                uuid=uuid, date=date, author=author, comment=comment,
+                branch=branch, tags=tags, phase=phase, changes=changes,
+                exception=model_exception.FossilCommitError
+            )
+        )
+        object.__setattr__(self, model_config.FOSSIL_COMMIT.uuid, uuid_val)
+        object.__setattr__(self, model_config.FOSSIL_COMMIT.date, date_val)
         object.__setattr__(
-            self, model_config.ConfigCommit.AUTHOR.value, author)
+            self, model_config.FOSSIL_COMMIT.author, author_val
+        )
         object.__setattr__(
-            self, model_config.ConfigCommit.COMMENT.value, comment)
+            self, model_config.FOSSIL_COMMIT.comment, comment_val
+        )
         object.__setattr__(
-            self, model_config.ConfigCommit.BRANCH.value, branch)
+            self, model_config.FOSSIL_COMMIT.branch, branch_val
+        )
+        object.__setattr__(
+            self,
+            model_config.FOSSIL_COMMIT.tags,
+            tags_val if tags_val is not None else []
+        )
 
-        tags = model_util.check_list_type(tags, commit_exception.TagsListError)
-        tags = model_util.check_list_content(
-            tags, commit_exception.TagsCommitError)
-        object.__setattr__(self, model_config.ConfigCommit.TAGS.value, tags)
+        object.__setattr__(self, model_config.FOSSIL_COMMIT.phase, phase_val)
 
-        object.__setattr__(self, model_config.ConfigCommit.PHASE.value, phase)
+        object.__setattr__(
+            self,
+            model_config.FOSSIL_COMMIT.changes,
+            changes_val if changes_val is not None else []
+        )
+    @property
+    def uuid(self) -> str:
+        """The unique identifier (hash) of the commit.
 
-        changes = model_util.check_list_type(
-            changes, commit_exception.ChangesTypeError)
-        changes = model_util.check_list_content(
-            changes, commit_exception.ChangeValueError)
+        Returns:
+            str: The commit UUID.
+        """
+        return cast(str, getattr(self, model_config.FOSSIL_COMMIT.uuid))
 
-        if changes is not None:
-            changes = model_util.is_valid_str_type(
-                changes, commit_exception.ChangesTypeError)
-            changes = model_util.is_not_empty(
-                changes, commit_exception.ChangesValueError)
-            object.__setattr__(
-                self,model_config.ConfigCommit.CHANGES.value,changes)
+    @property
+    def date(self) -> str:
+        """The date and time of the commit.
 
-        if changes is None:
-            object.__setattr__(
-                self, model_config.ConfigCommit.CHANGES.value, [])
+        Returns:
+            str: The commit date string (e.g., 'YYYY-MM-DD HH:MM:SS').
+        """
+        return cast(str, getattr(self, model_config.FOSSIL_COMMIT.date))
+
+
+    @property
+    def author(self) -> str:
+        """The author of the commit.
+
+        Returns:
+            str: The author's name.
+        """
+        return cast(str, getattr(self, model_config.FOSSIL_COMMIT.author))
+
+
+    @property
+    def comment(self) -> str:
+        """The commit message.
+
+        Returns:
+            str: The commit's comment or message.
+        """
+        return cast(str, getattr(self, model_config.FOSSIL_COMMIT.comment))
+
+
+    @property
+    def branch(self) -> Optional[str]:
+        """The branch name associated with the commit.
+
+        Returns:
+            Optional[str]: The branch name string, or None if not specified.
+        """
+        return cast(str, getattr(self, model_config.FOSSIL_COMMIT.branch))
+
+
+    @property
+    def tags(self) -> List[str]:
+        """A list of tags applied to the commit.
+
+        Returns:
+            List[str]: A list of tag strings. Can be empty if no tags.
+        """
+        return cast(List[str], getattr(self, model_config.FOSSIL_COMMIT.tags))
+
+
+    @property
+    def phase(self) -> Optional[str]:
+        """The commit phase (e.g., 'PUBLISHED', 'FROZEN', 'LEAF').
+
+        Returns:
+            Optional[str]: The commit phase string, or None if not specified.
+        """
+        return cast(str, getattr(self, model_config.FOSSIL_COMMIT.phase))
+
+
+    @property
+    def changes(self) -> List[Tuple[str, str]]:
+        """A list of file changes in the commit.
+
+        Each tuple contains (status, filename), e.g., ('ADDED', 'file.txt').
+
+        Returns:
+            List[Tuple[str, str]]:
+                A list of tuples representing file changes.
+                Can be empty if no changes.
+        """
+        return cast(
+            List[Tuple[str, str]], getattr(
+                self, model_config.FOSSIL_COMMIT.changes
+            )
+        )
+
+    def get_hash(self) -> str:
+        """Get Brief Commit Hash
+
+        Returns a shortened version of the commit's UUID (first 12 characters).
+
+        Returns:
+            str: The brief commit hash.
+        """
+        return self.uuid[:12]
 
     def __setattr__(self, name: Any, value: Any) -> None:
-        """Commits are Immutable"""
-        raise commit_exception.ImmutableCommitError()
+        """Prevents attribute modification, enforcing immutability.
 
-    def __deltattr__(self, name: Any) -> None:
-        """Commits are Immutable"""
-        raise commit_exception.ImmutableCommitError()
+        Attempting to set any attribute on a `FossilCommit` instance after
+        initialization will raise an `ImmutableError`.
 
-    def __repr__(self):
-        """Official String Represenation of a Commit"""
-        #todo unquote list args && quote str args
-        attributes = ', '.join(
-            f"{slot}={getattr(self,slot)}" for slot in self.__slots__)
-        return f'{self.__class__.__name__}({attributes})'
+        Args:
+            name (Any): The name of the attribute to set.
+            value (Any): The value to set for the attribute.
 
-    def __str__(self):
-        """Standard string output for a Commit."""
-        uuid = self.uuid[:12]
-        return f'uuid: {uuid}\ns ate: {self.date}\ncomment: {self.comment}'
+        Raises:
+            meta_exception.ImmutableError:
+                Always, as FossilCommit instances are immutable.
+        """
+        builder = meta_ec.MetaErrorBuilder(
+            error_context=meta_ec.MetaErrorPath.IMMUTABLE_INSTANCE,
+            error_code=meta_ec.META_ERROR_CODE.IMMUTABILITY_VIOLATION,
+            arg=self,
+            field= name,
+            info=meta_config.MOD_TYPE.set_attribute
+        )
+        error_data = builder.data()
+        raise meta_exception.ImmutableError(**error_data.to_exception())
 
-    def get_hash(self):
-        """Get Brief Commit Hash"""
-        return self.uuid[:12]
+    def __delattr__(self, name: Any) -> None:
+        """Prevents attribute deletion, enforcing immutability.
+
+        Attempting to delete any attribute on a `FossilCommit` instance
+        will raise an `ImmutableError`.
+
+        Args:
+            name (Any): The name of the attribute to delete.
+
+        Raises:
+            meta_exception.ImmutableError:
+            Always, as FossilCommit instances are immutable.
+        """
+        builder = meta_ec.MetaErrorBuilder(
+            error_context=meta_ec.MetaErrorPath.IMMUTABLE_INSTANCE,
+            error_code=meta_ec.META_ERROR_CODE.IMMUTABILITY_VIOLATION,
+            arg=self,
+            field= name,
+            info=meta_config.MOD_TYPE.delete_attribute
+        )
+        error_data = builder.data()
+        raise meta_exception.ImmutableError(**error_data.to_exception())
+
+    def __repr__(self) -> str:
+        """Official String Representation of a Commit for developers/debugging.
+
+        Returns:
+            str:
+                A detailed string representation including all commit
+                attributes.
+        """
+        attrs = []
+        for slot_name in self.__slots__:
+            prop_name = slot_name.lstrip('_')
+            attr_value = getattr(self, prop_name, None)
+
+            if isinstance(attr_value, str):
+                attrs.append(f'{prop_name}={attr_value!r}')
+            elif isinstance(attr_value, list):
+                if all(isinstance(item, str) for item in attr_value):
+                    list_items = [f'{item!r}' for item in attr_value]
+                    attrs.append(f"{prop_name}=[{', '.join(list_items)}]")
+                elif all(isinstance(item, tuple) for item in attr_value):
+                    tuple_items = []
+                    for t_item in attr_value:
+                        if isinstance(
+                                t_item, tuple
+                        ) and all(
+                            isinstance(s, str) for s in t_item
+                        ):
+                            tuple_items.append(
+                                f'({t_item[0]!r}, {t_item[1]!r})'
+                            )
+                        else:
+                            tuple_items.append(repr(t_item))
+                    attrs.append(f"{prop_name}=[{', '.join(tuple_items)}]")
+                else:
+                    attrs.append(f'{prop_name}={repr(attr_value)}')
+            else:
+                attrs.append(f'{prop_name}={attr_value}')
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
+
+    def __str__(self) -> str:
+        """Standard string output for a Commit (user-friendly summary).
+
+        Returns:
+            str:
+                A concise summary of the commit, including UUID, date, author,
+                and comment.
+        """
+        uuid_short = self.get_hash()
+        return (
+            f'uuid: {uuid_short}\n'
+            f'date: {self.date}\n'
+            f'author: {self.author}\n'
+            f'comment: {self.comment}'
+        )
+
+
+    def __hash__(self) -> int:
+        """Get a hash for a commit.
+
+        The hash is based on the immutable core properties of the commit.
+
+        Returns:
+            int: The hash value of the object.
+        """
+        return hash((self.uuid, self.date, self.author, self.comment))
 
 
 class FossilTimeline:
     """A list of all commits from the source repository timeline.
 
+    This class encapsulates a collection of `FossilCommit` objects, typically
+    representing the historical sequence of commits in a repository.
+
     Attributes:
-        commits List[FossilCommit]: A list of all timeline commits
+        commits (List[FossilCommit]): A list of all timeline commits, ordered
+                                      chronologically (oldest to newest).
     """
-    __slots__ = model_config.FOSSIL_TIMELINE.commits
+    __slots__ = (model_config.FOSSIL_TIMELINE.commits,)
+    # explicitly declare type of timeline slot
+    commits: List[FossilCommit]
 
     def __init__(self, commits: Optional[List[FossilCommit]] = None):
-        commits.reverse()
-        self.commits = commits
+        """Initializes a FossilTimeline instance.
+
+        Args:
+            commits (Optional[List[FossilCommit]]):
+                An optional list of FossilCommit objects.
+                If None, an empty list is used.
+                The list is reversed internally to ensure chronological order
+                (oldest to newest) if parsed from typical timeline output
+                (which is often newest to oldest).
+        """
+        if commits is None:
+            object.__setattr__(self, model_config.FOSSIL_TIMELINE.commits, [])
+        else:
+            commits.reverse()
+            object.__setattr__(
+                self, model_config.FOSSIL_TIMELINE.commits, commits
+            )
 
     def add(self, commit: FossilCommit) -> None:
+        """Adds a FossilCommit to the timeline.
+
+        Args:
+            commit (FossilCommit): The commit object to add.
+        """
         self.commits.append(commit)
+
+    def __len__(self) -> int:
+        """Returns the number of commits in the timeline."""
+        return len(self.commits)
+
+    def __getitem__(self, index: int) -> FossilCommit:
+        """Allows indexing into the commits list.
+
+        Args:
+            index (int): The index of the commit to retrieve.
+
+        Returns:
+            FossilCommit: The commit object at the specified index.
+        """
+        return self.commits[index]
+
+    def __iter__(self) -> Any:
+        """Allows iteration over the commits."""
+        return iter(self.commits)
+
+    def __repr__(self) -> str:
+        """Official string representation for developers/debugging.
+
+        Returns:
+            str:
+                A concise representation indicating the class and number
+                of commits.
+        """
+        return (
+            f'{self.__class__.__name__}(commits={len(self.commits)} commits)'
+        )
+
+    def __str__(self) -> str:
+        """User-friendly string representation of the timeline.
+
+        Returns:
+            str: A string summarizing the timeline's content.
+        """
+        return f'Fossil Timeline with {len(self.commits)} commits.'
