@@ -246,7 +246,7 @@ class FossilCommit(
         comment: str,
         branch: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        phase: Optional[str] = None,
+        phase: Optional[List[str]] = None,
         changes: Optional[List[Tuple[str,str]]] = None
     ):
         (uuid_val, date_val, author_val, comment_val, branch_val, tags_val,
@@ -331,7 +331,7 @@ class FossilCommit(
 
 
     @property
-    def tags(self) -> List[str]:
+    def tags(self) -> Optional[List[str]]:
         """A list of tags applied to the commit.
 
         Returns:
@@ -341,13 +341,14 @@ class FossilCommit(
 
 
     @property
-    def phase(self) -> Optional[str]:
-        """The commit phase (e.g., 'PUBLISHED', 'FROZEN', 'LEAF').
+    def phase(self) -> Optional[List[str]]:
+        """The commit phase,  zero or more of:
+        *CURRENT*, *MERGE*, *FORK*, *UNPUBLISHED*, *LEAF*, *BRANCH*
 
         Returns:
             Optional[str]: The commit phase string, or None if not specified.
         """
-        return cast(str, getattr(self, model_config.FOSSIL_COMMIT.phase))
+        return cast(List[str], getattr(self, model_config.FOSSIL_COMMIT.phase))
 
 
     @property
@@ -362,9 +363,8 @@ class FossilCommit(
                 Can be empty if no changes.
         """
         return cast(
-            List[Tuple[str, str]], getattr(
-                self, model_config.FOSSIL_COMMIT.changes
-            )
+            List[Tuple[str, str]],
+            getattr(self, model_config.FOSSIL_COMMIT.changes)
         )
 
     def get_hash(self) -> str:
@@ -502,8 +502,6 @@ class FossilTimeline:
                                       chronologically (oldest to newest).
     """
     __slots__ = (model_config.FOSSIL_TIMELINE.commits,)
-    # explicitly declare type of timeline slot
-    commits: List[FossilCommit]
 
     def __init__(self, commits: Optional[List[FossilCommit]] = None):
         """Initializes a FossilTimeline instance.
@@ -530,11 +528,19 @@ class FossilTimeline:
         Args:
             commit (FossilCommit): The commit object to add.
         """
-        self.commits.append(commit)
+        cast(
+            List[FossilCommit],
+            getattr(self,model_config.FOSSIL_TIMELINE.commits)
+        ).append(commit)
 
     def __len__(self) -> int:
         """Returns the number of commits in the timeline."""
-        return len(self.commits)
+        return len(
+            cast(
+                List[FossilCommit],
+                getattr(self,model_config.FOSSIL_TIMELINE.commits)
+            )
+        )
 
     def __getitem__(self, index: int) -> FossilCommit:
         """Allows indexing into the commits list.
@@ -545,11 +551,19 @@ class FossilTimeline:
         Returns:
             FossilCommit: The commit object at the specified index.
         """
-        return self.commits[index]
+        return cast(
+            List[FossilCommit],
+            getattr(self,model_config.FOSSIL_TIMELINE.commits)
+        )[index]
 
     def __iter__(self) -> Any:
         """Allows iteration over the commits."""
-        return iter(self.commits)
+        return iter(
+            cast(
+                List[FossilCommit],
+                getattr(self,model_config.FOSSIL_TIMELINE.commits)
+            )
+        )
 
     def __repr__(self) -> str:
         """Official string representation for developers/debugging.
@@ -559,8 +573,13 @@ class FossilTimeline:
                 A concise representation indicating the class and number
                 of commits.
         """
+        commits = cast(
+            List[FossilCommit],
+            getattr(self,model_config.FOSSIL_TIMELINE.commits)
+        )
+
         return (
-            f'{self.__class__.__name__}(commits={len(self.commits)} commits)'
+            f'{self.__class__.__name__}(commits={len(commits)} commits)'
         )
 
     def __str__(self) -> str:
@@ -569,4 +588,8 @@ class FossilTimeline:
         Returns:
             str: A string summarizing the timeline's content.
         """
-        return f'Fossil Timeline with {len(self.commits)} commits.'
+        commits = cast(
+            List[FossilCommit],
+            getattr(self,model_config.FOSSIL_TIMELINE.commits)
+        )
+        return f'Fossil Timeline with {len(commits)} commits.'
