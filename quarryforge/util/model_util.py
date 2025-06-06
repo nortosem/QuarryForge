@@ -176,7 +176,7 @@ def viable_fossil_repo(
                 field=model_config.FOSSIL_REPO._fields[0]
                 )
         )
-        file = validation_util.is_dir(
+        file = validation_util.is_file(
             arg=file,
             exception=exception,
             error_builder=model_ec.FossilRepoErrorBuilder(
@@ -233,7 +233,7 @@ def viable_fossil_commit(
     comment: str,
     branch: Optional[str] = None,
     tags: Optional[List[str]] = None,
-    phase: Optional[str] = None,
+    phase: Optional[List[str]] = None,
     changes: Optional[List[Tuple[str, str]]] = None,
     exception: Type[_ModelError],
 ) -> Tuple[
@@ -243,8 +243,8 @@ def viable_fossil_commit(
     str,
     Optional[str],
     Optional[List[str]],
-    Optional[str],
     Optional[List[str]],
+    Optional[List[Tuple[str,str]]],
 ]:
     """Validates the arguements fields for FossilCommit on Initialization."""
     uuid = validation_util.is_str_not_empty(
@@ -334,14 +334,14 @@ def viable_fossil_commit(
             )
         )
     if tags:
-        tags = validation_util.content_empty_error(
-            arg=validation_util.content_type_error(
+        tags = validation_util.content_empty_error_str_list(
+            arg=validation_util.content_type_error_str_list(
                 arg=tags,
                 exception=exception,
                 error_builder=model_ec.FossilCommitErrorBuilder(
                     error_context=model_ec.FossilCommitPath.INIT,
                     error_code=ec.GENERIC_ERROR.type_error,
-                    field=f'{[tag for tag in tags]}'
+                    field=f'{[tag for tag in tags] if tags else []}'
                 ),
             ),
             exception=exception,
@@ -352,26 +352,26 @@ def viable_fossil_commit(
             )
         )
     if phase:
-        phase  = validation_util.is_str_not_empty(
-            arg=validation_util.is_type_str(
+        phase = validation_util.content_empty_error_str_list(
+            arg=validation_util.content_type_error_str_list(
                 arg=phase,
                 exception=exception,
                 error_builder=model_ec.FossilCommitErrorBuilder(
                     error_context=model_ec.FossilCommitPath.INIT,
                     error_code=ec.GENERIC_ERROR.type_error,
-                    field=phase
-                )
+                    field=f'{[p for p in phase] if tags else []}'
+                ),
             ),
             exception=exception,
             error_builder=model_ec.FossilCommitErrorBuilder(
                 error_context=model_ec.FossilCommitPath.INIT,
                 error_code=ec.STRING_ERROR.empty,
-                field=phase
+                field=f'{[p for p in phase] if phase else []}'
             )
         )
     if changes:
-        changes = validation_util.content_empty_error(
-            arg=validation_util.content_type_error(
+        changes = validation_util.content_empty_error_str_tuple_list(
+            arg=validation_util.content_type_error_str_tuple_list(
                 arg=changes,
                 exception=exception,
                 error_builder=model_ec.FossilCommitErrorBuilder(
