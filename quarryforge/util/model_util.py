@@ -234,7 +234,7 @@ def viable_fossil_commit(
     branch: Optional[str] = None,
     tags: Optional[List[str]] = None,
     phase: Optional[str] = None,
-    changes: Optional[List[str]] = None,
+    changes: Optional[List[Tuple[str, str]]] = None,
     exception: Type[_ModelError],
 ) -> Tuple[
     str,
