@@ -10,6 +10,18 @@ from quarryforge.config.exception_conf.exception_data import BUILDER_FIELD
 __all__: List[str] = []
 
 
+class AttrModTypeConfig(NamedTuple):
+    """Types of attribute modifications.
+
+    Define the types of immutable modifications.
+    """
+    set_attribute: str = 'set attribute'
+    delete_attribute: str = 'delete attribute'
+
+
+MOD_TYPE: AttrModTypeConfig = AttrModTypeConfig()
+
+
 class ErrorBuilderConfig(NamedTuple):
     """The meta.assembler.BuildError configuration.
 
