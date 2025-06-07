@@ -46,6 +46,7 @@ class TestFossilConfig:
         assert cmd.LIST == 'list'
         assert cmd.ALL == '--all'
         assert cmd.OPEN == 'open'
+        assert cmd.CLOSE == 'close'
         assert cmd.WORKDIR == '--workdir'
         assert cmd.CLOSED == '--closed'
         assert cmd.INFO == 'info'
@@ -63,7 +64,7 @@ class TestFossilConfig:
         assert cmd.HASH == '--hash'
         assert cmd.COMMIT == 'commit'
 
-        assert len(get_namedtuple_fields(fossil_config.ConfigCommand)) == 30
+        assert len(get_namedtuple_fields(fossil_config.ConfigCommand)) == 39
 
     def test_config_timeline_data_attributes(self):
         """Test attributes of ConfigTimelineData."""
@@ -72,6 +73,7 @@ class TestFossilConfig:
         assert td.INIT_CHECKIN == 'initial empty check-in'
         assert td.END_MARK == '+++ end of timeline'
         assert td.COMMITS_KEY == 'commits'
+        assert td.COMMIT_SEP == '\\n(?=Commit:\\s+)'
         assert td.HASH_KEY == 'uuid'
         assert td.DATE_KEY == 'date'
         assert td.AUTHOR_KEY == 'author'
@@ -80,7 +82,6 @@ class TestFossilConfig:
         assert td.TAGS_KEY == 'tags'
         assert td.PHASE_KEY == 'phase'
         assert td.CHANGES_KEY == 'changes'
-
         assert td.HASH_PATTERN == '^(?P<label>Commit:\\s+)(?P<uuid>[0-9a-f]+)$'
         assert td.DATE_PATTERN == '^(?P<label>Date):\\s+(?P<date>.+)$'
         assert td.AUTHOR_PATTERN == '^(?P<label>Author):\\s+(?P<author>.+)?'
@@ -88,12 +89,8 @@ class TestFossilConfig:
         assert td.BRANCH_PATTERN == '^(?P<label>Branch):\\s+(?P<branch>.+)$'
         assert td.TAGS_PATTERN == '^(?P<label>Tags):\\s+(?P<tags>.+)$'
         assert td.TAG_REGEX == '?P<tag>[\\w-]+'
-        assert td.PHASE_PATTERN == (
-            '^(?P<label>Phase):\\s+\\*?(?P<phase>LEAF|PUBLISHED|FROZEN)?\\*?'
-        )
-        assert td.CHANGE_PATTERN == (
-            '^\\s+(?P<change>ADDED|EDITED|DELETED)\\s(?P<filename>.+)$'
-        )
+        assert td.PHASE_PATTERN == '^(?P<label>Phase):\\s+\\*?(?P<phase>LEAF|PUBLISHED|FROZEN)?\\*?'
+        assert td.CHANGE_PATTERN == '^\\s+(?P<change>ADDED|EDITED|DELETED)\\s(?P<filename>.+)$'
         assert td.PATH_PATTERN == '^(?P<path>.*[\\/])?(?P<file>[^/\\\\]+$)'
 
         expected_fields = [
@@ -128,7 +125,6 @@ class TestFossilConfig:
         method = getattr(td, method_name)
         pattern_obj = method()
         assert isinstance(pattern_obj, re.Pattern)
-
         expected_source_pattern = getattr(td, expected_pattern_attr)
         assert pattern_obj.pattern == expected_source_pattern
 
@@ -178,18 +174,17 @@ class TestFossilConfig:
         assert fossil_conf.default_return_code == 1
         assert fossil_conf.stderr == 'stderr'
         assert fossil_conf.timeout == 'timeout'
+        assert fossil_conf.step == 'step'
+        assert fossil_conf.init == 'New repository initialization'
+        assert fossil_conf.username_setup == 'username_setup'
+        assert fossil_conf.user_contact == 'user_contact'
 
         expected_attrs = [
-            'default_timeout', 'process_error', 'timeout_error',
-            'args', 'cmd', 'output', 'return_code',
-            'default_return_code', 'stderr', 'timeout'
+            'default_timeout', 'process_error', 'timeout_error', 'args', 'cmd',
+            'output', 'return_code', 'default_return_code', 'stderr',
+            'timeout', 'step', 'init', 'username_setup', 'user_contact'
         ]
-
-        for attr_name in expected_attrs:
-            assert hasattr(fossil_conf, attr_name)
-            assert getattr(fossil_conf, attr_name) == (
-                getattr(fossil_config.FOSSIL, attr_name)
-            )
+        assert sorted(get_namedtuple_fields(fossil_config.ConfigFossil)) == sorted(expected_attrs)
 
 
     def test_global_constants_types(self):
