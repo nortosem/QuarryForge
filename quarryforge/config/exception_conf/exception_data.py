@@ -1,6 +1,7 @@
 """Exception Data Module
 
-
+This module defines the data structures for holding configuration constants
+and the final, validated error data used in exceptions.
 """
 from typing import Any, Dict, List, NamedTuple, Optional
 
@@ -10,7 +11,7 @@ __all__: List[str] = ['ERROR_FIELD', 'BUILDER_FIELD', 'ValidErrorData']
 
 
 class ConfigErrorData(NamedTuple):
-    """Valid QuarryForge Exception Fields"""
+    """Configuration for valid QuarryForge Exception Fields."""
     code: str = 'code'
     details: str = 'details'
     message: str = 'message'
@@ -23,7 +24,7 @@ ERROR_FIELD: ConfigErrorData = ConfigErrorData()
 
 
 class ConfigBuilder(NamedTuple):
-    """BuildError Data fields"""
+    """Configuration for ErrorBuilder data fields."""
     arg: str = 'arg'
     error_code: str = 'error_code'
     error_context: str = 'error_context'
@@ -39,7 +40,7 @@ BUILDER_FIELD: ConfigBuilder = ConfigBuilder()
 
 
 class ValidErrorData(_.ImmutableInstance, metaclass=_.ImmutableMetaClass):
-    """Data container for exception information"""
+    """An immutable data container for fully constructed exception information."""
     __slots__ = ERROR_FIELD._fields[:-1]
 
     code: Optional[str]
@@ -61,7 +62,7 @@ class ValidErrorData(_.ImmutableInstance, metaclass=_.ImmutableMetaClass):
 
 
     def to_exception(self) -> Dict[str, Any]:
-        """Assemble to convert keyword args for a QuarryForge exception."""
+        """Assembles the data into a dictionary suitable for exception kwargs."""
         return {
             ERROR_FIELD.code: self.code,
             ERROR_FIELD.message: self.message,
