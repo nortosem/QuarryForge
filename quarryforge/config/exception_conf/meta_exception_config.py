@@ -26,7 +26,7 @@ class MetaErrorMessages(NamedTuple):
         'Attempted to modify an immutable object.'
     )
     assembler_error_user: str = (
-        'There was an issue preparing error information.'
+        'A fatal error occured while assembling an error message.'
     )
     default_meta_user: str = 'An error occurred in the meta subpackage.'
 
@@ -43,8 +43,12 @@ class MetaErrorPath(metaclass=immutable.Namespace):
     ASSEMBLER_CONTEXT: str = base_conf.BaseErrorPath.get_full_error_code(
         META_ROOT_CONTEXT, root.META_MODULE.assembler
     )
-    IMMUTABLE_NAMESPACE = f'{IMMUTABLE_CONTEXT}.Namespace'
-    IMMUTABLE_INSTANCE = f'{IMMUTABLE_CONTEXT}.Instance'
+    IMMUTABLE_NAMESPACE = base_conf.BaseErrorPath.get_full_error_code(
+        IMMUTABLE_CONTEXT, 'Namespace'
+    )
+    IMMUTABLE_INSTANCE = base_conf.BaseErrorPath.get_full_error_code(
+        IMMUTABLE_CONTEXT, 'Instance'
+    )
 
 
 class MetaErrorBuilder(base_conf.BaseErrorBuilder):
@@ -74,50 +78,42 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
             obj_name = 'the target object'
 
         operation_desc = self.info or 'modify'
-        attribute_name = f'attribute: {self.field}' or 'an attribute'
+        attribute_name = (
+            f'attribute: {self.field}' if self.field else 'an attribute'
+        )
 
         return (
-            f'{base_msg} Immutable object modification failure.'
-            f'Cannot {operation_desc.lower()}: {attribute_name} on '
-            f'immutable object: {obj_name}.'
+            f'{base_msg} Cannot {operation_desc.lower()} on immutable object '
+            f'"{obj_name}". Attempted to modify {attribute_name}.'
         )
 
     def _assembler_error_message(self) -> str:
-        """Generates a message for `meta.immutable.ImmutableError`"""
+        """Generates a message for meta.assembler.ErrorBuilder errors."""
         base_msg: str = self._base_message()
         reason = self.info or 'an unspecified issue'
         return (
-            f'{base_msg} Error builder assembly failure: {reason}'
-            f'Issue with field "{self.field or exc_conf.DESC_MSG.unknown}"'
+            f'{base_msg} Error builder assembly failure: {reason}. '
+            f'Issue with field: {self.field or exc_conf.DESC_MSG.unknown}.'
         )
 
     def message(self) -> str:
         """Builds a detailed, technical error message."""
-        if self.error_code == META_ERROR_CODE.IMMUTABILITY_VIOLATION:
-            return self._immutable_error_message()
-
-        if self.error_code == META_ERROR_CODE.ASSEMBLER_ERROR:
-            return self._assembler_error_message()
-
-        if self.error_code in exc_conf.GENERIC_ERROR:
-            return super().message()
-
-        return super().message()
+        match self.error_code:
+            case META_ERROR_CODE.IMMUTABILITY_VIOLATION:
+                return self._immutable_error_message()
+            case META_ERROR_CODE.ASSEMBLER_ERROR:
+                return self._assembler_error_message()
+            case _:
+                return super().message()
 
     def user_message(self) -> str:
         """Builds a user-friendly error message."""
-        if self.error_code == META_ERROR_CODE.IMMUTABILITY_VIOLATION:
-            return (
-                'An attempt was made to modify a component that is designed '
-                'to be unchangeable.'
-            )
-
-        if self.error_code == META_ERROR_CODE.ASSEMBLER_ERROR:
-            return (
-                'A fatal error occured while assembling an error message.'
-            )
-
-        if self.error_code in exc_conf.GENERIC_ERROR:
-            return super().user_message()
-
-        return 'A meta-subpackage application error occurred.'
+        match self.error_code:
+            case META_ERROR_CODE.IMMUTABILITY_VIOLATION:
+                return META_MSG.immutable_violation_user
+            case META_ERROR_CODE.ASSEMBLER_ERROR:
+                return META_MSG.assembler_error_user
+            case _ if self.error_code in exc_conf.GENERIC_ERROR:
+                return super().user_message()
+            case _:
+                return META_MSG.default_meta_user
