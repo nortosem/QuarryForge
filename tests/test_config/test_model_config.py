@@ -15,15 +15,22 @@ class TestModelConfig:
         assert sorted(model_config.__all__) == sorted(expected_all)
 
     def test_config_fossil_repo_attributes_and_method(self):
-        """Test attributes and method of ConfigFossilRepo."""
+        """Test attributes and slots() method of ConfigFossilRepo."""
         cfg = model_config.FOSSIL_REPO
         assert isinstance(cfg, model_config.ConfigFossilRepo)
 
+        # Test attributes
         assert cfg.file == '_file'
-        assert cfg.field_name() == 'file'
+        assert cfg.is_new == '_is_new'
+        assert cfg.workdir == '_workdir'
 
-        expected_fields = ['file']
+        # Test field definitions
+        expected_fields = ['file', 'is_new', 'workdir']
         assert sorted(get_namedtuple_fields(model_config.ConfigFossilRepo)) == sorted(expected_fields)
+
+        # Test slots() method
+        expected_slots = ('_file', '_is_new', '_workdir')
+        assert cfg.slots() == expected_slots
 
 
     def test_config_fossil_commit_attributes(self):
@@ -31,19 +38,24 @@ class TestModelConfig:
         cfg = model_config.FOSSIL_COMMIT
         assert isinstance(cfg, model_config.ConfigFossilCommit)
 
-        assert cfg.uuid == 'uuid'
-        assert cfg.date == 'date'
-        assert cfg.author == 'author'
-        assert cfg.comment == 'comment'
-        assert cfg.branch == 'branch'
-        assert cfg.tags == 'tags'
-        assert cfg.phase == 'phase'
-        assert cfg.changes == 'changes'
+        # Test attributes
+        assert cfg.uuid == '_uuid'
+        assert cfg.date == '_date'
+        assert cfg.author == '_author'
+        assert cfg.comment == '_comment'
+        assert cfg.branch == '_branch'
+        assert cfg.tags == '_tags'
+        assert cfg.phase == '_phase'
+        assert cfg.changes == '_changes'
 
         expected_fields = [
             'uuid', 'date', 'author', 'comment', 'branch', 'tags', 'phase', 'changes'
         ]
         assert sorted(get_namedtuple_fields(model_config.ConfigFossilCommit)) == sorted(expected_fields)
+
+        # Test slots() method
+        expected_slots = ('_uuid', '_date', '_author', '_comment', '_branch', '_tags', '_phase', '_changes')
+        assert cfg.slots() == expected_slots
 
     def test_config_fossil_timeline_attributes(self):
         """Test attributes of ConfigFossilTimeline."""
