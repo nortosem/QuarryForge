@@ -98,14 +98,14 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         info = self.info or config.DESC_MSG.unknown
         return (
             f'{self._base_message()} Expected type: {info}. Got '
-            f'type {type(self.arg).__name__} with value "{self.arg!r}" instead.'
+            f'type {type(self.arg).__name__} with value {self.arg!r} instead.'
         )
 
     def _value_message(self) -> str:
         """Generates a message for value errors."""
         info = self.info or config.DESC_MSG.unknown
         return (
-            f'{self._base_message()} Value "{self.arg!r}" is invalid. '
+            f'{self._base_message()} Value {self.arg!r} is invalid. '
             f'Expected value: {info}.'
         )
 
@@ -115,8 +115,8 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         Exceptions for invalid states require an action and current_state.
         (e.g. use the extra_details dictionary: extra_details['action'] = ...)
         """
-        action = 'An operation'
-        current_state = f'An {config.DESC_MSG.unknown} state'
+        action = 'an operation'
+        current_state = f'an {config.DESC_MSG.unknown} state'
 
         if self.extra_details:
             action = str(self.extra_details.get('action'))
@@ -133,8 +133,8 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         Exceptions for configuration require a configuration value & reason.
         (e.g. use the extra_details dictionary: extra_details['action'] = ...)
         """
-        config_key = 'A required configuration'
-        reason = f'An {config.DESC_MSG.unknown} {config.DESC_MSG.reason}'
+        config_key = 'required configuration'
+        reason = f'with {config.DESC_MSG.unknown} {config.DESC_MSG.reason}'
 
         if self.extra_details:
             config_key = str(self.extra_details.get('config_key'))
@@ -142,7 +142,7 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
 
         return (
             f'{self._base_message()} Missing or invalid configuration for '
-            f'{config_key}: {reason}.'
+            f'{config_key} {reason}.'
         )
 
     def _dependency_message(self) -> str:
@@ -152,14 +152,14 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         (e.g. use the extra_details dictionary: extra_details['action'] = ...)
         """
         dependency = (
-            f'An {config.DESC_MSG.unknown} {config.DESC_MSG.dependency}')
-        reason = f'An {config.DESC_MSG.unknown} {config.DESC_MSG.reason}'
+            f'{config.DESC_MSG.unknown} {config.DESC_MSG.dependency}')
+        reason = f'{config.DESC_MSG.unknown} {config.DESC_MSG.reason}'
 
         if self.extra_details:
             dependency = self.extra_details[config.DESC_MSG.dependency]
             reason = self.extra_details[config.DESC_MSG.reason]
         return (
-            f'{self._base_message()} {dependency} failed due to: {reason}.'
+            f'{self._base_message()} `{dependency}` failed due to: {reason}.'
         )
 
     def _not_implemented_message(self) -> str:
@@ -183,7 +183,7 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
 
         return (
             f'{BASE_ERROR_MSG.unexpected_error_prefix}'
-            f'`{self.error_context}` {suffix}'
+            f' `{self.error_context}` {suffix}'
         )
 
     def message(self) -> str:
@@ -218,7 +218,7 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
 
             case _:
                 error_message = (
-                    f'{self._base_message()} (Error code "{self.error_code}" '
+                    f'{self._base_message()} Error code {self.error_code} '
                     f'unhandled {config.DESC_MSG.unexpected_error}.'
                 )
 

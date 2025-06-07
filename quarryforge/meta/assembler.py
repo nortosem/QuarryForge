@@ -190,7 +190,7 @@ class ErrorBuilder(abc.ABC):
         This provides a consistent header for all technical error messages.
         """
         return (
-            f'Error in `{self.error_context}` (Code: {self.error_code}):'
+            f'Error in `{self.error_context}` (Code: {self.error_code}).'
         )
 
     def details(self) -> Dict[str, Any]:
