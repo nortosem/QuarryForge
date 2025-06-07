@@ -15,6 +15,17 @@ class TestMetaConfig:
         assert hasattr(meta_config, '__all__')
         assert meta_config.__all__ == []
 
+    def test_attr_mod_type_config_attributes(self):
+        """Test attributes of AttrModTypeConfig."""
+        cfg = meta_config.MOD_TYPE
+        assert isinstance(cfg, meta_config.AttrModTypeConfig)
+
+        assert cfg.set_attribute == 'set attribute'
+        assert cfg.delete_attribute == 'delete attribute'
+
+        expected_fields = ['set_attribute', 'delete_attribute']
+        assert sorted(get_namedtuple_fields(meta_config.AttrModTypeConfig)) == sorted(expected_fields)
+
     def test_error_builder_config_attributes(self):
         """Test attributes of ErrorBuilderConfig."""
         cfg = meta_config.BUILDER_CONFIG
@@ -42,7 +53,7 @@ class TestMetaConfig:
             get_namedtuple_fields(
                 meta_config.ErrorBuilderConfig)) == sorted(expected_fields)
 
-    def test_global_builder_config_instance(self):
-        """Test the global BUILDER_CONFIG instance."""
-        assert isinstance(
-            meta_config.BUILDER_CONFIG, meta_config.ErrorBuilderConfig)
+    def test_global_constants_instances(self):
+        """Test the global config instances."""
+        assert isinstance(meta_config.MOD_TYPE, meta_config.AttrModTypeConfig)
+        assert isinstance(meta_config.BUILDER_CONFIG, meta_config.ErrorBuilderConfig)
