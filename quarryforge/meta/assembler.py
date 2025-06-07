@@ -187,20 +187,11 @@ class ErrorBuilder(abc.ABC):
     def _base_message(self) -> str:
         """Generates a common error message prefix.
 
-        This prefix typically includes the error type and context, and
-        optionally the input value that caused the error.
-
-        Args:
-            field: The argument value associated with an error,
-                if applicable. Can be of any type.
-
-        Returns:
-            A detailed error message common for most exceptions.
+        This provides a consistent header for all technical error messages.
         """
-        field: str = f' for field "{self.field}"' if self.field else ''
-        message = f'{self.error_code} in `{self.error_context}` {field}'
-        value = f' for argument: {self.arg!r}.' if self.arg else '.'
-        return message + value
+        return (
+            f'Error in `{self.error_context}` (Code: {self.error_code}):'
+        )
 
     def details(self) -> Dict[str, Any]:
         """Abstract method to generate and return specific error details.

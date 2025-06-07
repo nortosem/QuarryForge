@@ -97,7 +97,7 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         """Generates a message for type errors."""
         info = self.info or config.DESC_MSG.unknown
         return (
-            f'{self._base_message()} Expected type: {info}. Got'
+            f'{self._base_message()} Expected type: {info}. Got '
             f'type {type(self.arg).__name__} with value "{self.arg!r}" instead.'
         )
 
