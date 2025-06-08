@@ -157,7 +157,6 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
         """
         base_msg: str = self._base_message()
         reason_suffix: str = self._get_reason_suffix()
-
         match self.error_context:
             case FossilErrorPath.FOSSIL_PROCESS:
                 return self._process_error_message()
