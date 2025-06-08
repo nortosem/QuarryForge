@@ -58,7 +58,7 @@ def load_toml(config_path: Path) -> Dict:
             logging.info('Loaded configuration from %s', config_path)
 
             return config_data
-    except base_main_exception.ArgumentError as e:
+    except main_exception.ArgumentError as e:
         logging.error('Error loading config file %s: %s', config_path, e)
         return {}
 
@@ -148,7 +148,7 @@ def reforge_process(argv=None):
             rebuilt_checkout_dir=args.rebuilt_project_dir,
         )
         logging.info('Rebuild process completed successfully.')
-    except base_main_exception.MainError as e:
+    except main_exception.MainError as e:
         logging.exception('An error occurred during the rebuild process: %s', e)
         sys.exit(1)
 
