@@ -99,14 +99,14 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
                 )
             case config.STRING_ERROR.invalid_chars:
                 return (
-                    f'{base_msg} String "{self.arg!r}" contains invalid '
+                    f'{base_msg} String {self.arg!r} contains invalid '
                     f'characters or patterns. '
                     f'Expected pattern: {self.info or config.DESC_MSG.unknown}.'
                 )
             case _:
                 return (
                     f'{base_msg} An unexpected string validation error '
-                    f'occurred for "{self.arg!r}".'
+                    f'occurred for {self.arg!r}.'
                 )
 
     def _path_error_message(self) -> str:
@@ -122,7 +122,7 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
                 )
             case config.PATH_ERROR.invalid_path_string:
                 return (
-                    f'{base_msg} The provided string "{self.arg!r}" cannot be '
+                    f'{base_msg} The provided string {self.arg!r} cannot be '
                     f' interpreted as a valid system path.'
                 )
             case config.PATH_ERROR.resolution:
@@ -132,40 +132,40 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
                         config.DESC_MSG.reason)
                     )
                 return (
-                    f'{base_msg} Path resolution failed for "{self.arg!r}". '
+                    f'{base_msg} Path resolution failed for {self.arg!r}. '
                     f' Reason: {reason}.'
                 )
             case config.PATH_ERROR.nonexistent:
                 return (
-                    f'{base_msg} Path "{self.arg!r}" is expected to exist, '
+                    f'{base_msg} Path {self.arg!r} is expected to exist, '
                     f'but does not.'
                 )
             case config.PATH_ERROR.existing:
                 return (
-                    f'{base_msg} Path "{self.arg!r}" is expected not to exist '
+                    f'{base_msg} Path {self.arg!r} is expected not to exist '
                     f'(for creation), but already does.'
                 )
             case config.PATH_ERROR.file_error:
                 return (
-                    f'{base_msg} Path "{self.arg!r}" is expected to be a file,'
+                    f'{base_msg} Path {self.arg!r} is expected to be a file,'
                     f' but it is a directory.'
                 )
             case config.PATH_ERROR.dir_error:
                 return (
-                    f'{base_msg} Path "{self.arg!r}" is expected to be a '
-                    f' directory, but it is a file.'
+                    f'{base_msg} Path {self.arg!r} is expected to be a'
+                    ' directory, but it is a file.'
                 )
             case config.PATH_ERROR.unreadable:
                 return (
-                    f'{base_msg} Path "{self.arg!r}" lacks read permissions.'
+                    f'{base_msg} Path {self.arg!r} lacks read permissions.'
                 )
             case config.PATH_ERROR.unwritable:
                 return (
-                    f'{base_msg} Path "{self.arg!r}" lacks write permissions.'
+                    f'{base_msg} Path {self.arg!r} lacks write permissions.'
                 )
             case config.PATH_ERROR.unexecutable:
                 return (
-                    f'{base_msg} Path "{self.arg!r}" lacks execute permissions.'
+                    f'{base_msg} Path {self.arg!r} lacks execute permissions.'
                 )
             case config.PATH_ERROR.same_dir:
                 return (
@@ -175,7 +175,7 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
 
             case _:
                 return (
-                    f'{base_msg} An unhandled path error for "{self.arg!r}". '
+                    f'{base_msg} An unhandled path error for {self.arg!r}. '
                     f'Details: {self.info or config.DESC_MSG.unknown}.'
                 )
 
@@ -275,7 +275,7 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
         base_msg = self._base_message()
         info = self.info or config.DESC_MSG.string
         return (
-            f'{base_msg} Commit UUID "{self.arg!r}" is not a valid format. '
+            f'{base_msg} Commit UUID {self.arg!r} is not a valid format. '
             f'Expected: {info} (e.g., 40-char SHA-3 hex).'
         )
 
@@ -288,7 +288,7 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
                 config.DESC_MSG.reason)
             )
         return (
-            f'{base_msg} Failed to parse commit data from "{self.arg!r}". '
+            f'{base_msg} Failed to parse commit data from {self.arg!r}. '
             f'Reason: {reason}.'
         )
 
@@ -297,7 +297,7 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
         base_msg = self._base_message()
         return (
             f'{base_msg} Required field "{self.field}" is missing or empty '
-            f'in commit data for "{self.arg!r}".'
+            f'in commit data for {self.arg!r}.'
         )
 
     def message(self) -> str:
@@ -359,7 +359,7 @@ class FossilTimelineErrorBuilder(base_config.BaseErrorBuilder):
                 config.DESC_MSG.reason)
             )
         return (
-            f'{base_msg} Failed to parse timeline data from "{self.arg!r}". '
+            f'{base_msg} Failed to parse timeline data from {self.arg!r}. '
             f'Reason: {reason}.'
         )
 
@@ -368,7 +368,7 @@ class FossilTimelineErrorBuilder(base_config.BaseErrorBuilder):
         base_msg = self._base_message()
         return (
             f'{base_msg} No commit data found in the timeline output for '
-            f'"{self.arg!r}". '
+            f'{self.arg!r}. '
             f'The timeline might be empty or in an unexpected format.'
         )
 
