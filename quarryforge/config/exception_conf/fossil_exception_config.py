@@ -24,29 +24,29 @@ class FossilMessage(NamedTuple):
     expected_str_list: str = 'Expected str or list, got'
     expected_int: str = 'Expected int, got'
     expected_str_or_none: str = 'Expected str or None, got'
-    timeline_detail: str = 'while processing Fossil timeline'
+    timeline_detail: str = 'while processing Fossil timeline.'
     timeline_user: str = (
         'Could not retrieve or parse the Fossil repository timeline.'
     )
     setup_detail: str = 'during Fossil repository setup'
     setup_user: str = 'There was a problem setting up the Fossil repository.'
-    info_detail: str = 'while fetching Fossil artifact information'
+    info_detail: str = 'while fetching Fossil artifact information.'
     info_user: str = 'Could not get details for the specified Fossil artifact.'
-    diff_detail: str = 'during Fossil diff operation'
+    diff_detail: str = 'during Fossil diff operation.'
     diff_user: str = (
         'Could not generate or process differences for the Fossil repository.'
     )
-    cat_detail: str = 'while retrieving file content using Fossil cat'
+    cat_detail: str = 'while retrieving file content using Fossil cat.'
     cat_user: str = (
         'Could not retrieve file content from the Fossil repository.'
     )
-    branch_detail: str = 'during Fossil branch operation'
+    branch_detail: str = 'during Fossil branch operation.'
     branch_user: str = 'There was a problem with a Fossil branch operation.'
-    add_detail: str = 'while adding files using Fossil add'
+    add_detail: str = 'while adding files using Fossil add.'
     add_user: str = (
         'Could not add the specified file(s) to the Fossil repository.'
     )
-    commit_detail: str = 'during Fossil commit operation'
+    commit_detail: str = 'during Fossil commit operation.'
     commit_user: str = 'Could not commit changes to the Fossil repository.'
 
 
@@ -106,7 +106,7 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
         """Helper to get a reason suffix from extra_details if available."""
         if self.extra_details and config.DESC_MSG.reason in self.extra_details:
             return f' Reason: {self.extra_details[config.DESC_MSG.reason]}.'
-        return '.'
+        return ''
 
 
     def _process_error_message(self) -> str:
@@ -141,7 +141,7 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
         stdout = details.get(
             fossil_config.FOSSIL.output, FOSSIL_MSG.no_output)
         stderr = details.get(
-            fossil_config.FOSSIL.stderr, FOSSIL_MSG.no_output)
+            fossil_config.FOSSIL.stderr, FOSSIL_MSG.no_stderr)
 
         return (
             f'{base_msg} Fossil command timed out after {timeout} seconds. '
@@ -168,10 +168,10 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
                     f'{FOSSIL_MSG.timeline_detail}{reason_suffix}'
                 )
             case FossilErrorPath.FOSSIL_SETUP:
-                step_info = ''
+                step_info = '.'
                 step = 'step'
                 if self.extra_details and 'step' in self.extra_details:
-                    step_info = f'during {self.extra_details[step]}'
+                    step_info = f' during {self.extra_details[step]}.'
                 return (
                     f'{base_msg} Failure '
                     f'{FOSSIL_MSG.setup_detail}{step_info}{reason_suffix}'
@@ -211,7 +211,7 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
                     return super().message()
                 return (
                     f'{base_msg} An unspecified Fossil operation '
-                    f' failed{reason_suffix}'
+                    f'failed{reason_suffix}'
                 )
 
     def user_message(self) -> str:
