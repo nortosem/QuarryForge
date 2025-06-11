@@ -12,7 +12,7 @@ Attributes:
     FossilModule (StrEnum): Fossil SCM command names.
     UtilModule (StrEnum): Utility module names.
 """
-from enum import StrEnum
+from enum import auto, StrEnum
 from typing import List
 
 
@@ -42,8 +42,8 @@ class Module(StrEnum):
         main (str): Name of the main application or entry point module.
         model (str): Name of the module defining core data models or structures.
     """
-    MAIN = 'main'
-    MODEL = 'model'
+    MAIN = auto()
+    MODEL = auto()
 
 
 class SubPackage(StrEnum):
@@ -59,11 +59,11 @@ class SubPackage(StrEnum):
         META (str): Name of the sub-package for metaclass modules.
         UTIL (str): Name of the sub-package for utility modules.
     """
-    CONFIG = 'config'
-    EXCEPTION = 'exception'
-    FOSSIL = 'fossil'
-    META = 'meta'
-    UTIL = 'util'
+    CONFIG = auto()
+    EXCEPTION = auto()
+    FOSSIL = auto()
+    META = auto()
+    UTIL = auto()
 
 
 class MetaModule(StrEnum):
@@ -77,8 +77,8 @@ class MetaModule(StrEnum):
         IMMUTABLE: The immutable module defines the metaclasses for immutable
             class creation.
     """
-    ASSEMBLER = 'assembler'
-    IMMUTABLE = 'immutable'
+    ASSEMBLER = auto()
+    IMMUTABLE = auto()
 
 
 class Model(StrEnum):
@@ -141,8 +141,8 @@ class UtilModule(StrEnum):
         VALIDATION_UTIL (str):
             Name of the helper-utility for the model utility.
     """
-    DECORATOR = 'decorator'
-    FOSSIL_UTIL = 'fossil_util'
-    MAIN_UTIL = 'main_util'
-    MODEL_UTIL = 'model_util'
-    VALIDATION_UTIL = 'validation_util'
+    DECORATOR = auto()
+    FOSSIL_UTIL = auto()
+    MAIN_UTIL = auto()
+    MODEL_UTIL = auto()
+    VALIDATION_UTIL = auto()
