@@ -159,8 +159,6 @@ class Fossil(StrEnum):
 
     Define the constants used with fossil commands and exceptions.
     """
-    PROCESS = 'FossilProcess'
-    TIMEOUT_EXPIRED = 'FossilTimeoutExpired'
     DEFAULT_TIMEOUT = 180 #seconds
     PROCESS_ERROR = 'FOSSIL_PROCESS_ERROR'
     TIMEOUT_ERROR = 'FOSSIL_TIMEOUT_ERROR'
