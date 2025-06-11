@@ -11,12 +11,16 @@ class TestModelConfig:
 
     def test_module_dunder_all(self):
         """Test the __all__ variable."""
-        expected_all = ['FOSSIL_REPO', 'FOSSIL_COMMIT', 'FOSSIL_TIMELINE']
+        expected_all = [
+            'fossil_repo_config',
+            'fossil_commit_config',
+            'fossil_timeline_config'
+        ]
         assert sorted(model_config.__all__) == sorted(expected_all)
 
     def test_config_fossil_repo_attributes_and_method(self):
         """Test attributes and slots() method of ConfigFossilRepo."""
-        cfg = model_config.FOSSIL_REPO
+        cfg = model_config.fossil_repo_config()
         assert isinstance(cfg, model_config.ConfigFossilRepo)
 
         # Test attributes
@@ -35,7 +39,7 @@ class TestModelConfig:
 
     def test_config_fossil_commit_attributes(self):
         """Test attributes of ConfigFossilCommit."""
-        cfg = model_config.FOSSIL_COMMIT
+        cfg = model_config.fossil_commit_config()
         assert isinstance(cfg, model_config.ConfigFossilCommit)
 
         # Test attributes
@@ -49,27 +53,43 @@ class TestModelConfig:
         assert cfg.changes == '_changes'
 
         expected_fields = [
-            'uuid', 'date', 'author', 'comment', 'branch', 'tags', 'phase', 'changes'
+            'uuid', 'date', 'author', 'comment',
+            'branch', 'tags', 'phase', 'changes'
         ]
-        assert sorted(get_namedtuple_fields(model_config.ConfigFossilCommit)) == sorted(expected_fields)
+        assert sorted(get_namedtuple_fields(
+            model_config.ConfigFossilCommit)) == sorted(expected_fields)
 
         # Test slots() method
-        expected_slots = ('_uuid', '_date', '_author', '_comment', '_branch', '_tags', '_phase', '_changes')
+        expected_slots = (
+            '_uuid', '_date', '_author', '_comment',
+            '_branch', '_tags', '_phase', '_changes'
+        )
         assert cfg.slots() == expected_slots
 
     def test_config_fossil_timeline_attributes(self):
         """Test attributes of ConfigFossilTimeline."""
-        cfg = model_config.FOSSIL_TIMELINE
+        cfg = model_config.fossil_timeline_config()
         assert isinstance(cfg, model_config.ConfigFossilTimeline)
 
         assert cfg.commits == 'commits'
 
         expected_fields = ['commits']
-        assert sorted(get_namedtuple_fields(model_config.ConfigFossilTimeline)) == sorted(expected_fields)
+        assert sorted(get_namedtuple_fields(
+            model_config.ConfigFossilTimeline)
+                      ) == sorted(expected_fields)
 
 
-    def test_global_constants_types(self):
-        """Test types of global constants."""
-        assert isinstance(model_config.FOSSIL_REPO, model_config.ConfigFossilRepo)
-        assert isinstance(model_config.FOSSIL_COMMIT, model_config.ConfigFossilCommit)
-        assert isinstance(model_config.FOSSIL_TIMELINE, model_config.ConfigFossilTimeline)
+    def test_config_functions_return_types(self):
+        """Test the return types of the configuration factory functions."""
+        assert isinstance(
+            model_config.fossil_repo_config(),
+            model_config.ConfigFossilRepo
+        )
+        assert isinstance(
+            model_config.fossil_commit_config(),
+            model_config.ConfigFossilCommit
+        )
+        assert isinstance(
+            model_config.fossil_timeline_config(),
+            model_config.ConfigFossilTimeline
+        )

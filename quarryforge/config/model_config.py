@@ -2,19 +2,15 @@
 
 This module provides detailed configurations for the classes defined in the
 model module.
-
-Attributes:
-    BASE_MODEL (BaseModelConfig):
-        An instance providing base path utilities for models.
-    FOSSIL_REPO_CONFIG (ConfigFossilRepo):
-        Configuration specific to the FossilRepo model.
-    FOSSIL_COMMIT_CONFIG (ConfigFossilCommit):
-        Configuration specific to the FossilCommit model.
 """
 from typing import List, NamedTuple, Tuple
 
 
-__all__: List[str] = ['FOSSIL_REPO','FOSSIL_COMMIT', 'FOSSIL_TIMELINE']
+__all__: List[str] = [
+    'fossil_repo_config',
+    'fossil_commit_config',
+    'fossil_timeline_config'
+]
 
 
 class ConfigFossilRepo(NamedTuple):
@@ -41,8 +37,9 @@ class ConfigFossilRepo(NamedTuple):
         return tuple(getattr(self, field) for field in self._fields)
 
 
-FOSSIL_REPO: ConfigFossilRepo = ConfigFossilRepo()
-"""Global constant for FossilRepo configuration."""
+def fossil_repo_config() -> ConfigFossilRepo:
+    """Provides the configuration for the FossilRepo model."""
+    return ConfigFossilRepo()
 
 
 class ConfigFossilCommit(NamedTuple):
@@ -79,8 +76,9 @@ class ConfigFossilCommit(NamedTuple):
         return tuple(getattr(self, field) for field in self._fields)
 
 
-FOSSIL_COMMIT: ConfigFossilCommit = ConfigFossilCommit()
-"""Global constant for FossilCommit configuration."""
+def fossil_commit_config() -> ConfigFossilCommit:
+    """Provides the configuration for the FossilCommit model."""
+    return ConfigFossilCommit()
 
 
 class ConfigFossilTimeline(NamedTuple):
@@ -88,4 +86,6 @@ class ConfigFossilTimeline(NamedTuple):
     commits: str = 'commits'
 
 
-FOSSIL_TIMELINE: ConfigFossilTimeline = ConfigFossilTimeline()
+def fossil_timeline_config() -> ConfigFossilTimeline:
+    """Provides the configuration for the FossilTimeline model."""
+    return ConfigFossilTimeline()

@@ -41,7 +41,7 @@ class FossilRepo(
             Internal attribute indicating if this represents a newly created
             repository or an existing one.
     """
-    __slots__ = model_config.FOSSIL_REPO.slots()
+    __slots__ = model_config.fossil_repo_config().slots()
 
     def __init__(
         self,
@@ -236,7 +236,7 @@ class FossilCommit(
             Internal attribute storing a list of tuples,
             where each tuple represents a file change: (status, filename).
     """
-    __slots__ = model_config.FOSSIL_COMMIT.slots()
+    __slots__ = model_config.fossil_commit_config().slots()
 
     def __init__(
         self,
@@ -501,7 +501,7 @@ class FossilTimeline:
         commits (List[FossilCommit]): A list of all timeline commits, ordered
                                       chronologically (oldest to newest).
     """
-    __slots__ = (model_config.FOSSIL_TIMELINE.commits,)
+    __slots__ = (model_config.fossil_timeline_config().commits,)
 
     def __init__(self, commits: Optional[List[FossilCommit]] = None):
         """Initializes a FossilTimeline instance.
