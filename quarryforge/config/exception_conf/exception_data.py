@@ -7,7 +7,11 @@ from typing import Any, Dict, List, NamedTuple, Optional
 
 from quarryforge.meta import immutable as _
 
-__all__: List[str] = ['ERROR_FIELD', 'BUILDER_FIELD', 'ValidErrorData']
+__all__: List[str] = [
+    'error_data_config',
+    'builder_config',
+    'ValidErrorData'
+]
 
 
 class ConfigErrorData(NamedTuple):
@@ -19,8 +23,9 @@ class ConfigErrorData(NamedTuple):
     timestamp: str = 'timestamp'
 
 
-ERROR_FIELD: ConfigErrorData = ConfigErrorData()
-"""Global constant for quarryforge exception fields."""
+def error_data_config() -> ConfigErrorData:
+    """Returns the configuration of error data fields."""
+    return ConfigErrorData()
 
 
 class ConfigBuilder(NamedTuple):
@@ -31,17 +36,19 @@ class ConfigBuilder(NamedTuple):
     extra_details: str = 'extra_details'
     info: str = 'info'
     field: str = 'field'
-    message: str = ERROR_FIELD.message
-    user_message: str = ERROR_FIELD.user_message
+    message: str = error_data_config().message
+    user_message: str = error_data_config().user_message
 
 
-BUILDER_FIELD: ConfigBuilder = ConfigBuilder()
-"""Global constant for BuildError data fields."""
+def builder_config() -> ConfigBuilder:
+    """Returns the configuration for an ErrorBuilder."""
+    return ConfigBuilder()
 
 
 class ValidErrorData(_.ImmutableInstance, metaclass=_.ImmutableMetaClass):
-    """An immutable data container for fully constructed exception information."""
-    __slots__ = ERROR_FIELD._fields[:-1]
+    """An immutable data container for fully constructed exception information.
+    """
+    __slots__ = error_data_config()[:-1]
 
     code: Optional[str]
     message: Optional[str]
@@ -55,17 +62,18 @@ class ValidErrorData(_.ImmutableInstance, metaclass=_.ImmutableMetaClass):
         user_message: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None
     ):
-        object.__setattr__(self, ERROR_FIELD.code, code)
-        object.__setattr__(self, ERROR_FIELD.message, message)
-        object.__setattr__(self, ERROR_FIELD.user_message, user_message)
-        object.__setattr__(self, ERROR_FIELD.details, details)
+        object.__setattr__(self, error_data_config().code, code)
+        object.__setattr__(self, error_data_config().message, message)
+        object.__setattr__(self, error_data_config().user_message, user_message)
+        object.__setattr__(self, error_data_config().details, details)
 
 
     def to_exception(self) -> Dict[str, Any]:
-        """Assembles the data into a dictionary suitable for exception kwargs."""
+        """Assembles the data into a dictionary suitable for exception kwargs.
+        """
         return {
-            ERROR_FIELD.code: self.code,
-            ERROR_FIELD.message: self.message,
-            ERROR_FIELD.user_message: self.user_message,
-            ERROR_FIELD.details: self.details
+            error_data_config().code: self.code,
+            error_data_config().message: self.message,
+            error_data_config().user_message: self.user_message,
+            error_data_config().details: self.details
         }
