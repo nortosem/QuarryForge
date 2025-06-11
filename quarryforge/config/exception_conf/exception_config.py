@@ -1,20 +1,33 @@
 """Exception Configuration Module
 
-This module defines various NamedTuple configurations for standard error types
+This module defines various StrEnum configurations for standard error types
 and common descriptive phrases used across the application's exception handling.
 """
-from typing import List, NamedTuple
+from enum import auto, StrEnum
+from typing import Any, List
 
 
 __all__: List[str] = [
-    'GENERIC_ERROR',
-    'STRING_ERROR',
-    'PATH_ERROR',
-    'DESC_MSG',
+    'GenericError',
+    'StringError',
+    'PathError',
+    'DescMsg',
 ]
 
 
-class GenericErrorType(NamedTuple):
+class _ValidName(StrEnum):
+    """Assign the member's name as its value."""
+    @staticmethod
+    def _generate_next_value_(
+        name: str,
+        start: int,
+        count: int,
+        last_values: list[Any]
+    ) -> Any:
+        return name
+
+
+class GenericError(_ValidName):
     """The constants codes for generic types of errors.
 
     Attributes:
@@ -26,35 +39,27 @@ class GenericErrorType(NamedTuple):
         external_dependency_error: External tool or service not found or failed
         not_implemented_error: Feature not implemented
     """
-    type_error: str = 'TYPE_ERROR'
-    value_error: str = 'VALUE_ERROR'
-    unexpected_error: str = 'UNEXPECTED_ERROR'
-    invalid_state: str = 'INVALID_STATE_ERROR'
-    configuration_error: str = 'CONFIGURATION_ERROR'
-    external_dependency_error: str = 'EXTERNAL_DEPENDENCY_ERROR'
-    not_implemented_error: str = 'NOT_IMPLEMENTED_ERROR'
+    TYPE_ERROR = auto()
+    VALUE_ERROR = auto()
+    UNEXPECTED_ERROR = auto()
+    INVALID_STATE_ERROR = auto()
+    CONFIGURATION_ERROR = auto()
+    EXTERNAL_DEPENDENCY_ERROR = auto()
+    NOT_IMPLEMENTED_ERROR = auto()
 
 
-GENERIC_ERROR = GenericErrorType()
-"""Global instance for general error types."""
-
-
-class StringErrorType(NamedTuple):
+class StringError(_ValidName):
     """The constant codes for errors involving strings.
 
     Attributes:
         empty: For empty or whitespace-only strings
         invalid_chars: For strings with unaccepted chars or patterns
     """
-    empty: str = 'EMPTY_STRING_ERROR'
-    invalid_chars: str = 'INVALID_CHARS_ERROR'
+    EMPTY_STRING_ERROR = auto()
+    INVALID_CHARS_ERROR = auto()
 
 
-STRING_ERROR: StringErrorType = StringErrorType()
-"""Global instance for string error types."""
-
-
-class PathErrorType(NamedTuple):
+class PathError(_ValidName):
     """The constant codes for errorw involving Path objects.
 
     Attributes:
@@ -82,36 +87,28 @@ class PathErrorType(NamedTuple):
         unwritable: Path doesn't have write permissions
         unexecutable: Path doesn't have execute permissions
     """
-    non_path_object: str = 'NON_PATH_OBJECT_ERROR'
-    invalid_path_string: str = 'INVALID_PATH_STRING_ERROR'
-    resolution: str = 'PATH_RESOLUTION_ERROR'
-    existing: str = 'PATH_EXISTING_ERROR'
-    nonexistent: str = 'PATH_NONEXISTENT_ERROR'
-    file_error: str = 'PATH_NOT_A_FILE_ERROR'
-    dir_error: str = 'PATH_NOT_A_DIRECTORY_ERROR'
-    unreadable: str = 'PATH_NOT_READABLE_ERROR'
-    unwritable: str = 'PATH_NOT_WRITABLE_ERROR'
-    unexecutable: str = 'PATH_NOT_EXECUTABLE_ERROR'
-    same_dir: str = 'SAME_REPO_DIR_AND_WORK_DIR'
+    NON_PATH_OBJECT_ERROR = auto()
+    INVALID_PATH_STRING_ERROR = auto()
+    PATH_RESOLUTION_ERROR = auto()
+    PATH_EXISTING_ERROR = auto()
+    PATH_NONEXISTENT_ERROR = auto()
+    PATH_NOT_A_FILE_ERROR = auto()
+    PATH_NOT_A_DIRECTORY_ERROR = auto()
+    PATH_NOT_READABLE_ERROR = auto()
+    PATH_NOT_WRITABLE_ERROR = auto()
+    PATH_NOT_EXECUTABLE_ERROR = auto()
+    SAME_REPO_DIR_AND_WORK_DIR = auto()
 
 
-PATH_ERROR: PathErrorType = PathErrorType()
-"""Global instance for path error types."""
-
-
-class DescMsg(NamedTuple):
+class DescMsg(StrEnum):
     """Basic description partials."""
-    dependency: str = 'dependency'
-    dictionary: str = 'a valid dictionary'
-    must_be: str = 'must be'
-    none: str = 'None'
-    path: str = 'a valid path'
-    reason: str = 'reason'
-    string: str = 'a valid string'
-    unempty: str = 'a non-empty string'
-    unexpected_error: str = 'is an unexpected error'
-    unknown: str = 'unknown'
-
-
-DESC_MSG = DescMsg()
-"""Global instance for description parts."""
+    DEPENDENCY = auto()
+    A_VALID_DICTIONARY = auto()
+    MUST_BE = auto()
+    NONE = auto()
+    A_VALID_PATH = auto()
+    REASON = auto()
+    A_VALID_STRING = auto()
+    A_NON_EMPTY_STRING = auto()
+    IS_AN_UNEXPECTED_ERROR = auto()
+    UNKNOWN = auto()
