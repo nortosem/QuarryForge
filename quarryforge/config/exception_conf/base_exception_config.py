@@ -2,48 +2,40 @@
 
 The configuraiton for the exception base class of quarryforge errors.
 """
+from enum import StrEnum
 from typing import List, NamedTuple
 
 from quarryforge.config import root
 from quarryforge.config.exception_conf import exception_config as config
 from quarryforge.meta import assembler
-from quarryforge.meta import immutable
 from quarryforge.util.decorator import validate_str_parameters
 
 
 __all__: List[str] = ['BaseErrorBuilder']
 
 
-class BaseConfig(metaclass=immutable.Namespace):
-    """Base Config
-
-    Define default path for all base exceptions.
-    """
-    PACKAGE: str = root.PACKAGE.name
-
-    @staticmethod
-    @validate_str_parameters
-    def path(name: str) -> str:
-        """Return valid path."""
-        return f'{BaseConfig.PACKAGE}.{name}'
+@validate_str_parameters
+def _build_path(suffix: str) -> str:
+    """Return valid path."""
+    return f'{root.Package.NAME}.{suffix}'
 
 
-class BaseErrorPath(metaclass=immutable.Namespace):
+class BaseErrorPath(StrEnum):
     """Create Path strings for the Base Exceptions of QuarryForge
 
     These represent the base path contexts for different error types.
     """
-    MODEL: str = BaseConfig.path(root.MODULE.model)
-    FOSSIL: str = BaseConfig.path(root.MODULE.fossil)
-    MAIN: str = BaseConfig.path(root.MODULE.main)
-    META: str = BaseConfig.path(root.SUB_PACKAGE.meta)
-    UTIL: str = BaseConfig.path(root.SUB_PACKAGE.util)
+    MODEL = _build_path(root.Module.MODEL)
+    FOSSIL = _build_path(root.SubPackage.FOSSIL)
+    MAIN = _build_path(root.Module.MAIN)
+    META = _build_path(root.SubPackage.META)
+    UTIL = _build_path(root.SubPackage.UTIL)
 
-    @staticmethod
-    @validate_str_parameters
-    def get_full_error_code(context_path: str, type_suffix: str) -> str:
-        """Constructs a full error code from context path and type suffix."""
-        return f'{context_path}.{type_suffix}'
+
+@validate_str_parameters
+def get_full_error_code(context_path: str, type_suffix: str) -> str:
+    """Constructs a full error code from context path and type suffix."""
+    return f'{context_path}.{type_suffix}'
 
 
 class BaseErrorMessageConfig(NamedTuple):
@@ -71,7 +63,9 @@ class BaseErrorMessageConfig(NamedTuple):
     default_user_message: str = 'An internal application error occurred.'
 
 
-BASE_ERROR_MSG: BaseErrorMessageConfig = BaseErrorMessageConfig()
+def base_error_message() -> BaseErrorMessageConfig:
+    """Return configuration for base message error strings."""
+    return BaseErrorMessageConfig()
 
 
 class BaseErrorBuilder(assembler.ErrorBuilder):
@@ -89,7 +83,7 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         Returns:
             The full error code string for an exception.
         """
-        return BaseErrorPath.get_full_error_code(
+        return get_full_error_code(
             self.error_context, self.error_code
         )
 
@@ -170,19 +164,19 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
     def _unexpected_message(self) -> str:
         """Generates a message for unexpected errors."""
         context = self.error_context.split('.')
-        if len(context) == 1 and context[0] == BaseConfig.PACKAGE:
-            suffix = BASE_ERROR_MSG.default_package_suffix
+        if len(context) == 1 and context[0] == root.Package.NAME:
+            suffix = base_error_message().default_package_suffix
         elif (
             len(context) == 2 and
-            context[0] == BaseConfig.PACKAGE and
-            context[1] in root.SUB_PACKAGE._fields
+            context[0] == root.Package.NAME and
+            context[1] in root.SubPackage.__members__
         ):
-            suffix = BASE_ERROR_MSG.default_subpackage_suffix
+            suffix = base_error_message().default_subpackage_suffix
         else:
-            suffix = BASE_ERROR_MSG.default_module_suffix
+            suffix = base_error_message().default_module_suffix
 
         return (
-            f'{BASE_ERROR_MSG.unexpected_error_prefix}'
+            f'{base_error_message().unexpected_error_prefix}'
             f' `{self.error_context}` {suffix}'
         )
 
@@ -263,9 +257,9 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
                 error_message = 'This feature is not available.'
 
             case config.GENERIC_ERROR.unexpected_error:
-                error_message = BASE_ERROR_MSG.default_user_message
+                error_message = base_error_message().default_user_message
 
             case _:
-                error_message = BASE_ERROR_MSG.default_user_message
+                error_message = base_error_message().default_user_message
 
         return error_message
