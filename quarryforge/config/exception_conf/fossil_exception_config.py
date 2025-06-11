@@ -4,7 +4,8 @@ This module defines the builder pattern for constructing detailed error data
 for Fossil SCM-related exceptions. It centralizes error contexts and message
 generation logic specific to Fossil operations.
 """
-from typing import Any, Dict, NamedTuple
+from enum import StrEnum
+from typing import Any, Dict
 
 from quarryforge.config import fossil_config
 from quarryforge.config import root
@@ -16,41 +17,42 @@ from quarryforge.meta import immutable
 __all__ = ['FossilErrorBuilder']
 
 
-class FossilMessage(NamedTuple):
+class FossilMessage(StrEnum):
     """Collect and define default messages for fossil exceptions."""
-    no_cmd: str = f'{fossil_config.FOSSIL.cmd}: {config.DESC_MSG.none}'
-    no_output: str = f'{fossil_config.FOSSIL.output}: {config.DESC_MSG.none}'
-    no_stderr: str = f'{fossil_config.FOSSIL.stderr}: {config.DESC_MSG.none}'
-    expected_str_list: str = 'Expected str or list, got'
-    expected_int: str = 'Expected int, got'
-    expected_str_or_none: str = 'Expected str or None, got'
-    timeline_detail: str = 'while processing Fossil timeline.'
-    timeline_user: str = (
+    NO_CMD = f'{fossil_config.Fossil.CMD}: {config.DescMsg.NONE}'
+    NO_OUTPUT = (
+        f'{fossil_config.Fossil.OUTPUT}: {config.DescMsg.NONE}'
+    )
+    NO_STDERR = (
+        f'{fossil_config.Fossil.STDERR}: {config.DescMsg.NONE}'
+    )
+    EXPECTED_STR_LIST = 'Expected str or list, got'
+    EXPECTED_INT = 'Expected int, got'
+    EXPECTED_STR_OR_NONE = 'Expected str or None, got'
+    TIMELINE_DETAIL = 'while processing Fossil timeline.'
+    TIMELINE_USER = (
         'Could not retrieve or parse the Fossil repository timeline.'
     )
-    setup_detail: str = 'during Fossil repository setup'
-    setup_user: str = 'There was a problem setting up the Fossil repository.'
-    info_detail: str = 'while fetching Fossil artifact information.'
-    info_user: str = 'Could not get details for the specified Fossil artifact.'
-    diff_detail: str = 'during Fossil diff operation.'
-    diff_user: str = (
+    SETUP_DETAIL = 'during Fossil repository setup'
+    SETUP_USER = 'There was a problem setting up the Fossil repository.'
+    INFO_DETAIL = 'while fetching Fossil artifact information.'
+    INFO_USER = 'Could not get details for the specified Fossil artifact.'
+    DIFF_DETAIL = 'during Fossil diff operation.'
+    DIFF_USER = (
         'Could not generate or process differences for the Fossil repository.'
     )
-    cat_detail: str = 'while retrieving file content using Fossil cat.'
-    cat_user: str = (
+    CAT_DETAIL = 'while retrieving file content using Fossil cat.'
+    CAT_USER = (
         'Could not retrieve file content from the Fossil repository.'
     )
-    branch_detail: str = 'during Fossil branch operation.'
-    branch_user: str = 'There was a problem with a Fossil branch operation.'
-    add_detail: str = 'while adding files using Fossil add.'
-    add_user: str = (
+    BRANCH_DETAIL = 'during Fossil branch operation.'
+    BRANCH_USER = 'There was a problem with a Fossil branch operation.'
+    ADD_DETAIL = 'while adding files using Fossil add.'
+    ADD_USER = (
         'Could not add the specified file(s) to the Fossil repository.'
     )
-    commit_detail: str = 'during Fossil commit operation.'
-    commit_user: str = 'Could not commit changes to the Fossil repository.'
-
-
-FOSSIL_MSG: FossilMessage = FossilMessage()
+    COMMIT_DETAIL = 'during Fossil commit operation.'
+    COMMIT_USER = 'Could not commit changes to the Fossil repository.'
 
 
 class FossilErrorPath(metaclass=immutable.Namespace):
@@ -61,36 +63,36 @@ class FossilErrorPath(metaclass=immutable.Namespace):
     the Fossil SCM interaction layer.
     """
     # General Fossil execution errors
-    FOSSIL_PROCESS: str = _.BaseErrorPath.get_full_error_code(
-        _.BaseErrorPath.FOSSIL, root.FOSSIL.process
+    FOSSIL_PROCESS = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, fossil_config.Fossil.PROCESS_ERROR
     )
-    FOSSIL_TIMEOUT: str = _.BaseErrorPath.get_full_error_code(
-        _.BaseErrorPath.FOSSIL, root.FOSSIL.timeout
+    FOSSIL_TIMEOUT = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, fossil_config.Fossil.TIMEOUT_ERROR
     )
     # Specific Fossil command errors
-    FOSSIL_TIMELINE: str = _.BaseErrorPath.get_full_error_code(
-        _.BaseErrorPath.FOSSIL, root.FOSSIL.timeline
+    FOSSIL_TIMELINE = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, root.FossilModule.TIMELINE
     )
-    FOSSIL_SETUP: str = _.BaseErrorPath.get_full_error_code(
-        _.BaseErrorPath.FOSSIL, root.FOSSIL.setup
+    FOSSIL_SETUP = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, root.FossilModule.SETUP
     )
-    FOSSIL_INFO: str = _.BaseErrorPath.get_full_error_code(
-        _.BaseErrorPath.FOSSIL, root.FOSSIL.info
+    FOSSIL_INFO = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, root.FossilModule.INFO
     )
-    FOSSIL_DIFF: str = _.BaseErrorPath.get_full_error_code(
-        _.BaseErrorPath.FOSSIL, root.FOSSIL.diff
+    FOSSIL_DIFF = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, root.FossilModule.DIFF
     )
-    FOSSIL_CAT: str = _.BaseErrorPath.get_full_error_code(
-        _.BaseErrorPath.FOSSIL, root.FOSSIL.cat
+    FOSSIL_CAT = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, root.FossilModule.CAT
     )
-    FOSSIL_BRANCH: str = _.BaseErrorPath.get_full_error_code(
-        _.BaseErrorPath.FOSSIL, root.FOSSIL.branch
+    FOSSIL_BRANCH = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, root.FossilModule.BRANCH
     )
-    FOSSIL_ADD: str = _.BaseErrorPath.get_full_error_code(
-        _.BaseErrorPath.FOSSIL, root.FOSSIL.add
+    FOSSIL_ADD = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, root.FossilModule.ADD
     )
-    FOSSIL_COMMIT: str = _.BaseErrorPath.get_full_error_code(
-        _.BaseErrorPath.FOSSIL, root.FOSSIL.commit
+    FOSSIL_COMMIT = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, root.FossilModule.COMMIT
     )
 
 
@@ -104,8 +106,8 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
     """
     def _get_reason_suffix(self) -> str:
         """Helper to get a reason suffix from extra_details if available."""
-        if self.extra_details and config.DESC_MSG.reason in self.extra_details:
-            return f' Reason: {self.extra_details[config.DESC_MSG.reason]}.'
+        if self.extra_details and config.DescMsg.REASON in self.extra_details:
+            return f' Reason: {self.extra_details[config.DescMsg.REASON]}.'
         return ''
 
 
@@ -115,13 +117,13 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
         details: Dict[str, Any] = self.extra_details or {}
 
         cmd: str = details.get(
-            fossil_config.FOSSIL.cmd, FOSSIL_MSG.no_cmd)
+            fossil_config.Fossil.CMD, FossilMessage.NO_CMD)
         return_code: int = details.get(
-            fossil_config.FOSSIL.return_code, config.DESC_MSG.unknown)
+            fossil_config.Fossil.RETURN_CODE, config.DescMsg.UNKNOWN)
         stdout: str = details.get(
-            fossil_config.FOSSIL.output, FOSSIL_MSG.no_output)
+            fossil_config.Fossil.OUTPUT, FossilMessage.NO_OUTPUT)
         stderr: str = details.get(
-            fossil_config.FOSSIL.stderr, FOSSIL_MSG.no_stderr)
+            fossil_config.Fossil.STDERR, FossilMessage.NO_STDERR)
 
         return (
             f'{base_msg} Fossil command failed. '
@@ -135,13 +137,13 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
         details: Dict[str, Any] = self.extra_details or {}
 
         cmd = details.get(
-            fossil_config.FOSSIL.cmd, FOSSIL_MSG.no_cmd)
+            fossil_config.Fossil.CMD, FossilMessage.NO_CMD)
         timeout = details.get(
-            fossil_config.FOSSIL.timeout, config.DESC_MSG.unknown)
+            fossil_config.Fossil.TIMEOUT, config.DescMsg.UNKNOWN)
         stdout = details.get(
-            fossil_config.FOSSIL.output, FOSSIL_MSG.no_output)
+            fossil_config.Fossil.OUTPUT, FossilMessage.NO_OUTPUT)
         stderr = details.get(
-            fossil_config.FOSSIL.stderr, FOSSIL_MSG.no_stderr)
+            fossil_config.Fossil.STDERR, FossilMessage.NO_STDERR)
 
         return (
             f'{base_msg} Fossil command timed out after {timeout} seconds. '
@@ -165,7 +167,7 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
             case FossilErrorPath.FOSSIL_TIMELINE:
                 return (
                     f'{base_msg} Failure '
-                    f'{FOSSIL_MSG.timeline_detail}{reason_suffix}'
+                    f'{FossilMessage.TIMELINE_DETAIL}{reason_suffix}'
                 )
             case FossilErrorPath.FOSSIL_SETUP:
                 step_info = '.'
@@ -174,40 +176,40 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
                     step_info = f' during {self.extra_details[step]}.'
                 return (
                     f'{base_msg} Failure '
-                    f'{FOSSIL_MSG.setup_detail}{step_info}{reason_suffix}'
+                    f'{FossilMessage.SETUP_DETAIL}{step_info}{reason_suffix}'
                 )
             case FossilErrorPath.FOSSIL_INFO:
                 return (
                     f'{base_msg} Failure '
-                    f'{FOSSIL_MSG.info_detail}{reason_suffix}'
+                    f'{FossilMessage.INFO_DETAIL}{reason_suffix}'
                 )
             case FossilErrorPath.FOSSIL_DIFF:
                 return (
                     f'{base_msg} Failure '
-                    f'{FOSSIL_MSG.diff_detail}{reason_suffix}'
+                    f'{FossilMessage.DIFF_DETAIL}{reason_suffix}'
                 )
             case FossilErrorPath.FOSSIL_CAT:
                 return (
                     f'{base_msg} Failure '
-                    f'{FOSSIL_MSG.cat_detail}{reason_suffix}'
+                    f'{FossilMessage.CAT_DETAIL}{reason_suffix}'
                 )
             case FossilErrorPath.FOSSIL_BRANCH:
                 return (
                     f'{base_msg} Failure '
-                    f'{FOSSIL_MSG.branch_detail}{reason_suffix}'
+                    f'{FossilMessage.BRANCH_DETAIL}{reason_suffix}'
                 )
             case FossilErrorPath.FOSSIL_ADD:
                 return (
                     f'{base_msg} Failure '
-                    f'{FOSSIL_MSG.add_detail}{reason_suffix}'
+                    f'{FossilMessage.ADD_DETAIL}{reason_suffix}'
                 )
             case FossilErrorPath.FOSSIL_COMMIT:
                 return (
                     f'{base_msg} Failure '
-                    f'{FOSSIL_MSG.commit_detail}{reason_suffix}'
+                    f'{FossilMessage.COMMIT_DETAIL}{reason_suffix}'
                 )
             case _:
-                if self.error_code in config.GENERIC_ERROR:
+                if self.error_code in config.GenericError:
                     return super().message()
                 return (
                     f'{base_msg} An unspecified Fossil operation '
@@ -231,22 +233,22 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
                         'and was stopped.'
                 )
             case FossilErrorPath.FOSSIL_TIMELINE:
-                return FOSSIL_MSG.timeline_user
+                return FossilMessage.TIMELINE_USER
             case FossilErrorPath.FOSSIL_SETUP:
-                return FOSSIL_MSG.setup_user
+                return FossilMessage.SETUP_USER
             case FossilErrorPath.FOSSIL_INFO:
-                return FOSSIL_MSG.info_user
+                return FossilMessage.INFO_USER
             case FossilErrorPath.FOSSIL_DIFF:
-                return FOSSIL_MSG.diff_user
+                return FossilMessage.DIFF_USER
             case FossilErrorPath.FOSSIL_CAT:
-                return FOSSIL_MSG.cat_user
+                return FossilMessage.CAT_USER
             case FossilErrorPath.FOSSIL_BRANCH:
-                return FOSSIL_MSG.branch_user
+                return FossilMessage.BRANCH_USER
             case FossilErrorPath.FOSSIL_ADD:
-                return FOSSIL_MSG.add_user
+                return FossilMessage.ADD_USER
             case FossilErrorPath.FOSSIL_COMMIT:
-                return FOSSIL_MSG.commit_user
+                return FossilMessage.COMMIT_USER
             case _:
-                if self.error_code in config.GENERIC_ERROR:
+                if self.error_code in config.GenericError:
                     return super().user_message()
-                return _.BASE_ERROR_MSG.default_user_message
+                return _.base_error_message().default_user_message
