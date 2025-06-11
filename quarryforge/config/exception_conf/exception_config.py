@@ -15,7 +15,7 @@ __all__: List[str] = [
 ]
 
 
-class _ValidName(StrEnum):
+class ValidName(StrEnum):
     """Assign the member's name as its value."""
     @staticmethod
     def _generate_next_value_(
@@ -27,7 +27,7 @@ class _ValidName(StrEnum):
         return name
 
 
-class GenericError(_ValidName):
+class GenericError(ValidName):
     """The constants codes for generic types of errors.
 
     Attributes:
@@ -48,7 +48,7 @@ class GenericError(_ValidName):
     NOT_IMPLEMENTED_ERROR = auto()
 
 
-class StringError(_ValidName):
+class StringError(ValidName):
     """The constant codes for errors involving strings.
 
     Attributes:
@@ -59,7 +59,7 @@ class StringError(_ValidName):
     INVALID_CHARS_ERROR = auto()
 
 
-class PathError(_ValidName):
+class PathError(ValidName):
     """The constant codes for errorw involving Path objects.
 
     Attributes:
