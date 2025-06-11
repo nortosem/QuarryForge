@@ -2,22 +2,19 @@
 
 The configuration for teh exception meta_error exceptions.
 """
+from enum import auto, StrEnum
 from typing import NamedTuple
 
 from quarryforge.config import root
 from quarryforge.config.exception_conf import base_exception_config as base_conf
 from quarryforge.config.exception_conf import exception_config as exc_conf
-from quarryforge.meta import immutable
 
 __all__ = ['MetaErrorBuilder']
 
-class MetaErrorCode(NamedTuple):
+class MetaErrorCode(exc_conf.ValidName):
     """Specific error codes for meta-related errors."""
-    ASSEMBLER_ERROR: str = 'ASSEMBLER_ERROR'
-    IMMUTABILITY_VIOLATION: str = 'IMMUTABILITY_VIOLATION'
-
-
-META_ERROR_CODE: MetaErrorCode = MetaErrorCode()
+    ASSEMBLER_ERROR = auto()
+    IMMUTABILITY_VIOLATION = auto()
 
 
 class MetaErrorMessages(NamedTuple):
@@ -31,22 +28,24 @@ class MetaErrorMessages(NamedTuple):
     default_meta_user: str = 'An error occurred in the meta subpackage.'
 
 
-META_MSG = MetaErrorMessages()
+def meta_error_message() -> MetaErrorMessages:
+    """Return a default meta error message."""
+    return MetaErrorMessages()
 
 
-class MetaErrorPath(metaclass=immutable.Namespace):
+class MetaErrorPath(StrEnum):
     """Defines error context paths for meta-related exceptions."""
-    META_ROOT_CONTEXT: str = base_conf.BaseConfig.path(root.SUB_PACKAGE.meta)
-    IMMUTABLE_CONTEXT: str = base_conf.BaseErrorPath.get_full_error_code(
-        META_ROOT_CONTEXT, root.META_MODULE.immutable
+    META_ROOT_CONTEXT = base_conf.build_path(root.SubPackage.META)
+    IMMUTABLE_CONTEXT = base_conf.get_full_error_code(
+        META_ROOT_CONTEXT, root.MetaModule.IMMUTABLE
     )
-    ASSEMBLER_CONTEXT: str = base_conf.BaseErrorPath.get_full_error_code(
-        META_ROOT_CONTEXT, root.META_MODULE.assembler
+    ASSEMBLER_CONTEXT = base_conf.get_full_error_code(
+        META_ROOT_CONTEXT, root.MetaModule.ASSEMBLER
     )
-    IMMUTABLE_NAMESPACE = base_conf.BaseErrorPath.get_full_error_code(
+    IMMUTABLE_NAMESPACE = base_conf.get_full_error_code(
         IMMUTABLE_CONTEXT, 'Namespace'
     )
-    IMMUTABLE_INSTANCE = base_conf.BaseErrorPath.get_full_error_code(
+    IMMUTABLE_INSTANCE = base_conf.get_full_error_code(
         IMMUTABLE_CONTEXT, 'Instance'
     )
 
@@ -99,9 +98,9 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
     def message(self) -> str:
         """Builds a detailed, technical error message."""
         match self.error_code:
-            case META_ERROR_CODE.IMMUTABILITY_VIOLATION:
+            case MetaErrorCode.IMMUTABILITY_VIOLATION:
                 return self._immutable_error_message()
-            case META_ERROR_CODE.ASSEMBLER_ERROR:
+            case MetaErrorCode.ASSEMBLER_ERROR:
                 return self._assembler_error_message()
             case _:
                 return super().message()
@@ -109,11 +108,11 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
     def user_message(self) -> str:
         """Builds a user-friendly error message."""
         match self.error_code:
-            case META_ERROR_CODE.IMMUTABILITY_VIOLATION:
-                return META_MSG.immutable_violation_user
-            case META_ERROR_CODE.ASSEMBLER_ERROR:
-                return META_MSG.assembler_error_user
+            case MetaErrorCode.IMMUTABILITY_VIOLATION:
+                return meta_error_message().immutable_violation_user
+            case MetaErrorCode.ASSEMBLER_ERROR:
+                return meta_error_message().assembler_error_user
             case _ if self.error_code in exc_conf.GENERIC_ERROR:
                 return super().user_message()
             case _:
-                return META_MSG.default_meta_user
+                return meta_error_message().default_meta_user
