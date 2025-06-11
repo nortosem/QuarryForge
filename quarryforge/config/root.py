@@ -5,12 +5,12 @@ throughout the QuarryForge application. It centralizes names for packages,
 modules, sub-packages, data models, Fossil SCM commands, and utility modules.
 
 Attributes:
-    PACKAGE (Package): Name for the main application package.
-    MODULE (Module): Names for top-level modules within the application.
-    SUB_PACKAGE (SubPackage): Names for sub-packages.
-    MODEL (Model): Data model names.
-    FOSSIL_COMMAND (FossilCommand): Fossil SCM command names.
-    UTIL_MODULE (UtilModule): Utility module names.
+    Package (StrEnum): Name for the main application package.
+    Module (StrEnum): Names for top-level modules within the application.
+    SubPackage (StrEnum): Names for sub-packages.
+    Model (StrEnum): Data model names.
+    FossilModule (StrEnum): Fossil SCM command names.
+    UtilModule (StrEnum): Utility module names.
 """
 from enum import StrEnum
 from typing import List
@@ -22,14 +22,14 @@ __all__: List[str] = [
     'SubPackage',
     'MetaModule',
     'Model',
-    'FossilCommand',
+    'FossilModule',
     'UtilModule'
 ]
 
 
 class Package(StrEnum):
     """Application package name"""
-    name: str = 'quarryforge'
+    NAME = 'quarryforge'
 
 
 class Module(StrEnum):
@@ -43,9 +43,9 @@ class Module(StrEnum):
         main (str): Name of the main application or entry point module.
         model (str): Name of the module defining core data models or structures.
     """
-    fossil: str = 'fossil'
-    main: str = 'main'
-    model: str = 'model'
+    FOSSIL = 'fossil'
+    MAIN = 'main'
+    MODEL = 'model'
 
 
 class SubPackage(StrEnum):
@@ -59,10 +59,11 @@ class SubPackage(StrEnum):
         exception (str): Name of the sub-package for custom exceptions.
         util (str): Name of the sub-package for utility modules.
     """
-    config: str = 'config'
-    exception: str = 'exception'
-    meta: str = 'meta'
-    util: str = 'util'
+    CONFIG = 'config'
+    EXCEPTION = 'exception'
+    FOSSIL = 'fossil'
+    META = 'meta'
+    UTIL = 'util'
 
 
 class MetaModule(StrEnum):
@@ -76,8 +77,8 @@ class MetaModule(StrEnum):
         immutable: The immutable module defines the metaclasses for immutable
             class creation.
     """
-    assembler: str = 'assembler'
-    immutable: str = 'immutable'
+    ASSEMBLER = 'assembler'
+    IMMUTABLE = 'immutable'
 
 
 class Model(StrEnum):
@@ -91,19 +92,19 @@ class Model(StrEnum):
         fossil_timeline (str):
             Name of the model representing a Fossil timeline entry.
     """
-    fossil_commit: str = 'FossilCommit'
-    fossil_repo: str = 'FossilRepo'
-    fossil_timeline: str = 'FossilTimeline'
+    FOSSIL_COMMIT = 'FossilCommit'
+    FOSSIL_REPO = 'FossilRepo'
+    FOSSIL_TIMELINE = 'FossilTimeline'
 
 
-class FossilCommand(StrEnum):
+class FossilModule(StrEnum):
     """Defines Fossil SCM commands.
 
-    These are the classes used to provide access to fossil commands via
+    These are the modules used to provide access to fossil commands via
     subprocess.
 
     Attributes:
-        timeline (str): Identifier for the Fossil 'timeline' command.
+        timeline (str): Module for the Fossil 'timeline' command.
         setup (str): Identifier for Fossil repository 'setup' operations.
         info (str): Identifier for the Fossil 'info' command.
         diff (str): Identifier for the Fossil 'diff' command.
@@ -112,16 +113,16 @@ class FossilCommand(StrEnum):
         add (str): Identifier for the Fossil 'add' command.
         commit (str): Identifier for the Fossil 'commit' command.
     """
-    process: str = 'FossilProcess'
-    timeout: str = 'FossilTimeoutExpired'
-    timeline: str = 'Timeline'
-    setup: str = 'Setup'
-    info: str = 'Info'
-    diff: str = 'Diff'
-    cat: str = 'Cat'
-    branch: str = 'Branch'
-    add: str = 'Add'
-    commit: str = 'Commit'
+    PROCESS = 'FossilProcess'
+    TIMEOUT = 'FossilTimeoutExpired'
+    TIMELINE = 'Timeline'
+    SETUP = 'Setup'
+    INFO = 'Info'
+    DIFF = 'Diff'
+    CAT = 'Cat'
+    BRANCH = 'Branch'
+    ADD = 'Add'
+    COMMIT = 'Commit'
 
 
 class UtilModule(StrEnum):
@@ -138,6 +139,8 @@ class UtilModule(StrEnum):
         model_util (str):
             Name of the utility module for model-related helpers.
     """
-    fossil_util: str = 'fossil_util'
-    main_util: str = 'main_util'
-    model_util: str = 'model_util'
+    DECORATOR = 'decorator'
+    FOSSIL_UTIL = 'fossil_util'
+    MAIN_UTIL = 'main_util'
+    MODEL_UTIL = 'model_util'
+    VALIDATION_UTIL = 'validation_util'
