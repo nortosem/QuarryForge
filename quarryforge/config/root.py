@@ -39,11 +39,9 @@ class Module(StrEnum):
     directory (e.g., `quarryforge/fossil.py`).
 
     Attributes:
-        fossil (str): Name of the module handling Fossil SCM interactions.
         main (str): Name of the main application or entry point module.
         model (str): Name of the module defining core data models or structures.
     """
-    FOSSIL = 'fossil'
     MAIN = 'main'
     MODEL = 'model'
 
@@ -55,9 +53,11 @@ class SubPackage(StrEnum):
     directly under the main package directory (e.g., `quarryforge/config/`).
 
     Attributes:
-        config (str): Name of the sub-package for application configurations.
-        exception (str): Name of the sub-package for custom exceptions.
-        util (str): Name of the sub-package for utility modules.
+        CONFIG (str): Name of the sub-package for application configurations.
+        EXCEPTION (str): Name of the sub-package for custom exceptions.
+        FOSSIL (str): Name of the sub-package for fossil command modules.
+        META (str): Name of the sub-package for metaclass modules.
+        UTIL (str): Name of the sub-package for utility modules.
     """
     CONFIG = 'config'
     EXCEPTION = 'exception'
@@ -73,8 +73,8 @@ class MetaModule(StrEnum):
     of modules located under the `quarryforge/util/` directory.
 
     Attributes:
-        assembler: The assembler module for package error handling.
-        immutable: The immutable module defines the metaclasses for immutable
+        ASSEMBLER: The assembler module for package error handling.
+        IMMUTABLE: The immutable module defines the metaclasses for immutable
             class creation.
     """
     ASSEMBLER = 'assembler'
@@ -85,11 +85,11 @@ class Model(StrEnum):
     """Defines names for quarryforge data models.
 
     Attributes:
-        fossil_commit (str):
+        FOSSIL_COMMIT (str):
             Name of the model representing a Fossil commit.
-        fossil_repo (str):
+        FOSSIL_REPO (str):
             Name of the model representing a Fossil repository.
-        fossil_timeline (str):
+        FOSSIL_TIMELINE (str):
             Name of the model representing a Fossil timeline entry.
     """
     FOSSIL_COMMIT = 'FossilCommit'
@@ -104,17 +104,15 @@ class FossilModule(StrEnum):
     subprocess.
 
     Attributes:
-        timeline (str): Module for the Fossil 'timeline' command.
-        setup (str): Identifier for Fossil repository 'setup' operations.
-        info (str): Identifier for the Fossil 'info' command.
-        diff (str): Identifier for the Fossil 'diff' command.
-        cat (str): Identifier for the Fossil 'cat' command.
-        branch (str): Identifier for Fossil 'branch' related commands.
-        add (str): Identifier for the Fossil 'add' command.
-        commit (str): Identifier for the Fossil 'commit' command.
+        TIMELINE (str): Module for the Fossil 'timeline' command.
+        SETUP (str): Module for Fossil repository 'setup' operations.
+        INFO (str): Module for the Fossil 'info' command.
+        DIFF (str): Module for the Fossil 'diff' command.
+        CAT (str): Module for the Fossil 'cat' command.
+        BRANCH (str): Module for Fossil 'branch' related commands.
+        ADD (str): Module for the Fossil 'add' command.
+        COMMIT (str): Module for the Fossil 'commit' command.
     """
-    PROCESS = 'FossilProcess'
-    TIMEOUT = 'FossilTimeoutExpired'
     TIMELINE = 'Timeline'
     SETUP = 'Setup'
     INFO = 'Info'
@@ -132,12 +130,16 @@ class UtilModule(StrEnum):
     of modules located under the `quarryforge/util/` directory.
 
     Attributes:
-        fossil_util (str):
+        DECORATOR (str):
+            Name of the module for decorators used in quarryforge.
+        FOSSIL_UTIL (str):
             Name of the utility module for Fossil-specific helpers.
-        main_util (str):
+        MAIN_UTIL (str):
             Name of the utility module for general application utilities.
-        model_util (str):
+        MODEL_UTIL (str):
             Name of the utility module for model-related helpers.
+        VALIDATION_UTIL (str):
+            Name of the helper-utility for the model utility.
     """
     DECORATOR = 'decorator'
     FOSSIL_UTIL = 'fossil_util'
