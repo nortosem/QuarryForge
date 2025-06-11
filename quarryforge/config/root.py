@@ -12,29 +12,27 @@ Attributes:
     FOSSIL_COMMAND (FossilCommand): Fossil SCM command names.
     UTIL_MODULE (UtilModule): Utility module names.
 """
-from typing import List, NamedTuple
+from enum import StrEnum
+from typing import List
 
 
 __all__: List[str] = [
-    'PACKAGE',
-    'MODULE',
-    'SUB_PACKAGE',
-    'META_MODULE',
-    'MODEL',
-    'FOSSIL',
-    'UTIL_MODULE'
+    'Package',
+    'Module',
+    'SubPackage',
+    'MetaModule',
+    'Model',
+    'FossilCommand',
+    'UtilModule'
 ]
 
 
-class Package(NamedTuple):
+class Package(StrEnum):
     """Application package name"""
     name: str = 'quarryforge'
 
 
-PACKAGE: Package = Package()
-"""Global constant for the main package name."""
-
-class Module(NamedTuple):
+class Module(StrEnum):
     """Defines names for top-level modules within the application.
 
     Python files residing directly under the main package
@@ -50,11 +48,7 @@ class Module(NamedTuple):
     model: str = 'model'
 
 
-MODULE: Module = Module()
-"""Global constant for top-level module names."""
-
-
-class SubPackage(NamedTuple):
+class SubPackage(StrEnum):
     """Defines names for top-level sub-packages.
 
     These are the directories containing an `__init__.py` file, residing
@@ -71,11 +65,7 @@ class SubPackage(NamedTuple):
     util: str = 'util'
 
 
-SUB_PACKAGE: SubPackage = SubPackage()
-"""Global constant for sub-package name configurations."""
-
-
-class MetaModule(NamedTuple):
+class MetaModule(StrEnum):
     """Defines names for modules within the utility sub-package (`meta`).
 
     These strings represent the file names (without the `.py` extension)
@@ -90,10 +80,7 @@ class MetaModule(NamedTuple):
     immutable: str = 'immutable'
 
 
-META_MODULE: MetaModule = MetaModule()
-"""Global constant for meta subpackage modules."""
-
-class Model(NamedTuple):
+class Model(StrEnum):
     """Defines names for quarryforge data models.
 
     Attributes:
@@ -109,11 +96,7 @@ class Model(NamedTuple):
     fossil_timeline: str = 'FossilTimeline'
 
 
-MODEL: Model = Model()
-"""Global constant for data model names."""
-
-
-class FossilCommand(NamedTuple):
+class FossilCommand(StrEnum):
     """Defines Fossil SCM commands.
 
     These are the classes used to provide access to fossil commands via
@@ -141,11 +124,7 @@ class FossilCommand(NamedTuple):
     commit: str = 'Commit'
 
 
-FOSSIL: FossilCommand = FossilCommand()
-"""Global constant for Fossil SCM command names."""
-
-
-class UtilModule(NamedTuple):
+class UtilModule(StrEnum):
     """Defines names for modules within the utility sub-package (`util`).
 
     These strings represent the file names (without the `.py` extension)
@@ -162,7 +141,3 @@ class UtilModule(NamedTuple):
     fossil_util: str = 'fossil_util'
     main_util: str = 'main_util'
     model_util: str = 'model_util'
-
-
-UTIL_MODULE: UtilModule = UtilModule()
-"""Global constant for utility module names."""
