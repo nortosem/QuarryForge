@@ -19,7 +19,9 @@ class AttrModTypeConfig(NamedTuple):
     delete_attribute: str = 'delete attribute'
 
 
-MOD_TYPE: AttrModTypeConfig = AttrModTypeConfig()
+def attribute_modifier_type() -> AttrModTypeConfig:
+    """Return configuiration for set/delete attributes."""
+    return AttrModTypeConfig()
 
 
 class ErrorBuilderConfig(NamedTuple):
@@ -36,3 +38,6 @@ class ErrorBuilderConfig(NamedTuple):
 
 
 BUILDER_CONFIG: ErrorBuilderConfig = ErrorBuilderConfig()
+def error_builder() -> ErrorBuilderConfig:
+    """Return configuration for assembling exception data."""
+    return ErrorBuilderConfig()
