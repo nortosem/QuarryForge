@@ -4,66 +4,63 @@ This module defines configurations specific to Fossil SCM operations,
 including default timeouts, command structures, and output parsing patterns.
 It centralizes all Fossil-related constant definitions.
 """
+from enum import StrEnum
 from typing import List, NamedTuple
 import re
 
 
 __all__: List[str] = [
-    'COMMAND',
-    'TIMELINE_DATA',
-    'INFO_DATA',
-    'FOSSIL'
+    'Command',
+    'timeline_data',
+    'info_data',
+    'Fossil'
 ]
 
 
-class ConfigCommand(NamedTuple):
+class Command(StrEnum):
     """The permitted fossil commands and options."""
-    FOSSIL: str = 'fossil'
-    REPO: str = '-R'
-    TIMELINE: str = 'timeline'
-    VERBOSE: str = '--verbose'
-    TYPE: str = '--type'
-    CI: str = 'ci'
-    LIMIT: str = '--limit'
-    NO_LIMIT: str = '0'
-    FULL: str = '--full'
-    NEW: str = 'new'
-    USER: str = 'user'
-    DEFAULT: str = 'default'
-    CONTACT: str = 'contact'
-    TEMPLATE: str = '--template'
-    ADMIN_USER: str = '--admin-user'
-    DATE_OVERRIDE: str = '--date-override'
-    PROJECT_NAME: str = '--project-name'
-    PROJECT_DESC: str = '--project-desc'
-    BRANCH: str = 'branch'
-    LIST: str = 'list'
-    ALL: str = '--all'
-    OPEN: str = 'open'
-    CLOSE: str = 'close'
-    WORKDIR: str = '--workdir'
-    CLOSED: str = '--closed'
-    INFO: str = 'info'
-    DIFF: str = 'diff'
-    BRIEF: str = '--brief'
-    FROM: str = '--from'
-    TO: str = '--to'
-    OUTFILE: str = '--out'
-    CAT: str = 'cat'
-    VERSION: str = '-r'
-    ADD: str = 'add'
-    COMMENT: str = '--comment'
-    TAG: str = '--tag'
-    USER_OVERRIDE: str = '--user-override'
-    HASH: str = '--hash'
-    COMMIT: str = 'commit'
+    FOSSIL = 'fossil'
+    REPO = '-R'
+    TIMELINE = 'timeline'
+    VERBOSE = '--verbose'
+    TYPE = '--type'
+    CI = 'ci'
+    LIMIT = '--limit'
+    NO_LIMIT = '0'
+    FULL = '--full'
+    NEW = 'new'
+    USER = 'user'
+    DEFAULT = 'default'
+    CONTACT = 'contact'
+    TEMPLATE = '--template'
+    ADMIN_USER = '--admin-user'
+    DATE_OVERRIDE = '--date-override'
+    PROJECT_NAME = '--project-name'
+    PROJECT_DESC = '--project-desc'
+    BRANCH = 'branch'
+    LIST = 'list'
+    ALL = '--all'
+    OPEN = 'open'
+    CLOSE = 'close'
+    WORKDIR = '--workdir'
+    CLOSED = '--closed'
+    INFO = 'info'
+    DIFF = 'diff'
+    BRIEF = '--brief'
+    FROM = '--from'
+    TO = '--to'
+    OUTFILE = '--out'
+    CAT = 'cat'
+    VERSION = '-r'
+    ADD = 'add'
+    COMMENT = '--comment'
+    TAG = '--tag'
+    USER_OVERRIDE = '--user-override'
+    HASH = '--hash'
+    COMMIT = 'commit'
 
 
-COMMAND: ConfigCommand = ConfigCommand()
-"""Global constant for fossil command arguments."""
-
-
-class ConfigTimelineData(NamedTuple):
+class TimelineDataConfig(NamedTuple):
     """Timeline Data
 
     The fields and patterns used to parse commits from the timeline output.
@@ -132,11 +129,12 @@ class ConfigTimelineData(NamedTuple):
         return re.compile(f'{self.CHANGE_PATTERN}')
 
 
-TIMELINE_DATA: ConfigTimelineData = ConfigTimelineData()
-"""Global constant for timeline data parsing configuration."""
+def timeline_data() -> TimelineDataConfig:
+    """Provides the configuration for the Timeline data."""
+    return TimelineDataConfig()
 
 
-class ConfigInfoData(NamedTuple):
+class InfoDataConfig(NamedTuple):
     """Parser for Fossil Info output."""
     INIT_HASH: str = '^comment:\\s+(?P<init>)\\s.+\\n'
     PARENT_KEY: str = 'parent'
@@ -151,30 +149,29 @@ class ConfigInfoData(NamedTuple):
         return re.compile(self.PARENT_DATA_PATTERN)
 
 
-INFO_DATA: ConfigInfoData = ConfigInfoData()
-"""Global constant for info data parsing patterns."""
+def info_data() -> InfoDataConfig:
+    """Provides the configuration for the Info data."""
+    return InfoDataConfig()
 
 
-class ConfigFossil(NamedTuple):
+class Fossil(StrEnum):
     """Config Fossil
 
     Define the constants used with fossil commands and exceptions.
     """
-    default_timeout: int = 180 #seconds
-    process_error: str = 'FOSSIL_PROCESS_ERROR'
-    timeout_error: str = 'FOSSIL_TIMEOUT_ERROR'
-    args: str = 'args'
-    cmd: str = 'cmd'
-    output: str = 'output'
-    return_code: str = 'return_code'
-    default_return_code: int = 1
-    stderr: str = 'stderr'
-    timeout: str = 'timeout'
-    step: str = 'step'
-    init: str = 'New repository initialization'
-    username_setup: str = 'username_setup'
-    user_contact: str = 'user_contact'
-
-
-FOSSIL: ConfigFossil = ConfigFossil()
-"""Global instance of the default fossil configuration."""
+    PROCESS = 'FossilProcess'
+    TIMEOUT_EXPIRED = 'FossilTimeoutExpired'
+    DEFAULT_TIMEOUT = 180 #seconds
+    PROCESS_ERROR = 'FOSSIL_PROCESS_ERROR'
+    TIMEOUT_ERROR = 'FOSSIL_TIMEOUT_ERROR'
+    ARGS = 'args'
+    CMD = 'cmd'
+    OUTPUT = 'output'
+    RETURN_CODE = 'return_code'
+    DEFAULT_RETURN_CODE = 1
+    STDERR = 'stderr'
+    TIMEOUT = 'timeout'
+    STEP = 'step'
+    INIT = 'New repository initialization'
+    USERNAME_SETUP = 'username_setup'
+    USER_CONTACT = 'user_contact'
