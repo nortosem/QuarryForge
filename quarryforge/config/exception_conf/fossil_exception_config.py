@@ -5,13 +5,12 @@ for Fossil SCM-related exceptions. It centralizes error contexts and message
 generation logic specific to Fossil operations.
 """
 from enum import StrEnum
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from quarryforge.config import fossil_config
 from quarryforge.config import root
 from quarryforge.config.exception_conf import base_exception_config as _
 from quarryforge.config.exception_conf import exception_config as config
-from quarryforge.meta import immutable
 
 
 __all__ = ['FossilErrorBuilder']
@@ -55,7 +54,7 @@ class FossilMessage(StrEnum):
     COMMIT_USER = 'Could not commit changes to the Fossil repository.'
 
 
-class FossilErrorPath(metaclass=immutable.Namespace):
+class FossilErrorPath(StrEnum):
     """Defines complete error context paths for Fossil SCM related exceptions.
 
     These paths are used as the `error_context` attribute in `ErrorBuilder`
@@ -106,9 +105,9 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
     """
     def _get_reason_suffix(self) -> str:
         """Helper to get a reason suffix from extra_details if available."""
-        if self.extra_details and config.DescMsg.REASON in self.extra_details:
-            return f' Reason: {self.extra_details[config.DescMsg.REASON]}.'
-        return ''
+        details = self.extra_details or {}
+        reason = details.get(config.DescMsg.REASON)
+        return f' Reason: {reason}.' if reason else ''
 
 
     def _process_error_message(self) -> str:
@@ -116,19 +115,22 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
         base_msg: str = self._base_message()
         details: Dict[str, Any] = self.extra_details or {}
 
-        cmd: str = details.get(
-            fossil_config.Fossil.CMD, FossilMessage.NO_CMD)
-        return_code: int = details.get(
-            fossil_config.Fossil.RETURN_CODE, config.DescMsg.UNKNOWN)
-        stdout: str = details.get(
-            fossil_config.Fossil.OUTPUT, FossilMessage.NO_OUTPUT)
-        stderr: str = details.get(
-            fossil_config.Fossil.STDERR, FossilMessage.NO_STDERR)
+        cmd: str = details.get(fossil_config.Fossil.CMD, FossilMessage.NO_CMD)
+        return_code: Optional[int] = details.get(
+            fossil_config.Fossil.RETURN_CODE,
+            fossil_config.Fossil.DEFAULT_RETURN_CODE
+        )
+        stdout: str = (
+            details.get(fossil_config.Fossil.OUTPUT, FossilMessage.NO_OUTPUT)
+        ).strip()
+        stderr: str = (
+            details.get(fossil_config.Fossil.STDERR, FossilMessage.NO_STDERR)
+        ).strip()
 
         return (
             f'{base_msg} Fossil command failed. '
             f'Command: "{cmd}". Return Code: {return_code}. '
-            f'STDOUT: "{stdout.strip()}". STDERR: "{stderr.strip()}".'
+            f'STDOUT: "{stdout}". STDERR: "{stderr}".'
         )
 
     def _timeout_expired_message(self) -> str:
@@ -136,19 +138,23 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
         base_msg = self._base_message()
         details: Dict[str, Any] = self.extra_details or {}
 
-        cmd = details.get(
+        cmd: str = details.get(
             fossil_config.Fossil.CMD, FossilMessage.NO_CMD)
-        timeout = details.get(
-            fossil_config.Fossil.TIMEOUT, config.DescMsg.UNKNOWN)
-        stdout = details.get(
-            fossil_config.Fossil.OUTPUT, FossilMessage.NO_OUTPUT)
-        stderr = details.get(
-            fossil_config.Fossil.STDERR, FossilMessage.NO_STDERR)
+        timeout: str = details.get(
+            fossil_config.Fossil.TIMEOUT,
+            fossil_config.Fossil.DEFAULT_TIMEOUT
+        )
+        stdout: str = (
+            details.get(fossil_config.Fossil.OUTPUT, FossilMessage.NO_OUTPUT)
+        ).strip()
+        stderr: str = (
+            details.get(fossil_config.Fossil.STDERR, FossilMessage.NO_STDERR)
+        ).strip()
 
         return (
             f'{base_msg} Fossil command timed out after {timeout} seconds. '
             f'Command: "{cmd}". '
-            f'STDOUT: "{stdout.strip()}". STDERR: "{stderr.strip()}".'
+            f'STDOUT: "{stdout}". STDERR: "{stderr}".'
         )
 
     def message(self) -> str:
@@ -249,6 +255,8 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
             case FossilErrorPath.FOSSIL_COMMIT:
                 return FossilMessage.COMMIT_USER
             case _:
+                # For generic errors, fall back to the base implementation.
                 if self.error_code in config.GenericError:
                     return super().user_message()
+                # Otherwise, provide a default fossil-specific user message.
                 return _.base_error_message().default_user_message
