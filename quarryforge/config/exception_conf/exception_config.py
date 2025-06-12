@@ -101,14 +101,14 @@ class PathError(ValidName):
 
 
 class DescMsg(StrEnum):
-    """Basic description partials."""
-    DEPENDENCY = auto()
-    A_VALID_DICTIONARY = auto()
-    MUST_BE = auto()
-    NONE = auto()
-    A_VALID_PATH = auto()
-    REASON = auto()
-    A_VALID_STRING = auto()
-    A_NON_EMPTY_STRING = auto()
-    IS_AN_UNEXPECTED_ERROR = auto()
-    UNKNOWN = auto()
+    """Basic description partials with human-readable values."""
+    DEPENDENCY = 'dependency'
+    A_VALID_DICTIONARY = 'a valid dictionary'
+    MUST_BE = 'must be'
+    NONE = 'None'
+    A_VALID_PATH = 'a valid path'
+    REASON = 'reason'
+    A_VALID_STRING = 'a valid string'
+    A_NON_EMPTY_STRING = 'a non-empty string'
+    IS_AN_UNEXPECTED_ERROR = 'is an unexpected error'
+    UNKNOWN = 'unknown'
