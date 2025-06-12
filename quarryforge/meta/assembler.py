@@ -123,8 +123,7 @@ class ErrorBuilder(abc.ABC):
             error_code: The specific type or code of the error.
             arg: The argument/value that caused the error (optional).
             field: The specific field name related to the error (optional).
-            info_type: The name of the type that was info
-             (e.g., 'str', 'int', 'Path')
+            info: The name of the type (e.g., 'str', 'int', 'Path')
             extra_details:
                 A dictionary of additional context or details for the error
                 (optional).
