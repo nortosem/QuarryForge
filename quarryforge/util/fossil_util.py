@@ -24,16 +24,16 @@ def get_raw_timeline(source: model.FossilRepo) -> List[str]:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.TIMELINE,
-        fossil_config.COMMAND.VERBOSE,
-        fossil_config.COMMAND.FULL,
-        fossil_config.COMMAND.LIMIT,
-        fossil_config.COMMAND.NO_LIMIT,
-        fossil_config.COMMAND.TYPE,
-        fossil_config.COMMAND.CI,
-        fossil_config.COMMAND.REPO,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.TIMELINE,
+        fossil_config.Command.VERBOSE,
+        fossil_config.Command.FULL,
+        fossil_config.Command.LIMIT,
+        fossil_config.Command.NO_LIMIT,
+        fossil_config.Command.TYPE,
+        fossil_config.Command.CI,
+        fossil_config.Command.REPO,
         str(source),
     ]
     return cmd
@@ -61,27 +61,27 @@ def rebuild_init(
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.NEW,
-        fossil_config.COMMAND.ADMIN_USER,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.NEW,
+        fossil_config.Command.ADMIN_USER,
         username,
-        fossil_config.COMMAND.DATE_OVERRIDE,
+        fossil_config.Command.DATE_OVERRIDE,
         date_override,
     ]
     if template:
         cmd.extend([
-            fossil_config.COMMAND.TEMPLATE,
+            fossil_config.Command.TEMPLATE,
             str(template),
         ])
     if project_name:
         cmd.extend([
-            fossil_config.COMMAND.PROJECT_NAME,
+            fossil_config.Command.PROJECT_NAME,
             project_name,
         ])
     if project_desc:
         cmd.extend([
-            fossil_config.COMMAND.PROJECT_DESC,
+            fossil_config.Command.PROJECT_DESC,
             project_desc,
         ])
     cmd.append(str(new_repo))
@@ -99,12 +99,12 @@ def set_default_user(username: str, new_repo: model.FossilRepo) -> List[str]:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.USER,
-        fossil_config.COMMAND.DEFAULT,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.USER,
+        fossil_config.Command.DEFAULT,
         username,
-        fossil_config.COMMAND.REPO,
+        fossil_config.Command.REPO,
         str(new_repo),
     ]
     return cmd
@@ -127,13 +127,13 @@ def set_user_contact(
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.USER,
-        fossil_config.COMMAND.CONTACT,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.USER,
+        fossil_config.Command.CONTACT,
         username,
         email,
-        fossil_config.COMMAND.REPO,
+        fossil_config.Command.REPO,
         str(source),
     ]
     return cmd
@@ -149,11 +149,11 @@ def open_rebuild(new_repo: model.FossilRepo, workdir: Path) -> List[str]:
     Returns:
         A list of strings representing the command.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.OPEN,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.OPEN,
         str(new_repo),
-        fossil_config.COMMAND.WORKDIR,
+        fossil_config.Command.WORKDIR,
         str(workdir),
     ]
     return cmd
@@ -165,9 +165,9 @@ def close_rebuild() -> List[str]:
     Returns:
         A list of string representing the command.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.CLOSE,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.CLOSE,
     ]
     return cmd
 
@@ -184,11 +184,11 @@ def get_parent_hash(version: str, source: model.FossilRepo) -> List[str]:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.INFO,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.INFO,
         version,
-        fossil_config.COMMAND.REPO,
+        fossil_config.Command.REPO,
         str(source),
     ]
     return cmd
@@ -212,15 +212,15 @@ def get_file_changes(
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.DIFF,
-        fossil_config.COMMAND.BRIEF,
-        fossil_config.COMMAND.FROM,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.DIFF,
+        fossil_config.Command.BRIEF,
+        fossil_config.Command.FROM,
         from_arg,
-        fossil_config.COMMAND.TO,
+        fossil_config.Command.TO,
         to_arg,
-        fossil_config.COMMAND.REPO,
+        fossil_config.Command.REPO,
         str(source),
     ]
     return cmd
@@ -246,15 +246,15 @@ def get_file_content(
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.CAT,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.CAT,
         filename,
-        fossil_config.COMMAND.OUTFILE,
+        fossil_config.Command.OUTFILE,
         outfile,
-        fossil_config.COMMAND.VERSION,
+        fossil_config.Command.VERSION,
         version,
-        fossil_config.COMMAND.REPO,
+        fossil_config.Command.REPO,
         str(source),
     ]
     return cmd
@@ -271,12 +271,12 @@ def ls_branches(source: model.FossilRepo) -> List[str]:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.BRANCH,
-        fossil_config.COMMAND.LIST,
-        fossil_config.COMMAND.ALL,
-        fossil_config.COMMAND.REPO,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.BRANCH,
+        fossil_config.Command.LIST,
+        fossil_config.Command.ALL,
+        fossil_config.Command.REPO,
         str(source),
     ]
     return cmd
@@ -293,12 +293,12 @@ def closed_branches(source: model.FossilRepo) -> List[str]:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.BRANCH,
-        fossil_config.COMMAND.LIST,
-        fossil_config.COMMAND.CLOSED,
-        fossil_config.COMMAND.REPO,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.BRANCH,
+        fossil_config.Command.LIST,
+        fossil_config.Command.CLOSED,
+        fossil_config.Command.REPO,
         str(source),
     ]
     return cmd
@@ -314,9 +314,9 @@ def add_files(files: List[Path]) -> List[str]:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.ADD,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.ADD,
     ]
     cmd.extend([str(file_path) for file_path in files])
     return cmd
@@ -338,25 +338,29 @@ def commit(
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
     """
-    cmd = [
-        fossil_config.COMMAND.FOSSIL,
-        fossil_config.COMMAND.COMMIT,
-        fossil_config.COMMAND.HASH,
-        fossil_config.COMMAND.DATE_OVERRIDE,
+    cmd: List[str] = [
+        fossil_config.Command.FOSSIL,
+        fossil_config.Command.COMMIT,
+        fossil_config.Command.HASH,
+        fossil_config.Command.DATE_OVERRIDE,
         date_override,
-        fossil_config.COMMAND.USER_OVERRIDE,
+        fossil_config.Command.USER_OVERRIDE,
         user_override,
-        fossil_config.COMMAND.COMMENT,
+        fossil_config.Command.COMMENT,
         comment,
     ]
 
     if branch:
-        cmd.extend([''.join(['--',fossil_config.COMMAND.BRANCH]),
-                    branch])
+        cmd.extend([
+            ''.join(['--',fossil_config.Command.BRANCH]),
+            branch
+        ])
 
     if tag:
-        cmd.extend([fossil_config.COMMAND.TAG,
-                    tag])
+        cmd.extend([
+            fossil_config.Command.TAG,
+            tag
+        ])
 
     cmd.extend([str(file_path) for file_path in files])
     return cmd
