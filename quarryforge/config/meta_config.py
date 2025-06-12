@@ -37,7 +37,6 @@ class ErrorBuilderConfig(NamedTuple):
     field: str = BUILDER_FIELD.field
 
 
-BUILDER_CONFIG: ErrorBuilderConfig = ErrorBuilderConfig()
 def error_builder() -> ErrorBuilderConfig:
     """Return configuration for assembling exception data."""
     return ErrorBuilderConfig()
