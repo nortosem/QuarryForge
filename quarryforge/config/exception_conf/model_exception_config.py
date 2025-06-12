@@ -3,13 +3,13 @@
 Configures and provides builders for FossilRepo, FossilCommit, & Fossil
 Timeline exceptions.
 """
+from enum import StrEnum
 from typing import List
 
 from quarryforge.config import model_config
 from quarryforge.config import root
 from quarryforge.config.exception_conf import base_exception_config as base_config
 from quarryforge.config.exception_conf import exception_config as config
-from quarryforge.meta import immutable
 
 
 __all__: List[str] = [
@@ -19,66 +19,42 @@ __all__: List[str] = [
 ]
 
 
-class ModelErrorPath(metaclass=immutable.Namespace):
+class ModelErrorPath(StrEnum):
     """Create Path strings for the Model module expcetions.
 
     These represent the path context for differnt module error types.
 
     Attributes:
-        FOSSIL_COMMIT: Full base path for a FossilCommit exception code.
-        FOSSIL_REPO: Full base path for a FossilRepo exception code.
-        FOSSIL_TIMELINE: Full base path for FossilTimeline exception code.
-    """
-    FOSSIL_COMMIT: str = base_config.BaseErrorPath.get_full_error_code(
-        base_config.BaseErrorPath.MODEL, root.MODEL.fossil_commit
-    )
-    FOSSIL_REPO: str = base_config.BaseErrorPath.get_full_error_code(
-        base_config.BaseErrorPath.MODEL, root.MODEL.fossil_repo
-    )
-    FOSSIL_TIMELINE: str = base_config.BaseErrorPath.get_full_error_code(
-        base_config.BaseErrorPath.MODEL, root.MODEL.fossil_timeline
-    )
-
-
-class FossilRepoPath(metaclass=immutable.Namespace):
-    """Create the path context for a FossilRepo exception.
-
-    These are the `error_context` values.
-
-    Attributes:
-        INIT: Full model error path with `__init__` context.
-    """
-    INIT: str = f'{ModelErrorPath.FOSSIL_REPO}.__init__'
-
-
-class FossilCommitPath(metaclass=immutable.Namespace):
-    """Create the path context for a FossilCommit exception.
-
-    These are the `error_context` values.
-
-    Attributes:
+        _FOSSIL_COMMIT: Full base path for a FossilCommit exception code.
+        _FOSSIL_REPO: Full base path for a FossilRepo exception code.
+        _FOSSIL_TIMELINE: Full base path for FossilTimeline exception code.
         INIT: Full model error path with `__init__` context.
         PARSE: Context for errors during commit data parsing.
-        VALIDATION: Context for errors validating commit fields.
-    """
-    INIT: str = f'{ModelErrorPath.FOSSIL_COMMIT}.__init__'
-    PARSE: str = f'{ModelErrorPath.FOSSIL_COMMIT}.parse'
-    VALIDATION: str = f'{ModelErrorPath.FOSSIL_COMMIT}.validation'
-
-
-class FossilTimelinePath(metaclass=immutable.Namespace):
-    """Create the path context for a FossilTimeline exception.
-
-    These are the `error_context` values.
-
-    Attributes:
         INIT: Full model error path with `__init__` context.
         PARSE: Context for errors during timeline data parsing.
         NO_COMMITS_DATA: Context when timeline parsing yields no commit data.
     """
-    INIT: str = f'{ModelErrorPath.FOSSIL_TIMELINE}.__init__'
-    PARSE: str = f'{ModelErrorPath.FOSSIL_TIMELINE}.parse'
-    NO_COMMITS_DATA: str = f'{ModelErrorPath.FOSSIL_TIMELINE}.no_commits_data'
+    # path roots
+    _FOSSIL_COMMIT_ROOT = base_config.get_full_error_code(
+        base_config.BaseErrorPath.MODEL, root.Model.FOSSIL_COMMIT
+    )
+    _FOSSIL_REPO_ROOT = base_config.get_full_error_code(
+        base_config.BaseErrorPath.MODEL, root.Model.FOSSIL_REPO
+    )
+    _FOSSIL_TIMELINE_ROOT = base_config.get_full_error_code(
+        base_config.BaseErrorPath.MODEL, root.Model.FOSSIL_TIMELINE
+    )
+    # FossilRepo Path
+    FOSSIL_REPO_INIT = f'{_FOSSIL_REPO_ROOT}.__init__'
+
+    # FossilCommit Path
+    FOSSIL_COMMIT_INIT = f'{_FOSSIL_COMMIT_ROOT}.__init__'
+    FOSSIL_COMMIT_PARSE = f'{_FOSSIL_COMMIT_ROOT}.parse'
+
+    # FossilTimeline Path
+    FOSSIL_TIMELINE_INIT = f'{_FOSSIL_TIMELINE_ROOT}.__init__'
+    FOSSIL_TIMELINE_PARSE = f'{_FOSSIL_TIMELINE_ROOT}.parse'
+    FOSSIL_TIMELINE_NO_COMMITS = f'{_FOSSIL_TIMELINE_ROOT}.no_commits_data'
 
 
 class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
@@ -92,16 +68,17 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
         """Generates a message for string errors specific to FossilRepo."""
         base_msg = self._base_message()
         match self.error_code:
-            case config.STRING_ERROR.empty:
+            case config.StringError.EMPTY_STRING_ERROR:
                 return (
                     f'{base_msg} String argument is empty or only whitespace. '
-                    f'Expected: {self.info or config.DESC_MSG.unempty}.'
+                    'Expected: '
+                    f'{self.info or config.DescMsg.A_NON_EMPTY_STRING}.'
                 )
-            case config.STRING_ERROR.invalid_chars:
+            case config.StringError.INVALID_CHARS_ERROR:
                 return (
                     f'{base_msg} String {self.arg!r} contains invalid '
                     f'characters or patterns. '
-                    f'Expected pattern: {self.info or config.DESC_MSG.unknown}.'
+                    f'Expected pattern: {self.info or config.DescMsg.UNKNOWN}.'
                 )
             case _:
                 return (
@@ -112,62 +89,61 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
     def _path_error_message(self) -> str:
         """Generates a message for errors with FossilRepo file paths."""
         base_msg = self._base_message()
-        path_info = self.info or config.DESC_MSG.path
+        path_info = self.info or config.DescMsg.A_VALID_PATH
+        details = self.extra_details or {}
+        reason: str = details.get(
+            config.DescMsg.REASON, config.DescMsg.UNKNOWN
+        )
 
         match self.error_code:
-            case config.PATH_ERROR.non_path_object:
+            case config.PathError.NON_PATH_OBJECT_ERROR:
                 return (
                     f'{base_msg} Argument {self.arg!r} is not {path_info} or '
                     f' convertible to one.'
                 )
-            case config.PATH_ERROR.invalid_path_string:
+            case config.PathError.INVALID_PATH_STRING_ERROR:
                 return (
                     f'{base_msg} The provided string {self.arg!r} cannot be '
                     f' interpreted as a valid system path.'
                 )
-            case config.PATH_ERROR.resolution:
-                reason = config.DESC_MSG.unknown
-                if self.extra_details:
-                    reason = str(self.extra_details.get(
-                        config.DESC_MSG.reason)
-                    )
+            case config.PathError.PATH_RESOLUTION_ERROR:
                 return (
                     f'{base_msg} Path resolution failed for {self.arg!r}. '
                     f' Reason: {reason}.'
                 )
-            case config.PATH_ERROR.nonexistent:
+            case config.PathError.PATH_NONEXISTENT_ERROR:
                 return (
                     f'{base_msg} Path {self.arg!r} is expected to exist, '
                     f'but does not.'
                 )
-            case config.PATH_ERROR.existing:
+            case config.PathError.PATH_EXISTING_ERROR:
                 return (
                     f'{base_msg} Path {self.arg!r} is expected not to exist '
                     f'(for creation), but already does.'
                 )
-            case config.PATH_ERROR.file_error:
+            case config.PathError.PATH_NOT_A_FILE_ERROR:
                 return (
                     f'{base_msg} Path {self.arg!r} is expected to be a file,'
                     f' but it is a directory.'
                 )
-            case config.PATH_ERROR.dir_error:
+            case config.PathError.PATH_NOT_A_DIRECTORY_ERROR:
                 return (
                     f'{base_msg} Path {self.arg!r} is expected to be a'
                     ' directory, but it is a file.'
                 )
-            case config.PATH_ERROR.unreadable:
+            case config.PathError.PATH_NOT_READABLE_ERROR:
                 return (
                     f'{base_msg} Path {self.arg!r} lacks read permissions.'
                 )
-            case config.PATH_ERROR.unwritable:
+            case config.PathError.PATH_NOT_WRITABLE_ERROR:
                 return (
                     f'{base_msg} Path {self.arg!r} lacks write permissions.'
                 )
-            case config.PATH_ERROR.unexecutable:
+            case config.PathError.PATH_NOT_EXECUTABLE_ERROR:
                 return (
                     f'{base_msg} Path {self.arg!r} lacks execute permissions.'
                 )
-            case config.PATH_ERROR.same_dir:
+            case config.PathError.SAME_REPO_DIR_AND_WORK_DIR:
                 return (
                     f'{base_msg} Fossil repository directory matches the '
                     f'working directory.'
@@ -176,7 +152,7 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
             case _:
                 return (
                     f'{base_msg} An unhandled path error for {self.arg!r}. '
-                    f'Details: {self.info or config.DESC_MSG.unknown}.'
+                    f'Details: {self.info or config.DescMsg.UNKNOWN}.'
                 )
 
 
@@ -188,21 +164,24 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
         to generic messages.
         """
         match self.error_code:
-            case config.STRING_ERROR.empty | config.STRING_ERROR.invalid_chars:
+            case (
+                config.StringError.EMPTY_STRING_ERROR |
+                config.StringError.INVALID_CHARS_ERROR
+            ):
                 return self._string_error_message()
 
             case (
-                config.PATH_ERROR.non_path_object |
-                config.PATH_ERROR.invalid_path_string |
-                config.PATH_ERROR.resolution |
-                config.PATH_ERROR.existing |
-                config.PATH_ERROR.nonexistent |
-                config.PATH_ERROR.file_error |
-                config.PATH_ERROR.dir_error |
-                config.PATH_ERROR.unreadable |
-                config.PATH_ERROR.unwritable |
-                config.PATH_ERROR.unexecutable |
-                config.PATH_ERROR.same_dir
+                config.PathError.NON_PATH_OBJECT_ERROR |
+                config.PathError.INVALID_PATH_STRING_ERROR |
+                config.PathError.PATH_RESOLUTION_ERROR |
+                config.PathError.PATH_EXISTING_ERROR |
+                config.PathError.PATH_NONEXISTENT_ERROR |
+                config.PathError.PATH_NOT_A_FILE_ERROR |
+                config.PathError.PATH_NOT_A_DIRECTORY_ERROR |
+                config.PathError.PATH_NOT_READABLE_ERROR |
+                config.PathError.PATH_NOT_WRITABLE_ERROR |
+                config.PathError.PATH_NOT_EXECUTABLE_ERROR |
+                config.PathError.SAME_REPO_DIR_AND_WORK_DIR
             ):
                 return self._path_error_message()
 
@@ -216,46 +195,46 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
         where applicable, then falls back to generic messages.
         """
         match self.error_code:
-            case config.STRING_ERROR.empty:
+            case config.StringError.EMPTY_STRING_ERROR:
                 return 'A required text input was left empty.'
-            case config.STRING_ERROR.invalid_chars:
+            case config.StringError.INVALID_CHARS_ERROR:
                 return (
                     'A text input contains unsupported characters '
                     'or is not in the expected format.'
                     )
-            case config.PATH_ERROR.non_path_object:
+            case config.PathError.NON_PATH_OBJECT_ERROR:
                 return 'The file path is in an incorrect format or type.'
-            case config.PATH_ERROR.invalid_path_string:
+            case config.PathError.INVALID_PATH_STRING_ERROR:
                 return 'The provided path string is not a valid file path.'
-            case config.PATH_ERROR.resolution:
+            case config.PathError.PATH_RESOLUTION_ERROR:
                 return 'The path provided could not be resolved.'
-            case config.PATH_ERROR.nonexistent:
+            case config.PathError.PATH_NONEXISTENT_ERROR:
                 return 'A required file or directory was not found.'
-            case config.PATH_ERROR.existing:
+            case config.PathError.PATH_EXISTING_ERROR:
                 return 'A file or directory that should be new already exists.'
-            case config.PATH_ERROR.file_error:
+            case config.PathError.PATH_NOT_A_FILE_ERROR:
                 return (
                     'Expected a file at the path, but found a directory or '
                     ' something else.'
                 )
-            case config.PATH_ERROR.dir_error:
+            case config.PathError.PATH_NOT_A_DIRECTORY_ERROR:
                 return (
                     'Expected a directory at the path, but found a file or '
                     'something else.'
                 )
-            case config.PATH_ERROR.unreadable:
+            case config.PathError.PATH_NOT_READABLE_ERROR:
                 return (
                     'Permission denied: Cannot read from the specified '
                     'file or directory.'
                 )
-            case config.PATH_ERROR.unwritable:
+            case config.PathError.PATH_NOT_WRITABLE_ERROR:
                 return (
                     'Permission denied: Cannot write to the specified '
                     'file or directory.'
                 )
-            case config.PATH_ERROR.unexecutable:
+            case config.PathError.PATH_NOT_EXECUTABLE_ERROR:
                 return 'Permission denied: Cannot execute the specified file.'
-            case config.PATH_ERROR.same_dir:
+            case config.PathError.SAME_REPO_DIR_AND_WORK_DIR:
                 return (
                     'The fossil repository parent directory is the same '
                     'directory as the workdir.'
@@ -273,7 +252,7 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
     def _invalid_uuid_message(self) -> str:
         """Generates a message for invalid UUID format errors."""
         base_msg = self._base_message()
-        info = self.info or config.DESC_MSG.string
+        info = self.info or config.DescMsg.A_VALID_STRING
         return (
             f'{base_msg} Commit UUID {self.arg!r} is not a valid format. '
             f'Expected: {info} (e.g., 40-char SHA-3 hex).'
@@ -282,11 +261,10 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
     def _parse_error_message(self) -> str:
         """Generates a message for commit data parsing errors."""
         base_msg = self._base_message()
-        reason = config.DESC_MSG.unknown
-        if self.extra_details:
-            reason = str(self.extra_details.get(
-                config.DESC_MSG.reason)
-            )
+        details = self.extra_details or {}
+        reason: str = details.get(
+            config.DescMsg.REASON, config.DescMsg.UNKNOWN
+        )
         return (
             f'{base_msg} Failed to parse commit data from {self.arg!r}. '
             f'Reason: {reason}.'
@@ -303,19 +281,19 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
     def message(self) -> str:
         """Builds a detailed, technical message for FossilCommit exceptions."""
         match self.error_code:
-            case config.STRING_ERROR.invalid_chars if (
-                self.field == model_config.FOSSIL_COMMIT.uuid
+            case config.StringError.INVALID_CHARS_ERROR if (
+                self.field == model_config.fossil_commit_config().uuid
             ):
                 return self._invalid_uuid_message()
-            case config.GENERIC_ERROR.value_error if (
-                self.error_context == FossilCommitPath.PARSE
+            case config.GenericError.VALUE_ERROR if (
+                self.error_context == ModelErrorPath.FOSSIL_COMMIT_PARSE
             ):
                 return self._parse_error_message()
-            case config.GENERIC_ERROR.type_error if (
-                self.error_context == FossilCommitPath.PARSE
+            case config.GenericError.TYPE_ERROR if (
+                self.error_context == ModelErrorPath.FOSSIL_COMMIT_PARSE
             ):
                 return self._parse_error_message()
-            case config.GENERIC_ERROR.invalid_state if self.field:
+            case config.GenericError.INVALID_STATE_ERROR if self.field:
                 return self._missing_field_message()
             case _:
                 return super().message()
@@ -323,19 +301,19 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
     def user_message(self) -> str:
         """Builds a user-friendly error message for FossilCommit exceptions."""
         match self.error_code:
-            case config.STRING_ERROR.invalid_chars if (
-                self.field == model_config.FOSSIL_COMMIT.uuid
+            case config.StringError.INVALID_CHARS_ERROR if (
+                self.field == model_config.fossil_commit_config().uuid
             ):
                 return 'The commit identifier (UUID) is in an invalid format.'
-            case config.GENERIC_ERROR.value_error if (
-                self.error_context == FossilCommitPath.PARSE
+            case config.GenericError.VALUE_ERROR if (
+                self.error_context == ModelErrorPath.FOSSIL_COMMIT_PARSE
             ):
                 return 'Could not understand the commit information provided.'
-            case config.GENERIC_ERROR.type_error if (
-                self.error_context == FossilCommitPath.PARSE
+            case config.GenericError.TYPE_ERROR if (
+                self.error_context == ModelErrorPath.FOSSIL_COMMIT_PARSE
             ):
                 return 'Commit information is in an unexpected format.'
-            case config.GENERIC_ERROR.invalid_state if self.field:
+            case config.GenericError.INVALID_STATE_ERROR if self.field:
                 return (
                     f'A required piece of commit information ({self.field}) '
                     f'was missing.'
@@ -353,11 +331,10 @@ class FossilTimelineErrorBuilder(base_config.BaseErrorBuilder):
     def _parse_error_message(self) -> str:
         """Generates a message for timeline data parsing errors."""
         base_msg = self._base_message()
-        reason = config.DESC_MSG.unknown
-        if self.extra_details:
-            reason = str(self.extra_details.get(
-                config.DESC_MSG.reason)
-            )
+        details = self.extra_details or {}
+        reason: str = details.get(
+            config.DescMsg.REASON, config.DescMsg.UNKNOWN
+        )
         return (
             f'{base_msg} Failed to parse timeline data from {self.arg!r}. '
             f'Reason: {reason}.'
@@ -375,16 +352,16 @@ class FossilTimelineErrorBuilder(base_config.BaseErrorBuilder):
     def message(self) -> str:
         """Builds detailed, technical message for FossilTimeline exceptions."""
         match self.error_code:
-            case config.GENERIC_ERROR.value_error if (
-                self.error_context == FossilTimelinePath.PARSE
+            case config.GenericError.VALUE_ERROR if (
+                self.error_context == ModelErrorPath.FOSSIL_TIMELINE_PARSE
             ):
                 return self._parse_error_message()
-            case config.GENERIC_ERROR.type_error if (
-                self.error_context == FossilTimelinePath.PARSE
+            case config.GenericError.TYPE_ERROR if (
+                self.error_context == ModelErrorPath.FOSSIL_TIMELINE_PARSE
             ):
                 return self._parse_error_message()
-            case config.GENERIC_ERROR.invalid_state if (
-                self.error_context == FossilTimelinePath.NO_COMMITS_DATA
+            case config.GenericError.INVALID_STATE_ERROR if (
+                self.error_context == ModelErrorPath.FOSSIL_TIMELINE_NO_COMMITS
             ):
                 return self._no_commits_data_message()
             case _:
@@ -393,16 +370,16 @@ class FossilTimelineErrorBuilder(base_config.BaseErrorBuilder):
     def user_message(self) -> str:
         """Builds a user-friendly message for FossilTimeline exceptions."""
         match self.error_code:
-            case config.GENERIC_ERROR.value_error if (
-                self.error_context == FossilTimelinePath.PARSE
+            case config.GenericError.VALUE_ERROR if (
+                self.error_context == ModelErrorPath.FOSSIL_TIMELINE_PARSE
             ):
                 return 'Could not use the timeline information provided.'
-            case config.GENERIC_ERROR.type_error if (
-                self.error_context == FossilTimelinePath.PARSE
+            case config.GenericError.TYPE_ERROR if (
+                self.error_context == ModelErrorPath.FOSSIL_TIMELINE_PARSE
             ):
                 return 'Timeline information is in an unexpected format.'
-            case config.GENERIC_ERROR.invalid_state if (
-                self.error_context == FossilTimelinePath.NO_COMMITS_DATA
+            case config.GenericError.INVALID_STATE_ERROR if (
+                self.error_context == ModelErrorPath.FOSSIL_TIMELINE_NO_COMMITS
             ):
                 return 'No commit history could be found for the repository.'
             case _:
