@@ -42,13 +42,13 @@ def validate_str_parameters(
         for parameter in args:
             if not isinstance(parameter, str):
                 raise TypeError(
-                    f'{parameter!r} {config.DESC_MSG.must_be}'
-                    f' {config.DESC_MSG.string}'
+                    f'{parameter!r} {config.DescMsg.MUST_BE}'
+                    f' {config.DescMsg.A_VALID_STRING}'
                 )
             if not parameter:
                 raise ValueError(
-                    f'{parameter!r} {config.DESC_MSG.must_be}'
-                    f' {config.DESC_MSG.unempty}'
+                    f'{parameter!r} {config.DescMsg.MUST_BE}'
+                    f' {config.DescMsg.A_NON_EMPTY_STRING}'
                 )
         return method(*args, **kwargs)
     return wrapper
