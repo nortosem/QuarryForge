@@ -4,7 +4,7 @@
 """
 from typing import List, NamedTuple
 
-from quarryforge.config.exception_conf.exception_data import BUILDER_FIELD
+from quarryforge.config.exception_conf.exception_data import builder_config
 
 
 __all__: List[str] = []
@@ -29,12 +29,12 @@ class ErrorBuilderConfig(NamedTuple):
 
     Define the default slots for all BuildError instances.
     """
-    error_context: str = BUILDER_FIELD.error_context
-    error_code: str = BUILDER_FIELD.error_code
-    arg: str = BUILDER_FIELD.arg
-    extra_details: str = BUILDER_FIELD.extra_details
-    info: str = BUILDER_FIELD.info
-    field: str = BUILDER_FIELD.field
+    error_context: str = builder_config().error_context
+    error_code: str = builder_config().error_code
+    arg: str = builder_config().arg
+    extra_details: str = builder_config().extra_details
+    info: str = builder_config().info
+    field: str = builder_config().field
 
 
 def error_builder() -> ErrorBuilderConfig:
