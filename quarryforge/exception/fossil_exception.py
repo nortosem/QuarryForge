@@ -39,43 +39,43 @@ class FossilProcessError(
             details: A dictionary containing detailed error information,
                 expected to include `cmd`, `returncode`, `stdout`, `stderr`.
         """
-        cmd: str = _.FossilMessage.no_cmd
-        return_code: int = config.FOSSIL.default_return_code
-        output: str = _.FossilMessage.no_output
-        stderr: str = _.FossilMessage.no_stderr
+        cmd: str = _.FossilMessage.NO_CMD
+        return_code: int = int(config.Fossil.DEFAULT_RETURN_CODE)
+        output: str = _.FossilMessage.NO_OUTPUT
+        stderr: str = _.FossilMessage.NO_STDERR
 
-        if details[config.FOSSIL.cmd]:
+        if details[config.Fossil.CMD]:
             if not isinstance(cmd, (str, list)):
                 raise TypeError(
-                    f'{_.FossilMessage.expected_str_list} {type(cmd).__name__}'
+                    f'{_.FossilMessage.EXPECTED_STR_LIST} {type(cmd).__name__}'
                 )
-            cmd = details.get(config.FOSSIL.cmd, cmd)
+            cmd = details.get(config.Fossil.CMD, cmd)
 
-        if details[config.FOSSIL.return_code]:
+        if details[config.Fossil.RETURN_CODE]:
             if not isinstance(return_code, int):
                 raise TypeError(
-                    f'{_.FossilMessage.expected_int} '
+                    f'{_.FossilMessage.EXPECTED_INT} '
                     f'{type(return_code).__name__}'
                 )
             return_code = details.get(
-                config.FOSSIL.return_code, return_code
+                config.Fossil.RETURN_CODE, return_code
             )
 
-        if details[config.FOSSIL.output]:
+        if details[config.Fossil.OUTPUT]:
             if not isinstance(output, str):
                 raise TypeError(
-                    f'{_.FossilMessage.expected_str_or_none} '
+                    f'{_.FossilMessage.EXPECTED_STR_OR_NONE} '
                     f'{type(stderr).__name__}'
                 )
-            output = details.get(config.FOSSIL.output, output)
+            output = details.get(config.Fossil.OUTPUT, output)
 
-        if details[config.FOSSIL.stderr]:
+        if details[config.Fossil.STDERR]:
             if not isinstance(stderr, str):
                 raise TypeError(
-                    f'{_.FossilMessage.expected_str_or_none} '
+                    f'{_.FossilMessage.EXPECTED_STR_OR_NONE} '
                     f'{type(stderr).__name__}'
                 )
-            stderr = details.get(config.FOSSIL.stderr, stderr)
+            stderr = details.get(config.Fossil.STDERR, stderr)
 
         subprocess.CalledProcessError.__init__(
             self, return_code, cmd, output=output, stderr=stderr)
@@ -113,37 +113,37 @@ class FossilTimeoutError(
             details: A dictionary containing detailed error information,
                      expected to include `cmd`, `timeout`, `stdout`, `stderr`.
         """
-        cmd: str = _.FossilMessage.no_cmd
-        timeout: int = config.FOSSIL.default_timeout
-        output: str = _.FossilMessage.no_output
-        stderr: str = _.FossilMessage.no_stderr
+        cmd: str = _.FossilMessage.NO_CMD
+        timeout: int = int(config.Fossil.DEFAULT_TIMEOUT)
+        output: str = _.FossilMessage.NO_OUTPUT
+        stderr: str = _.FossilMessage.NO_STDERR
 
-        if details[config.FOSSIL.cmd]:
+        if details[config.Fossil.CMD]:
             if not isinstance(cmd, (str, list)):
                 raise TypeError(
-                    f'{_.FossilMessage.expected_str_list} {type(cmd).__name__}'
+                    f'{_.FossilMessage.EXPECTED_STR_LIST} {type(cmd).__name__}'
                 )
-            cmd = details.get(config.FOSSIL.cmd, cmd)
-        if details[config.FOSSIL.timeout]:
+            cmd = details.get(config.Fossil.CMD, cmd)
+        if details[config.Fossil.TIMEOUT]:
             if not isinstance(timeout, int):
                 raise TypeError(
-                    f'{_.FossilMessage.expected_int} {type(timeout).__name__}'
+                    f'{_.FossilMessage.EXPECTED_INT} {type(timeout).__name__}'
                 )
-            timeout = details.get(config.FOSSIL.timeout, timeout)
-        if details[config.FOSSIL.output]:
+            timeout = details.get(config.Fossil.TIMEOUT, timeout)
+        if details[config.Fossil.OUTPUT]:
             if not isinstance(output, str):
                 raise TypeError(
-                    f'{_.FossilMessage.expected_str_or_none} '
+                    f'{_.FossilMessage.EXPECTED_STR_OR_NONE} '
                     f'{type(output).__name__}'
                 )
-            output = details.get(config.FOSSIL.output, output)
-        if details[config.FOSSIL.stderr]:
+            output = details.get(config.Fossil.OUTPUT, output)
+        if details[config.Fossil.STDERR]:
             if not isinstance(stderr, str):
                 raise TypeError(
-                    f'{_.FossilMessage.expected_str_or_none} '
+                    f'{_.FossilMessage.EXPECTED_STR_OR_NONE} '
                     f'{type(stderr).__name__}'
                 )
-            stderr = details.get(config.FOSSIL.stderr, stderr)
+            stderr = details.get(config.Fossil.STDERR, stderr)
 
 
         subprocess.TimeoutExpired.__init__(
