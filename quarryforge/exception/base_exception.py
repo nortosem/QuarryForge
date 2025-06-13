@@ -58,11 +58,11 @@ class QuarryForgeError(Exception):
     def to_dict(self) -> Dict[str, Any]:
         """Returns a dictionary representation of the exception."""
         return {
-            _.ERROR_FIELD.message: str(self),
-            _.ERROR_FIELD.code: self.code,
-            _.ERROR_FIELD.details: self.details,
-            _.ERROR_FIELD.timestamp: self.timestamp.isoformat(),
-            _.ERROR_FIELD.user_message: self.user_message,
+            _.error_data_config().message: str(self),
+            _.error_data_config().code: self.code,
+            _.error_data_config().details: self.details,
+            _.error_data_config().timestamp: self.timestamp.isoformat(),
+            _.error_data_config().user_message: self.user_message,
         }
 
     def __str__(self) -> str:
@@ -77,9 +77,9 @@ class QuarryForgeError(Exception):
         if self.details:
             filtered_details = {}
             for key, value in self.details.items():
-                if key not in [_.ERROR_FIELD.code,
-                    _.ERROR_FIELD.message,
-                    _.ERROR_FIELD.user_message
+                if key not in [_.error_data_config().code,
+                    _.error_data_config().message,
+                    _.error_data_config().user_message
                 ]:
                     filtered_details[key] = value
 
