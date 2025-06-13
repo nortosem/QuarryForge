@@ -28,8 +28,8 @@ def _valid_str_type(value: str) -> str:
     """
     if not isinstance(value, str):
         raise TypeError(
-            f'{value!r} {config.DESC_MSG.must_be}'
-            f' {config.DESC_MSG.string}'
+            f'{value!r} {config.DescMsg.MUST_BE}'
+            f' {config.DescMsg.A_VALID_STRING}'
         )
     return value
 
@@ -48,8 +48,8 @@ def _valid_str_value(value: str) -> str:
     """
     if not value:
         raise ValueError(
-            f'{value!r} {config.DESC_MSG.must_be}'
-            f' {config.DESC_MSG.unempty}'
+            f'{value!r} {config.DescMsg.MUST_BE}'
+            f' {config.DescMsg.A_NON_EMPTY_STRING}'
         )
     return value
 
@@ -106,7 +106,7 @@ class ErrorBuilder(abc.ABC):
         info (str): The error info associated with an error.
         field (str): The class field or attribute affected by the error.
     """
-    __slots__ = meta_config.BUILDER_CONFIG._fields
+    __slots__ = meta_config.error_builder().slots()
 
     def __init__(self,
                  *,
@@ -148,8 +148,8 @@ class ErrorBuilder(abc.ABC):
         if extra_details:
             if not isinstance(extra_details, dict):
                 raise TypeError(
-                    f'{extra_details!r} {config.DESC_MSG.must_be}'
-                    f' {config.DESC_MSG.dictionary}'
+                    f'{extra_details!r} {config.DescMsg.MUST_BE}'
+                    f' {config.DescMsg.dictionary}'
                 )
         self.extra_details = extra_details
 
@@ -203,17 +203,17 @@ class ErrorBuilder(abc.ABC):
         """
 
         details = {
-            error.BUILDER_FIELD.error_context: self.error_context,
-            error.BUILDER_FIELD.error_code: self.error_code,
-            error.BUILDER_FIELD.message: self.message(),
-            error.BUILDER_FIELD.user_message: self.user_message(),
+            error.builder_config().error_context: self.error_context,
+            error.builder_config().error_code: self.error_code,
+            error.builder_config().message: self.message(),
+            error.builder_config().user_message: self.user_message(),
         }
         if self.arg:
-            details[error.BUILDER_FIELD.arg] = self.arg
+            details[error.builder_config().arg] = self.arg
         if self.field:
-            details[error.BUILDER_FIELD.field] = self.field
+            details[error.builder_config().field] = self.field
         if self.info:
-            details[error.BUILDER_FIELD.info] = self.info
+            details[error.builder_config().info] = self.info
         if self.extra_details:
             details.update(self.extra_details)
 
@@ -236,7 +236,7 @@ class ErrorBuilder(abc.ABC):
 
         return error.ValidErrorData(
             code=code,
-            message=details[error.BUILDER_FIELD.message],
-            user_message=details[error.BUILDER_FIELD.user_message],
+            message=details[error.builder_config().message],
+            user_message=details[error.builder_config().user_message],
             details=details,
         )
