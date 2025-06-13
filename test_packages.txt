@@ -1,0 +1,10 @@
+astroid
+dill
+iniconfig
+isort
+mccabe
+packaging
+platformdirs
+pluggy
+tomlkit
+typing_extensions
