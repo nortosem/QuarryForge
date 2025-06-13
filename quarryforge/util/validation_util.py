@@ -9,7 +9,7 @@ detailed error information.
 """
 import os
 from pathlib import Path
-from typing import Any, List, Optional, Tuple, Type, TypeVar
+from typing import Any, assert_never, List, Optional, Tuple, Type, TypeVar
 
 from quarryforge.exception import base_exception
 from quarryforge.meta import assembler
@@ -104,14 +104,10 @@ def is_type_path(
             error_builder=error_builder,
         )
         return Path(valid_str)
-
-    if isinstance(arg, Path):
+    elif isinstance(arg, Path):
         return arg
-
-    # catch all for unexpected types
-    error_data = error_builder.data()
-    raise exception(**error_data.to_exception())
-
+    else:
+        assert_never(arg)
 
 
 def resolve_path_arg(
@@ -337,13 +333,11 @@ def content_type_error_str_list(
     Raises:
         exception: If any element in `arg` is not a string.
     """
-    if arg:
-        for item in arg:
-            if not isinstance(item, str):
-                error_data = error_builder.data()
-                raise exception(**error_data.to_exception())
-        return arg
-    return []
+    valid = arg or []
+    if not all(isinstance(item, str) for item in valid):
+        error_data = error_builder.data()
+        raise exception(**error_data.to_exception())
+    return valid
 
 
 def content_empty_error_str_list(
@@ -371,13 +365,11 @@ def content_empty_error_str_list(
         exception: If any string in `args_list` is empty after stripping
             whitespace.
     """
-    if arg:
-        for item in arg:
-            if not item.strip():
-                error_data = error_builder.data()
-                raise exception(**error_data.to_exception())
-        return arg
-    return []
+    valid = arg or []
+    if not all(item.strip() for item in valid):
+        error_data = error_builder.data()
+        raise exception(**error_data.to_exception())
+    return valid
 
 
 def content_type_error_str_tuple_list(
@@ -386,7 +378,7 @@ def content_type_error_str_tuple_list(
     exception: Type[_QFE],
     error_builder: _EB,
 ) -> List[Tuple[str,str]]:
-    """Validates if all elements within the given list are tuples of two strings.
+    """Validate elements within the given list are tuples of two strings.
 
     Args:
         arg: The list of items to check.
@@ -400,19 +392,20 @@ def content_type_error_str_tuple_list(
     Raises:
         exception: If any element in `arg` is not a tuple of two strings.
     """
-    if arg:
-        for item in arg:
-            if not (isinstance(item, tuple) and len(item) == 2 and
-                    isinstance(item[0], str) and isinstance(item[1], str)):
-                error_data = error_builder.data()
-                raise exception(**error_data.to_exception())
-        return arg
-    return []
+    valid = arg or []
+    if not all(
+        isinstance(item, tuple) and len(item) == 2 and
+        isinstance(item[0], str) and isinstance(item[1], str)
+        for item in valid
+    ):
+        error_data = error_builder.data()
+        raise exception(**error_data.to_exception())
+    return valid
 
 
 def content_empty_error_str_tuple_list(
     *,
-    arg: List[Tuple[str, str]],
+    arg: Optional[List[Tuple[str, str]]],
     exception: Type[_QFE],
     error_builder: _EB,
 ) -> List[Tuple[str,str]]:
@@ -438,9 +431,11 @@ def content_empty_error_str_tuple_list(
             If any string within any tuple in `arg` is empty after stripping
             whitespace.
     """
-    for item in arg:
-        for element in item:
-            if not isinstance(element, str) or not element.strip():
-                error_data = error_builder.data()
-                raise exception(**error_data.to_exception())
-    return arg
+    valid = arg or []
+    if not all(
+        isinstance(element, str) and element.strip()
+        for item in valid for element in item
+    ):
+        error_data = error_builder.data()
+        raise exception(**error_data.to_exception())
+    return valid
