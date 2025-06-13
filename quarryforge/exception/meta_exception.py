@@ -1,7 +1,7 @@
 """Meta Exception Module"""
 from typing import Any, Dict, Optional
 
-from quarryforge.config.exception_conf.exception_data import BUILDER_FIELD
+from quarryforge.config.exception_conf.exception_data import builder_config
 from quarryforge.exception import base_exception
 
 
@@ -17,8 +17,8 @@ class ImmutableError(base_exception.MetaError, AttributeError):
         obj: Optional[Any] = None
 
         if details is not None:
-            name = details.get(BUILDER_FIELD.field)
-            obj = details.get(BUILDER_FIELD.arg)
+            name = details.get(builder_config().field)
+            obj = details.get(builder_config().arg)
 
         AttributeError.__init__(self, name=name, obj=obj)
 
