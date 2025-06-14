@@ -15,7 +15,7 @@ __all__: List[str] = ['BaseErrorBuilder']
 
 
 @validate_str_parameters
-def _build_path(suffix: str) -> str:
+def build_path(suffix: str) -> str:
     """Return valid path."""
     return f'{root.Package.NAME}.{suffix}'
 
@@ -25,11 +25,11 @@ class BaseErrorPath(StrEnum):
 
     These represent the base path contexts for different error types.
     """
-    MODEL = _build_path(root.Module.MODEL)
-    FOSSIL = _build_path(root.SubPackage.FOSSIL)
-    MAIN = _build_path(root.Module.MAIN)
-    META = _build_path(root.SubPackage.META)
-    UTIL = _build_path(root.SubPackage.UTIL)
+    MODEL = build_path(root.Module.MODEL)
+    FOSSIL = build_path(root.SubPackage.FOSSIL)
+    MAIN = build_path(root.Module.MAIN)
+    META = build_path(root.SubPackage.META)
+    UTIL = build_path(root.SubPackage.UTIL)
 
 
 @validate_str_parameters
