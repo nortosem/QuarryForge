@@ -92,7 +92,7 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
         reason = self.info or 'an unspecified issue'
         return (
             f'{base_msg} Error builder assembly failure: {reason}. '
-            f'Issue with field: {self.field or exc_conf.DESC_MSG.unknown}.'
+            f'Issue with field: {self.field or exc_conf.DescMsg.UNKNOWN}.'
         )
 
     def message(self) -> str:
@@ -112,7 +112,7 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
                 return meta_error_message().immutable_violation_user
             case MetaErrorCode.ASSEMBLER_ERROR:
                 return meta_error_message().assembler_error_user
-            case _ if self.error_code in exc_conf.GENERIC_ERROR:
+            case _ if self.error_code in exc_conf.GenericError:
                 return super().user_message()
             case _:
                 return meta_error_message().default_meta_user
