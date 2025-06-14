@@ -1,9 +1,7 @@
+"""Exception Config Module Test Suite"""
 import pytest
-from typing import NamedTuple
-
-from quarryforge.config.exception_conf import exception_config
-
-from tests.test_config.test_root import get_namedtuple_fields
+from enum import StrEnum
+from quarryforge.config.exception_conf import exception_config as ec
 
 
 class TestExceptionConfig:
@@ -11,95 +9,55 @@ class TestExceptionConfig:
 
     def test_module_dunder_all(self):
         """Test the __all__ variable."""
-        expected_all = [
-            'GENERIC_ERROR', 'STRING_ERROR', 'PATH_ERROR', 'DESC_MSG'
-        ]
-        assert sorted(exception_config.__all__) == sorted(expected_all)
+        expected_all = ['GenericError', 'StringError', 'PathError', 'DescMsg']
+        assert sorted(ec.__all__) == sorted(expected_all)
 
     def test_generic_error_type_attributes(self):
-        """Test attributes of GenericErrorType."""
-        cfg = exception_config.GENERIC_ERROR
-        assert isinstance(cfg, exception_config.GenericErrorType)
-        assert cfg.type_error == 'TYPE_ERROR'
-        assert cfg.value_error == 'VALUE_ERROR'
-        assert cfg.unexpected_error == 'UNEXPECTED_ERROR'
-        assert cfg.invalid_state == 'INVALID_STATE_ERROR'
-        assert cfg.configuration_error == 'CONFIGURATION_ERROR'
-        assert cfg.external_dependency_error == 'EXTERNAL_DEPENDENCY_ERROR'
-        assert cfg.not_implemented_error == 'NOT_IMPLEMENTED_ERROR'
+        """Verify members and values of the GenericError StrEnum."""
+        assert issubclass(ec.GenericError, ec.ValidName)
+        assert ec.GenericError.TYPE_ERROR == 'TYPE_ERROR'
 
-        expected_fields = (
-            'type_error', 'value_error', 'unexpected_error',
-            'invalid_state', 'configuration_error',
-            'external_dependency_error', 'not_implemented_error'
-        )
-        assert get_namedtuple_fields(
-            exception_config.GenericErrorType) == expected_fields
+        assert ec.GenericError.VALUE_ERROR == 'VALUE_ERROR'
+        assert ec.GenericError.UNEXPECTED_ERROR == 'UNEXPECTED_ERROR'
+        assert ec.GenericError.INVALID_STATE_ERROR == 'INVALID_STATE_ERROR'
+        assert ec.GenericError.CONFIGURATION_ERROR == 'CONFIGURATION_ERROR'
+        assert ec.GenericError.EXTERNAL_DEPENDENCY_ERROR == 'EXTERNAL_DEPENDENCY_ERROR'
+        assert ec.GenericError.NOT_IMPLEMENTED_ERROR == 'NOT_IMPLEMENTED_ERROR'
+        assert len(list(ec.GenericError)) == 7
 
     def test_string_error_type_attributes(self):
-        """Test attributes of StringErrorType."""
-        cfg = exception_config.STRING_ERROR
-        assert isinstance(cfg, exception_config.StringErrorType)
-        assert cfg.empty == 'EMPTY_STRING_ERROR'
-        assert cfg.invalid_chars == 'INVALID_CHARS_ERROR'
-
-        expected_fields = ('empty', 'invalid_chars')
-        assert get_namedtuple_fields(
-            exception_config.StringErrorType) == expected_fields
+        """Verify members and values of the StringError StrEnum."""
+        assert issubclass(ec.StringError, ec.ValidName)
+        assert ec.StringError.EMPTY_STRING_ERROR == 'EMPTY_STRING_ERROR'
+        assert ec.StringError.INVALID_CHARS_ERROR == 'INVALID_CHARS_ERROR'
 
     def test_path_error_type_attributes(self):
-        """Test attributes of PathErrorType."""
-        cfg = exception_config.PATH_ERROR
-        assert isinstance(cfg, exception_config.PathErrorType)
-        assert cfg.non_path_object == 'NON_PATH_OBJECT_ERROR'
-        assert cfg.invalid_path_string == 'INVALID_PATH_STRING_ERROR'
-        assert cfg.resolution == 'PATH_RESOLUTION_ERROR'
-        assert cfg.existing == 'PATH_EXISTING_ERROR'
-        assert cfg.nonexistent == 'PATH_NONEXISTENT_ERROR'
-        assert cfg.file_error == 'PATH_NOT_A_FILE_ERROR'
-        assert cfg.dir_error == 'PATH_NOT_A_DIRECTORY_ERROR'
-        assert cfg.unreadable == 'PATH_NOT_READABLE_ERROR'
-        assert cfg.unwritable == 'PATH_NOT_WRITABLE_ERROR'
-        assert cfg.unexecutable == 'PATH_NOT_EXECUTABLE_ERROR'
-        assert cfg.same_dir == 'SAME_REPO_DIR_AND_WORK_DIR'
-
-        expected_fields = (
-            'non_path_object', 'invalid_path_string', 'resolution', 'existing',
-            'nonexistent', 'file_error', 'dir_error', 'unreadable',
-            'unwritable', 'unexecutable', 'same_dir'
-        )
-        assert get_namedtuple_fields(exception_config.PathErrorType) == expected_fields
+        """Verify members and values of the PathError StrEnum."""
+        assert issubclass(ec.PathError, ec.ValidName)
+        assert ec.PathError.NON_PATH_OBJECT_ERROR == 'NON_PATH_OBJECT_ERROR'
+        assert ec.PathError.INVALID_PATH_STRING_ERROR == 'INVALID_PATH_STRING_ERROR'
+        assert ec.PathError.PATH_RESOLUTION_ERROR == 'PATH_RESOLUTION_ERROR'
+        assert ec.PathError.PATH_EXISTING_ERROR == 'PATH_EXISTING_ERROR'
+        assert ec.PathError.PATH_NONEXISTENT_ERROR == 'PATH_NONEXISTENT_ERROR'
+        assert ec.PathError.PATH_NOT_A_FILE_ERROR == 'PATH_NOT_A_FILE_ERROR'
+        assert ec.PathError.PATH_NOT_A_DIRECTORY_ERROR == 'PATH_NOT_A_DIRECTORY_ERROR'
+        assert ec.PathError.PATH_NOT_READABLE_ERROR == 'PATH_NOT_READABLE_ERROR'
+        assert ec.PathError.PATH_NOT_WRITABLE_ERROR == 'PATH_NOT_WRITABLE_ERROR'
+        assert ec.PathError.PATH_NOT_EXECUTABLE_ERROR == 'PATH_NOT_EXECUTABLE_ERROR'
+        assert ec.PathError.SAME_REPO_DIR_AND_WORK_DIR == 'SAME_REPO_DIR_AND_WORK_DIR'
+        assert len(list(ec.PathError)) == 11
 
     def test_desc_msg_attributes(self):
-        """Test attributes of DescMsg."""
-        cfg = exception_config.DESC_MSG
-        assert isinstance(cfg, exception_config.DescMsg)
-        assert cfg.dependency == 'dependency'
-        assert cfg.dictionary == 'a valid dictionary'
-        assert cfg.must_be == 'must be'
-        assert cfg.none == 'None'
-        assert cfg.path == 'a valid path'
-        assert cfg.reason == 'reason'
-        assert cfg.string == 'a valid string'
-        assert cfg.unempty == 'a non-empty string'
-        assert cfg.unexpected_error == 'is an unexpected error'
-        assert cfg.unknown == 'unknown'
-
-        expected_fields = (
-            'dependency', 'dictionary', 'must_be', 'none', 'path', 'reason',
-            'string', 'unempty', 'unexpected_error', 'unknown'
-        )
-        assert get_namedtuple_fields(
-            exception_config.DescMsg) == expected_fields
-
-
-    def test_global_constants_types(self):
-        """Test types of global constants."""
-        assert isinstance(
-            exception_config.GENERIC_ERROR, exception_config.GenericErrorType)
-        assert isinstance(
-            exception_config.STRING_ERROR, exception_config.StringErrorType)
-        assert isinstance(
-            exception_config.PATH_ERROR, exception_config.PathErrorType)
-        assert isinstance(
-            exception_config.DESC_MSG, exception_config.DescMsg)
+        """Verify members and manually assigned values of the DescMsg StrEnum."""
+        assert issubclass(ec.DescMsg, StrEnum)
+        assert not issubclass(ec.DescMsg, ec.ValidName)
+        assert ec.DescMsg.DEPENDENCY == 'dependency'
+        assert ec.DescMsg.A_VALID_DICTIONARY == 'a valid dictionary'
+        assert ec.DescMsg.MUST_BE == 'must be'
+        assert ec.DescMsg.NONE == 'None'
+        assert ec.DescMsg.A_VALID_PATH == 'a valid path'
+        assert ec.DescMsg.REASON == 'reason'
+        assert ec.DescMsg.A_VALID_STRING == 'a valid string'
+        assert ec.DescMsg.A_NON_EMPTY_STRING == 'a non-empty string'
+        assert ec.DescMsg.IS_AN_UNEXPECTED_ERROR == 'is an unexpected error'
+        assert ec.DescMsg.UNKNOWN == 'unknown'
