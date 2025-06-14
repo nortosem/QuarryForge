@@ -2,7 +2,7 @@
 
 
 """
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Tuple
 
 from quarryforge.config.exception_conf.exception_data import builder_config
 
