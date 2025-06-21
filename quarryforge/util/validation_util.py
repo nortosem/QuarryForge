@@ -7,10 +7,12 @@ These functions are designed to raise specific, configurable exceptions from
 the `quarryforge.exception` hierarchy upon validation failure, providing
 detailed error information.
 """
+
 import os
 from pathlib import Path
-from typing import Any, assert_never, List, Optional, Tuple, Type, TypeVar
+from typing import Any, TypeVar, assert_never
 
+from quarryforge.config import model_config
 from quarryforge.exception import base_exception
 from quarryforge.meta import assembler
 
@@ -21,7 +23,7 @@ _EB = TypeVar('_EB', bound=assembler.ErrorBuilder)
 def is_type_str(
     *,
     arg: Any,
-    exception: Type[_QFE],
+    exception: type[_QFE],
     error_builder: _EB,
 ) -> str:
     """Validates if the given argument is a string.
@@ -48,7 +50,7 @@ def is_type_str(
 def is_str_not_empty(
     *,
     arg: str,
-    exception: Type[_QFE],
+    exception: type[_QFE],
     error_builder: _EB,
 ) -> str:
     """Validates if the given string argument is not empty.
@@ -77,7 +79,7 @@ def is_str_not_empty(
 def is_type_path(
     *,
     arg: Path | str,
-    exception: Type[_QFE],
+    exception: type[_QFE],
     error_builder: _EB,
 ) -> Path:
     """Validates if the given argument is a pathlib.Path object.
@@ -113,7 +115,7 @@ def is_type_path(
 def resolve_path_arg(
     *,
     arg: Path,
-    exception: Type[_QFE],
+    exception: type[_QFE],
     error_builder: _EB,
 ) -> Path:
     """Resolves a path argument to an absolute path, expanding uservars.
@@ -143,13 +145,13 @@ def resolve_path_arg(
         raise exception(**error_data.to_exception()) from run_error
     except OSError as os_error:
         error_data = error_builder.data()
-        raise exception(**error_data.to_exception())from os_error
+        raise exception(**error_data.to_exception()) from os_error
 
 
 def exist(
     *,
     arg: Path,
-    exception: Type[_QFE],
+    exception: type[_QFE],
     error_builder: _EB,
 ) -> Path:
     """Validates if the path specified exists.
@@ -175,7 +177,7 @@ def exist(
 def not_exist(
     *,
     arg: Path,
-    exception: Type[_QFE],
+    exception: type[_QFE],
     error_builder: _EB,
 ) -> Path:
     """Validates if the path specified exists.
@@ -201,7 +203,7 @@ def not_exist(
 def is_file(
     *,
     arg: Path,
-    exception: Type[_QFE],
+    exception: type[_QFE],
     error_builder: _EB,
 ) -> Path:
     """Validates if the path specified is a file.
@@ -230,7 +232,7 @@ def is_file(
 def is_dir(
     *,
     arg: Path,
-    exception: Type[_QFE],
+    exception: type[_QFE],
     error_builder: _EB,
 ) -> Path:
     """Validates if the path specified is a directory.
@@ -259,7 +261,7 @@ def is_dir(
 def is_read_ok(
     *,
     arg: Path,
-    exception: Type[_QFE],
+    exception: type[_QFE],
     error_builder: _EB,
 ) -> Path:
     """Validates if the path specified has read permissions.
@@ -286,7 +288,7 @@ def is_read_ok(
 def is_write_ok(
     *,
     arg: Path,
-    exception: Type[_QFE],
+    exception: type[_QFE],
     error_builder: _EB,
 ) -> Path:
     """Validates if the path specified has write permissions.
@@ -315,10 +317,10 @@ def is_write_ok(
 
 def content_type_error_str_list(
     *,
-    arg: Optional[List[str]],
-    exception: Type[_QFE],
+    arg: list[str] | None,
+    exception: type[_QFE],
     error_builder: _EB,
-) -> List[str]:
+) -> list[str]:
     """Validates if all elements within the given list are strings.
 
     Args:
@@ -342,10 +344,10 @@ def content_type_error_str_list(
 
 def content_empty_error_str_list(
     *,
-    arg: Optional[List[str]],
-    exception: Type[_QFE],
+    arg: list[str] | None,
+    exception: type[_QFE],
     error_builder: _EB,
-) -> List[str]:
+) -> list[str]:
     """Validates if all string elements within the given list are not empty.
 
     This function checks if each string in the list is not empty after
@@ -374,10 +376,10 @@ def content_empty_error_str_list(
 
 def content_type_error_str_tuple_list(
     *,
-    arg: Optional[List[Tuple[str, str]]],
-    exception: Type[_QFE],
+    arg: list[tuple[str, str]] | None,
+    exception: type[_QFE],
     error_builder: _EB,
-) -> List[Tuple[str,str]]:
+) -> list[tuple[str, str]]:
     """Validate elements within the given list are tuples of two strings.
 
     Args:
@@ -392,10 +394,13 @@ def content_type_error_str_tuple_list(
     Raises:
         exception: If any element in `arg` is not a tuple of two strings.
     """
+    valid_config = model_config.validation_config()
     valid = arg or []
     if not all(
-        isinstance(item, tuple) and len(item) == 2 and
-        isinstance(item[0], str) and isinstance(item[1], str)
+        isinstance(item, tuple)
+        and len(item) == valid_config.PAIR
+        and isinstance(item[valid_config.KEY], str)
+        and isinstance(item[valid_config.VALUE], str)
         for item in valid
     ):
         error_data = error_builder.data()
@@ -405,10 +410,10 @@ def content_type_error_str_tuple_list(
 
 def content_empty_error_str_tuple_list(
     *,
-    arg: Optional[List[Tuple[str, str]]],
-    exception: Type[_QFE],
+    arg: list[tuple[str, str]] | None,
+    exception: type[_QFE],
     error_builder: _EB,
-) -> List[Tuple[str,str]]:
+) -> list[tuple[str, str]]:
     """Validates string elements in the given list of string-tuples.
 
     This function checks if each string within each tuple in the list is not
@@ -434,7 +439,8 @@ def content_empty_error_str_tuple_list(
     valid = arg or []
     if not all(
         isinstance(element, str) and element.strip()
-        for item in valid for element in item
+        for item in valid
+        for element in item
     ):
         error_data = error_builder.data()
         raise exception(**error_data.to_exception())
