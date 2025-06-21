@@ -12,23 +12,23 @@ Attributes:
     FossilModule (StrEnum): Fossil SCM command names.
     UtilModule (StrEnum): Utility module names.
 """
-from enum import auto, StrEnum
-from typing import List
 
+from enum import StrEnum, auto
 
-__all__: List[str] = [
+__all__: list[str] = [
     'Package',
     'Module',
     'SubPackage',
     'MetaModule',
     'Model',
     'FossilModule',
-    'UtilModule'
+    'UtilModule',
 ]
 
 
 class Package(StrEnum):
     """Application package name"""
+
     NAME = 'quarryforge'
 
 
@@ -42,6 +42,7 @@ class Module(StrEnum):
         main (str): Name of the main application or entry point module.
         model (str): Name of the module defining core data models or structures.
     """
+
     MAIN = auto()
     MODEL = auto()
 
@@ -59,6 +60,7 @@ class SubPackage(StrEnum):
         META (str): Name of the sub-package for metaclass modules.
         UTIL (str): Name of the sub-package for utility modules.
     """
+
     CONFIG = auto()
     EXCEPTION = auto()
     FOSSIL = auto()
@@ -77,6 +79,7 @@ class MetaModule(StrEnum):
         IMMUTABLE: The immutable module defines the metaclasses for immutable
             class creation.
     """
+
     ASSEMBLER = auto()
     IMMUTABLE = auto()
 
@@ -92,6 +95,7 @@ class Model(StrEnum):
         FOSSIL_TIMELINE (str):
             Name of the model representing a Fossil timeline entry.
     """
+
     FOSSIL_COMMIT = 'FossilCommit'
     FOSSIL_REPO = 'FossilRepo'
     FOSSIL_TIMELINE = 'FossilTimeline'
@@ -113,6 +117,7 @@ class FossilModule(StrEnum):
         ADD (str): Module for the Fossil 'add' command.
         COMMIT (str): Module for the Fossil 'commit' command.
     """
+
     TIMELINE = 'Timeline'
     SETUP = 'Setup'
     INFO = 'Info'
@@ -141,6 +146,7 @@ class UtilModule(StrEnum):
         VALIDATION_UTIL (str):
             Name of the helper-utility for the model utility.
     """
+
     DECORATOR = auto()
     FOSSIL_UTIL = auto()
     MAIN_UTIL = auto()

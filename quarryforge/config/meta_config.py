@@ -1,13 +1,10 @@
-"""Meta Subpackage Configuration Module.
+"""Meta Subpackage Configuration Module."""
 
-
-"""
-from typing import List, NamedTuple, Tuple
+from typing import NamedTuple
 
 from quarryforge.config.exception_conf.exception_data import builder_config
 
-
-__all__: List[str] = []
+__all__: list[str] = []
 
 
 class AttrModTypeConfig(NamedTuple):
@@ -15,6 +12,7 @@ class AttrModTypeConfig(NamedTuple):
 
     Define the types of immutable modifications.
     """
+
     set_attribute: str = 'set attribute'
     delete_attribute: str = 'delete attribute'
 
@@ -29,6 +27,7 @@ class ErrorBuilderConfig(NamedTuple):
 
     Define the default slots for all BuildError instances.
     """
+
     error_context: str = builder_config().error_context
     error_code: str = builder_config().error_code
     arg: str = builder_config().arg
@@ -36,7 +35,7 @@ class ErrorBuilderConfig(NamedTuple):
     info: str = builder_config().info
     field: str = builder_config().field
 
-    def slots(self) -> Tuple[str]:
+    def slots(self) -> tuple[str]:
         """The meta.assembler.BuildError slots.
 
         Returns:

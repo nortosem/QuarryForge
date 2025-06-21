@@ -3,11 +3,11 @@
 This module defines various StrEnum configurations for standard error types
 and common descriptive phrases used across the application's exception handling.
 """
-from enum import auto, StrEnum
-from typing import Any, List
 
+from enum import StrEnum, auto
+from typing import Any
 
-__all__: List[str] = [
+__all__: list[str] = [
     'GenericError',
     'StringError',
     'PathError',
@@ -17,12 +17,10 @@ __all__: List[str] = [
 
 class ValidName(StrEnum):
     """Assign the member's name as its value."""
+
     @staticmethod
     def _generate_next_value_(
-        name: str,
-        start: int,
-        count: int,
-        last_values: list[Any]
+        name: str, start: int, count: int, last_values: list[Any]
     ) -> Any:
         return name
 
@@ -39,6 +37,7 @@ class GenericError(ValidName):
         external_dependency_error: External tool or service not found or failed
         not_implemented_error: Feature not implemented
     """
+
     TYPE_ERROR = auto()
     VALUE_ERROR = auto()
     UNEXPECTED_ERROR = auto()
@@ -55,6 +54,7 @@ class StringError(ValidName):
         empty: For empty or whitespace-only strings
         invalid_chars: For strings with unaccepted chars or patterns
     """
+
     EMPTY_STRING_ERROR = auto()
     INVALID_CHARS_ERROR = auto()
 
@@ -87,6 +87,7 @@ class PathError(ValidName):
         unwritable: Path doesn't have write permissions
         unexecutable: Path doesn't have execute permissions
     """
+
     NON_PATH_OBJECT_ERROR = auto()
     INVALID_PATH_STRING_ERROR = auto()
     PATH_RESOLUTION_ERROR = auto()
@@ -102,6 +103,7 @@ class PathError(ValidName):
 
 class DescMsg(StrEnum):
     """Basic description partials with human-readable values."""
+
     DEPENDENCY = 'dependency'
     A_VALID_DICTIONARY = 'a valid dictionary'
     MUST_BE = 'must be'

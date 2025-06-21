@@ -2,7 +2,8 @@
 
 The configuration for teh exception meta_error exceptions.
 """
-from enum import auto, StrEnum
+
+from enum import StrEnum, auto
 from typing import NamedTuple
 
 from quarryforge.config import root
@@ -11,17 +12,18 @@ from quarryforge.config.exception_conf import exception_config as exc_conf
 
 __all__ = ['MetaErrorBuilder']
 
+
 class MetaErrorCode(exc_conf.ValidName):
     """Specific error codes for meta-related errors."""
+
     ASSEMBLER_ERROR = auto()
     IMMUTABILITY_VIOLATION = auto()
 
 
 class MetaErrorMessages(NamedTuple):
     """User-facing message templates or parts for meta errors."""
-    immutable_violation_user: str = (
-        'Attempted to modify an immutable object.'
-    )
+
+    immutable_violation_user: str = 'Attempted to modify an immutable object.'
     assembler_error_user: str = (
         'A fatal error occured while assembling an error message.'
     )
@@ -35,6 +37,7 @@ def meta_error_message() -> MetaErrorMessages:
 
 class MetaErrorPath(StrEnum):
     """Defines error context paths for meta-related exceptions."""
+
     META_ROOT_CONTEXT = base_conf.build_path(root.SubPackage.META)
     IMMUTABLE_CONTEXT = base_conf.get_full_error_code(
         META_ROOT_CONTEXT, root.MetaModule.IMMUTABLE
@@ -57,6 +60,7 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
         assembler errors
         immutability errors.
     """
+
     def _immutable_error_message(self) -> str:
         """
         Generates a message for `meta.immutable.ImmutableError`
@@ -69,8 +73,11 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
         obj_name = ''
         if self.arg:
             try:
-                obj_name = self.arg.__name__ if isinstance(
-                    self.arg, type) else type(self.arg).__name__
+                obj_name = (
+                    self.arg.__name__
+                    if isinstance(self.arg, type)
+                    else type(self.arg).__name__
+                )
             except AttributeError:
                 obj_name = str(self.arg)
         else:

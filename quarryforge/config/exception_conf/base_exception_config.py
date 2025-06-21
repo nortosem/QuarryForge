@@ -2,16 +2,16 @@
 
 The configuraiton for the exception base class of quarryforge errors.
 """
+
 from enum import StrEnum
-from typing import List, NamedTuple
+from typing import NamedTuple
 
 from quarryforge.config import root
 from quarryforge.config.exception_conf import exception_config as config
 from quarryforge.meta import assembler
 from quarryforge.util.decorator import validate_str_parameters
 
-
-__all__: List[str] = ['BaseErrorBuilder']
+__all__: list[str] = ['BaseErrorBuilder']
 
 
 @validate_str_parameters
@@ -25,6 +25,7 @@ class BaseErrorPath(StrEnum):
 
     These represent the base path contexts for different error types.
     """
+
     MODEL = build_path(root.Module.MODEL)
     FOSSIL = build_path(root.SubPackage.FOSSIL)
     MAIN = build_path(root.Module.MAIN)
@@ -55,6 +56,7 @@ class BaseErrorMessageConfig(NamedTuple):
         default_user_message:
             A generic user-friendly message.
     """
+
     unexpected_error_suffix: str = config.GenericError.UNEXPECTED_ERROR
     unexpected_error_prefix: str = 'An unexpected error occurred within'
     default_module_suffix: str = 'module.'
@@ -77,9 +79,7 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
 
     def code(self) -> str:
         """Generate the complete unique exception code for the error."""
-        return get_full_error_code(
-            self.error_context, self.error_code
-        )
+        return get_full_error_code(self.error_context, self.error_code)
 
     def _type_message(self) -> str:
         """Generates a message for type errors."""
@@ -120,10 +120,10 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         (e.g. use the extra_details dictionary: extra_details['action'] = ...)
         """
         details = self.extra_details or {}
-        config_key =  details.get('config_key', 'required configuration')
+        config_key = details.get('config_key', 'required configuration')
         reason = details.get(
             config.DescMsg.REASON,
-            f'with {config.DescMsg.UNKNOWN} {config.DescMsg.REASON}'
+            f'with {config.DescMsg.UNKNOWN} {config.DescMsg.REASON}',
         )
         return (
             f'{self._base_message()} Missing or invalid configuration for '
@@ -139,15 +139,13 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         details = self.extra_details or {}
         dependency = details.get(
             config.DescMsg.DEPENDENCY,
-            f'{config.DescMsg.UNKNOWN} {config.DescMsg.DEPENDENCY}'
+            f'{config.DescMsg.UNKNOWN} {config.DescMsg.DEPENDENCY}',
         )
         reason = details.get(
             config.DescMsg.REASON,
-            f'{config.DescMsg.UNKNOWN} {config.DescMsg.REASON}'
+            f'{config.DescMsg.UNKNOWN} {config.DescMsg.REASON}',
         )
-        return (
-            f'{self._base_message()} `{dependency}` failed due to: {reason}.'
-        )
+        return f'{self._base_message()} `{dependency}` failed due to: {reason}.'
 
     def _not_implemented_message(self) -> str:
         """Generates a message for not implemented errors."""
@@ -162,17 +160,15 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         if len(context) == 1 and context[0] == root.Package.NAME:
             suffix = cfg.default_package_suffix
         elif (
-            len(context) > 1 and
-            context[0] == root.Package.NAME and
-            context[1] in root.SubPackage.__members__
+            len(context) > 1
+            and context[0] == root.Package.NAME
+            and context[1] in root.SubPackage.__members__
         ):
             suffix = cfg.default_subpackage_suffix
         else:
             suffix = cfg.default_module_suffix
 
-        return (
-            f'{cfg.unexpected_error_prefix} `{self.error_context}` {suffix}'
-        )
+        return f'{cfg.unexpected_error_prefix} `{self.error_context}` {suffix}'
 
     def message(self) -> str:
         """Builds a detailed, technical error message for base exceptions.
@@ -208,7 +204,6 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
                     f'unhandled {config.DescMsg.IS_AN_UNEXPECTED_ERROR}.'
                 )
 
-
     def user_message(self) -> str:
         """Builds a user-friendly error message for base exceptions.
 
@@ -222,27 +217,19 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
 
         match self.error_code:
             case config.GenericError.TYPE_ERROR:
-                return (
-                    'An input was provided in an incorrect format.'
-                )
+                return 'An input was provided in an incorrect format.'
 
             case config.GenericError.VALUE_ERROR:
-                return (
-                    'An input value is not valid for this operation.'
-                )
+                return 'An input value is not valid for this operation.'
 
             case config.GenericError.INVALID_STATE_ERROR:
-                return (
-                    'An operation attempted in an invalid application state.'
-                )
+                return 'An operation attempted in an invalid application state.'
 
             case config.GenericError.CONFIGURATION_ERROR:
                 return 'There is an issue with the configuration.'
 
             case config.GenericError.EXTERNAL_DEPENDENCY_ERROR:
-                return (
-                    'An required tool or service encountered an issue.'
-                )
+                return 'An required tool or service encountered an issue.'
 
             case config.GenericError.NOT_IMPLEMENTED_ERROR:
                 return 'This feature is not available.'

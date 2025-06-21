@@ -4,21 +4,17 @@ This module defines configurations specific to Fossil SCM operations,
 including default timeouts, command structures, and output parsing patterns.
 It centralizes all Fossil-related constant definitions.
 """
-from enum import StrEnum
-from typing import List, NamedTuple
+
 import re
+from enum import StrEnum
+from typing import NamedTuple
 
-
-__all__: List[str] = [
-    'Command',
-    'timeline_data',
-    'info_data',
-    'Fossil'
-]
+__all__: list[str] = ['Command', 'timeline_data', 'info_data', 'Fossil']
 
 
 class Command(StrEnum):
     """The permitted fossil commands and options."""
+
     FOSSIL = 'fossil'
     REPO = '-R'
     TIMELINE = 'timeline'
@@ -65,6 +61,7 @@ class TimelineDataConfig(NamedTuple):
 
     The fields and patterns used to parse commits from the timeline output.
     """
+
     INIT_CHECKIN: str = 'initial empty check-in'
     END_MARK: str = '+++ end of timeline'
     COMMITS_KEY: str = 'commits'
@@ -136,6 +133,7 @@ def timeline_data() -> TimelineDataConfig:
 
 class InfoDataConfig(NamedTuple):
     """Parser for Fossil Info output."""
+
     INIT_HASH: str = '^comment:\\s+(?P<init>)\\s.+\\n'
     PARENT_KEY: str = 'parent'
     PARENT_DATA_PATTERN: str = '^parent:\\s+(?P<uuid>.+?)\\s.+\\n'
@@ -159,7 +157,8 @@ class Fossil(StrEnum):
 
     Define the constants used with fossil commands and exceptions.
     """
-    DEFAULT_TIMEOUT = 180 #seconds
+
+    DEFAULT_TIMEOUT = 180  # seconds
     PROCESS_ERROR = 'FOSSIL_PROCESS_ERROR'
     TIMEOUT_ERROR = 'FOSSIL_TIMEOUT_ERROR'
     ARGS = 'args'

@@ -4,27 +4,23 @@ This module defines the builder pattern for constructing detailed error data
 for Fossil SCM-related exceptions. It centralizes error contexts and message
 generation logic specific to Fossil operations.
 """
-from enum import StrEnum
-from typing import Any, Dict, Optional
 
-from quarryforge.config import fossil_config
-from quarryforge.config import root
+from enum import StrEnum
+from typing import Any
+
+from quarryforge.config import fossil_config, root
 from quarryforge.config.exception_conf import base_exception_config as _
 from quarryforge.config.exception_conf import exception_config as config
-
 
 __all__ = ['FossilErrorBuilder']
 
 
 class FossilMessage(StrEnum):
     """Collect and define default messages for fossil exceptions."""
+
     NO_CMD = f'{fossil_config.Fossil.CMD}: {config.DescMsg.NONE}'
-    NO_OUTPUT = (
-        f'{fossil_config.Fossil.OUTPUT}: {config.DescMsg.NONE}'
-    )
-    NO_STDERR = (
-        f'{fossil_config.Fossil.STDERR}: {config.DescMsg.NONE}'
-    )
+    NO_OUTPUT = f'{fossil_config.Fossil.OUTPUT}: {config.DescMsg.NONE}'
+    NO_STDERR = f'{fossil_config.Fossil.STDERR}: {config.DescMsg.NONE}'
     EXPECTED_STR_LIST = 'Expected str or list, got'
     EXPECTED_INT = 'Expected int, got'
     EXPECTED_STR_OR_NONE = 'Expected str or None, got'
@@ -41,15 +37,11 @@ class FossilMessage(StrEnum):
         'Could not generate or process differences for the Fossil repository.'
     )
     CAT_DETAIL = 'while retrieving file content using Fossil cat.'
-    CAT_USER = (
-        'Could not retrieve file content from the Fossil repository.'
-    )
+    CAT_USER = 'Could not retrieve file content from the Fossil repository.'
     BRANCH_DETAIL = 'during Fossil branch operation.'
     BRANCH_USER = 'There was a problem with a Fossil branch operation.'
     ADD_DETAIL = 'while adding files using Fossil add.'
-    ADD_USER = (
-        'Could not add the specified file(s) to the Fossil repository.'
-    )
+    ADD_USER = 'Could not add the specified file(s) to the Fossil repository.'
     COMMIT_DETAIL = 'during Fossil commit operation.'
     COMMIT_USER = 'Could not commit changes to the Fossil repository.'
 
@@ -61,6 +53,7 @@ class FossilErrorPath(StrEnum):
     to provide a unique identifier for where an error occurred within
     the Fossil SCM interaction layer.
     """
+
     # General Fossil execution errors
     FOSSIL_PROCESS = _.get_full_error_code(
         _.BaseErrorPath.FOSSIL, fossil_config.Fossil.PROCESS_ERROR
@@ -103,22 +96,22 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
     (e.g., `CalledProcessError`, `TimeoutExpiredError`) and other
     command-specific issues.
     """
+
     def _get_reason_suffix(self) -> str:
         """Helper to get a reason suffix from extra_details if available."""
         details = self.extra_details or {}
         reason = details.get(config.DescMsg.REASON)
         return f' Reason: {reason}.' if reason else ''
 
-
     def _process_error_message(self) -> str:
         """Generates a message for `subprocess.CalledProcessError`."""
         base_msg: str = self._base_message()
-        details: Dict[str, Any] = self.extra_details or {}
+        details: dict[str, Any] = self.extra_details or {}
 
         cmd: str = details.get(fossil_config.Fossil.CMD, FossilMessage.NO_CMD)
-        return_code: Optional[int] = details.get(
+        return_code: int | None = details.get(
             fossil_config.Fossil.RETURN_CODE,
-            fossil_config.Fossil.DEFAULT_RETURN_CODE
+            fossil_config.Fossil.DEFAULT_RETURN_CODE,
         )
         stdout: str = (
             details.get(fossil_config.Fossil.OUTPUT, FossilMessage.NO_OUTPUT)
@@ -136,13 +129,11 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
     def _timeout_expired_message(self) -> str:
         """Generates a message for `subprocess.TimeoutExpired` errors."""
         base_msg = self._base_message()
-        details: Dict[str, Any] = self.extra_details or {}
+        details: dict[str, Any] = self.extra_details or {}
 
-        cmd: str = details.get(
-            fossil_config.Fossil.CMD, FossilMessage.NO_CMD)
+        cmd: str = details.get(fossil_config.Fossil.CMD, FossilMessage.NO_CMD)
         timeout: str = details.get(
-            fossil_config.Fossil.TIMEOUT,
-            fossil_config.Fossil.DEFAULT_TIMEOUT
+            fossil_config.Fossil.TIMEOUT, fossil_config.Fossil.DEFAULT_TIMEOUT
         )
         stdout: str = (
             details.get(fossil_config.Fossil.OUTPUT, FossilMessage.NO_OUTPUT)
@@ -235,8 +226,9 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
                     'Please check logs for details.'
                 )
             case FossilErrorPath.FOSSIL_TIMEOUT:
-                return ('A Fossil command took too long to complete '
-                        'and was stopped.'
+                return (
+                    'A Fossil command took too long to complete '
+                    'and was stopped.'
                 )
             case FossilErrorPath.FOSSIL_TIMELINE:
                 return FossilMessage.TIMELINE_USER
