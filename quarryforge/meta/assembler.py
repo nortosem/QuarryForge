@@ -3,15 +3,15 @@
 This module provides abstract base classes and utility functions for
 constructing structured error messages and comprehensive error data objects.
 """
+
 import abc
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from quarryforge.config import meta_config
 from quarryforge.config.exception_conf import exception_config as config
 from quarryforge.config.exception_conf import exception_data as error
 
-
-__all__: List[str] = ['ErrorBuilder']
+__all__: list[str] = ['ErrorBuilder']
 
 
 def _valid_str_type(value: str) -> str:
@@ -54,11 +54,12 @@ def _valid_str_value(value: str) -> str:
     return value
 
 
-def _validate_init(context_value: Any,
-                   code_value: Any,
-                   field_value: Any = None,
-                   info_value: Any = None
-                   ) -> Tuple[str, str, str | None, str | None]:
+def _validate_init(
+    context_value: Any,
+    code_value: Any,
+    field_value: Any = None,
+    info_value: Any = None,
+) -> tuple[str, str, str | None, str | None]:
     """Applies type and non-empty validation to two string values.
 
     This helper is used in __init__ methods for common string arguments.
@@ -83,8 +84,7 @@ def _validate_init(context_value: Any,
         field_value = _valid_str_value(_valid_str_type(field_value))
 
     if info_value:
-        info_value = _valid_str_value(
-            _valid_str_type(info_value))
+        info_value = _valid_str_value(_valid_str_type(info_value))
 
     return (context_value, code_value, field_value, info_value)
 
@@ -106,16 +106,19 @@ class ErrorBuilder(abc.ABC):
         info (str): The error info associated with an error.
         field (str): The class field or attribute affected by the error.
     """
+
     __slots__ = meta_config.error_builder().slots()
 
-    def __init__(self,
-                 *,
-                 error_context: str,
-                 error_code: str,
-                 arg: Optional[Any] = None,
-                 field: Optional[str] = None,
-                 info: Optional[str] = None,
-                 extra_details: Optional[Dict[str, Any]] = None):
+    def __init__(
+        self,
+        *,
+        error_context: str,
+        error_code: str,
+        arg: Any | None = None,
+        field: str | None = None,
+        info: str | None = None,
+        extra_details: dict[str, Any] | None = None,
+    ):
         """Default exception constructor initialization.
 
         Args:
@@ -135,10 +138,7 @@ class ErrorBuilder(abc.ABC):
         self.arg = arg
 
         error_context, error_code, field, info = _validate_init(
-            error_context,
-            error_code,
-            field,
-            info
+            error_context, error_code, field, info
         )
         self.error_context = error_context
         self.error_code = error_code
@@ -188,11 +188,9 @@ class ErrorBuilder(abc.ABC):
 
         This provides a consistent header for all technical error messages.
         """
-        return (
-            f'Error in `{self.error_context}` (Code: {self.error_code}).'
-        )
+        return f'Error in `{self.error_context}` (Code: {self.error_code}).'
 
-    def details(self) -> Dict[str, Any]:
+    def details(self) -> dict[str, Any]:
         """Abstract method to generate and return specific error details.
 
         Subclasses must implement this method to provide a dictionary of
