@@ -105,7 +105,6 @@ exclude = [
 
 # --- Linter Configuration ---
 [tool.ruff.lint]
-# CORRECTED: Combined all desired rule sets into one `select` list.
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -115,7 +114,6 @@ select = [
     "B",   # flake8-bugbear
     "PL",  # Pylint
 ]
-# This is the translation of the 'disable=...' list from your pylintrc.
 ignore = [
     # --- Docstring Rules (from pylint's missing-*-docstring) ---
     "D100", # Missing docstring in public module
