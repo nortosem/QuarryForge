@@ -3,7 +3,8 @@
 This module defines specific exception classes for errors encountered within
 the data models, leveraging builders for structured error data.
 """
-from typing import Any, Dict
+
+from typing import Any
 
 from quarryforge.exception import base_exception
 
@@ -15,12 +16,13 @@ class FossilRepoError(base_exception.ModelError):
     This includes issues with path validation, file access, and repository
     state.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Initializes the FossilRepoError.
 
@@ -44,12 +46,13 @@ class FossilCommitError(base_exception.ModelError):
     Exception raised for errors related to the FossilCommit data model.
     This includes issues with commit data validation, parsing, and immutability.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Initializes the FossilCommitError.
 
@@ -74,12 +77,13 @@ class FossilTimelineError(base_exception.ModelError):
     This typically involves issues with parsing timeline data or constructing
     the timeline object.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Initializes the FossilTimelineError.
 

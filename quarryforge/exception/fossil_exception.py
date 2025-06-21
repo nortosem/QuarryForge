@@ -4,8 +4,9 @@ This module defines specific exception classes for errors encountered during
 Fossil SCM operations, leveraging the `FossilErrorBuilder` for structured
 error data.
 """
+
 import subprocess
-from typing import Any, Dict
+from typing import Any
 
 from quarryforge.config import fossil_config as config
 from quarryforge.config.exception_conf import fossil_exception_config as _
@@ -13,8 +14,7 @@ from quarryforge.exception import base_exception
 
 
 class FossilProcessError(
-        base_exception.FossilError,
-        subprocess.CalledProcessError
+    base_exception.FossilError, subprocess.CalledProcessError
 ):
     """Fossil Called Process Error
 
@@ -23,12 +23,13 @@ class FossilProcessError(
     attributes while integrating with the QuarryForge exception structure via
     `FossilErrorBuilder`.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Initialize FossilProcessError.
 
@@ -45,7 +46,7 @@ class FossilProcessError(
         stderr: str = _.FossilMessage.NO_STDERR
 
         if details[config.Fossil.CMD]:
-            if not isinstance(cmd, (str, list)):
+            if not isinstance(cmd, str | list):
                 raise TypeError(
                     f'{_.FossilMessage.EXPECTED_STR_LIST} {type(cmd).__name__}'
                 )
@@ -57,9 +58,7 @@ class FossilProcessError(
                     f'{_.FossilMessage.EXPECTED_INT} '
                     f'{type(return_code).__name__}'
                 )
-            return_code = details.get(
-                config.Fossil.RETURN_CODE, return_code
-            )
+            return_code = details.get(config.Fossil.RETURN_CODE, return_code)
 
         if details[config.Fossil.OUTPUT]:
             if not isinstance(output, str):
@@ -78,31 +77,27 @@ class FossilProcessError(
             stderr = details.get(config.Fossil.STDERR, stderr)
 
         subprocess.CalledProcessError.__init__(
-            self, return_code, cmd, output=output, stderr=stderr)
+            self, return_code, cmd, output=output, stderr=stderr
+        )
 
         base_exception.FossilError.__init__(
             self,
             code=code,
             message=message,
             user_message=user_message,
-            details=details
+            details=details,
         )
 
 
-class FossilTimeoutError(
-    base_exception.FossilError,
-    subprocess.TimeoutExpired
-):
-    """Fossil Timeout Error
+class FossilTimeoutError(base_exception.FossilError, subprocess.TimeoutExpired):
+    """Fossil Timeout Error"""
 
-
-    """
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Initialize FossilTimeoutError.
 
@@ -119,7 +114,7 @@ class FossilTimeoutError(
         stderr: str = _.FossilMessage.NO_STDERR
 
         if details[config.Fossil.CMD]:
-            if not isinstance(cmd, (str, list)):
+            if not isinstance(cmd, str | list):
                 raise TypeError(
                     f'{_.FossilMessage.EXPECTED_STR_LIST} {type(cmd).__name__}'
                 )
@@ -145,16 +140,16 @@ class FossilTimeoutError(
                 )
             stderr = details.get(config.Fossil.STDERR, stderr)
 
-
         subprocess.TimeoutExpired.__init__(
-            self, cmd, timeout, output=output, stderr=stderr)
+            self, cmd, timeout, output=output, stderr=stderr
+        )
 
         base_exception.FossilError.__init__(
             self,
             code=code,
             message=message,
             user_message=user_message,
-            details=details
+            details=details,
         )
 
 
@@ -165,12 +160,13 @@ class FossilTimelineError(base_exception.FossilError):
     exit code, indicating an error in the command's execution.  Wraps the
     subprocess.CalledProcessError with a quarryforge specific exception.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Fossil Timeline Error Init"""
         super().__init__(
@@ -188,12 +184,13 @@ class FossilSetupError(base_exception.FossilError):
     exit code, indicating an error in the command's execution.  Wraps the
     subprocess.CalledProcessError with a quarryforge specific exception.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Fossil Setup Error Init"""
         super().__init__(
@@ -211,12 +208,13 @@ class FossilInfoError(base_exception.FossilError):
     exit code, indicating an error in the command's execution.  Wraps the
     subprocess.CalledProcessError with a quarryforge specific exception.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Fossil Info Error Init"""
         super().__init__(
@@ -234,12 +232,13 @@ class FossilDiffError(base_exception.FossilError):
     exit code, indicating an error in the command's execution.  Wraps the
     subprocess.CalledProcessError with a quarryforge specific exception.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Fossil Diff Error Init"""
         super().__init__(
@@ -257,12 +256,13 @@ class FossilCatError(base_exception.FossilError):
     exit code, indicating an error in the command's execution.  Wraps the
     subprocess.CalledProcessError with a quarryforge specific exception.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Fossil Cat Error Init"""
         super().__init__(
@@ -280,12 +280,13 @@ class FossilBranchError(base_exception.FossilError):
     exit code, indicating an error in the command's execution.  Wraps the
     subprocess.CalledProcessError with a quarryforge specific exception.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Fossil Branch Error Init"""
         super().__init__(
@@ -303,12 +304,13 @@ class FossilAddError(base_exception.FossilError):
     exit code, indicating an error in the command's execution.  Wraps the
     subprocess.CalledProcessError with a quarryforge specific exception.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Fossil Add Error Init"""
         super().__init__(
@@ -326,12 +328,13 @@ class FossilCommitError(base_exception.FossilError):
     exit code, indicating an error in the command's execution.  Wraps the
     subprocess.CalledProcessError with a quarryforge specific exception.
     """
+
     def __init__(
         self,
         code: str,
         message: str,
         user_message: str,
-        details: Dict[str, Any]
+        details: dict[str, Any],
     ):
         """Fossil Commit Error Init"""
         super().__init__(

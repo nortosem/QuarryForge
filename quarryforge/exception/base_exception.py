@@ -4,8 +4,9 @@ This module defines the custom exception hierarchy for the quarryforge package.
 It includes a base exception class and specific exceptions for different
 modules & subpackages within the QuarryForge package.
 """
+
 import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from quarryforge.config.exception_conf import exception_data as _
 
@@ -31,11 +32,14 @@ class QuarryForgeError(Exception):
         to_dict(): Returns a dictionary representation of the exception.
         __str__(): Returns a formatted string representation of the exception.
     """
-    def __init__(self,
-                 message: str,
-                 code: str,
-                 user_message: str,
-                 details: Optional[Dict[str, Any]] = None):
+
+    def __init__(
+        self,
+        message: str,
+        code: str,
+        user_message: str,
+        details: dict[str, Any] | None = None,
+    ):
         """Initialize a new QuarryForgeError instance.
 
         This constructor expects pre-built error information, typically from an
@@ -55,7 +59,7 @@ class QuarryForgeError(Exception):
         self.timestamp = datetime.datetime.now(datetime.UTC)
         self.user_message = user_message
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representation of the exception."""
         return {
             _.error_data_config().message: str(self),
@@ -77,17 +81,19 @@ class QuarryForgeError(Exception):
         if self.details:
             filtered_details = {}
             for key, value in self.details.items():
-                if key not in [_.error_data_config().code,
+                if key not in [
+                    _.error_data_config().code,
                     _.error_data_config().message,
-                    _.error_data_config().user_message
+                    _.error_data_config().user_message,
                 ]:
                     filtered_details[key] = value
 
             if filtered_details:
                 detail_str = ', '.join(
-                    [f'{key}: {value}' for key, value in (
-                        filtered_details.items()
-                    )]
+                    [
+                        f'{key}: {value}'
+                        for key, value in (filtered_details.items())
+                    ]
                 )
                 parts.append(f'({detail_str})')
         return (' ').join(parts)
@@ -98,6 +104,7 @@ class ModelError(QuarryForgeError):
 
     Base exception class for all exceptions in the model module.
     """
+
     pass
 
 
@@ -106,6 +113,7 @@ class FossilError(QuarryForgeError):
 
     Base exception class for all exceptions for the fossil module.
     """
+
     pass
 
 
@@ -114,6 +122,7 @@ class MainError(QuarryForgeError):
 
     Base exception class for all exceptions in the main module.
     """
+
     pass
 
 
@@ -122,6 +131,7 @@ class MetaError(QuarryForgeError):
 
     Base exception class for all exceptions for the meta subpackage.
     """
+
     pass
 
 
@@ -130,4 +140,5 @@ class UtilError(QuarryForgeError):
 
     Base exception class for all exceptions for the util subpackage.
     """
+
     pass
