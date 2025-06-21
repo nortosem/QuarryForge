@@ -1,9 +1,8 @@
 # ===================================================================
 # pyproject.toml for the quarryforge package
 #
-# This file serves as the single source of truth for project metadata,
-# dependencies, and tool configurations, following modern Python
-# packaging standards (PEP 621, PEP 518).
+# This file is the single source of truth for project metadata,
+# dependencies, and tool configurations.
 # ===================================================================
 
 [build-system]
@@ -40,18 +39,20 @@ classifiers = [
   "Typing :: Typed",
 ]
 
-# --- Dependencies ---
+# --- Runtime Dependencies ---
 dependencies = []
 
 [project.optional-dependencies]
 # Development dependencies for testing, linting, and formatting.
 # Install with: pip install -e .[dev]
 dev = [
-  "pytest>=7.0",
-  "pytest-cov>=4.0", 
-  "mypy>=1.10", # Updated to a more recent version      
-  "ruff>=0.12", # Updated to a more recent version
-  "types-setuptools",
+  "coverage>=7.9",
+  "coverage[toml]>=7.5.0", 
+  "pytest>=8.0",
+  "pytest-mock>=3.14", 
+  "mypy>=1.16.0",
+  "mypy_extensions>=1.0.0",
+  "ruff>=0.12",
 ]
 
 [project.urls]
@@ -85,7 +86,7 @@ show_missing = true
 python_version = "3.10"
 strict = true
 warn_unreachable = true
-exclude = ["tests/"]
+exclude = ["tests/", "build/", "dist/", ".venv/"]
 
 # ===================================================================
 # Ruff Configuration (Linter and Formatter)
@@ -95,33 +96,19 @@ exclude = ["tests/"]
 # Global settings for both linter and formatter
 target-version = "py310"
 line-length = 80
-exclude = [
-    ".venv",
-    ".git",
-    "__pycache__",
-    "build",
-    "dist",
-]
+exclude = [".venv", ".git", "__pycache__", "build", "dist"]
+
 
 # --- Linter Configuration ---
 [tool.ruff.lint]
-select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # Pyflakes
-    "I",   # isort
-    "UP",  # pyupgrade
-    "B",   # flake8-bugbear
-    "PL",  # Pylint
-]
+select = ["E", "W", "F", "I", "UP", "B", "PL", "D"] 
 ignore = [
     # --- Docstring Rules (from pylint's missing-*-docstring) ---
-    "D100", # Missing docstring in public module
-    "D101", # Missing docstring in public class
-    "D102", # Missing docstring in public method
-    "D103", # Missing docstring in public function
-    "D104", # Missing docstring in public package
-    "D107", # Missing docstring in __init__
+    # Allow test functions to be complex
+    "PLR0904", # too-many-public-methods
+    "PLR2004", # magic-value-comparison
+    # Docstring rules to ignore globally (can be enabled later)
+    "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107",
     # --- Disabled Style & Refactoring Rules ---
     "PLR1722", # pylint: useless-suppression
 ]
