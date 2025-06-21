@@ -5,29 +5,26 @@ including representations for Fossil repositories, individual commits, and
 repository timelines. All data models are designed to be immutable once created,
 enforcing data integrity.
 """
-from pathlib import Path
-from typing import Any, cast, List, Optional, Tuple, TypeVar
 
-from quarryforge.config import meta_config
-from quarryforge.config import model_config
+from pathlib import Path
+from typing import Any, TypeVar, cast
+
+from quarryforge.config import meta_config, model_config
 from quarryforge.config.exception_conf import exception_config as ec
 from quarryforge.config.exception_conf import meta_exception_config as meta_ec
 from quarryforge.config.exception_conf import model_exception_config as model_ec
-from quarryforge.exception import meta_exception
-from quarryforge.exception import model_exception
+from quarryforge.exception import meta_exception, model_exception
 from quarryforge.meta import immutable
 from quarryforge.util import model_util
 
-
 _ImmutableModel = TypeVar(
-    '_ImmutableModel',
-    bound='immutable.ImmutableInstance'
+    '_ImmutableModel', bound='immutable.ImmutableInstance'
 )
 
 
 class FossilRepo(
-    immutable.ImmutableInstance,
-    metaclass=immutable.ImmutableMetaClass):
+    immutable.ImmutableInstance, metaclass=immutable.ImmutableMetaClass
+):
     """Represents an immutable Fossil repository configuration.
 
     This class encapsulates the file path to a Fossil repository.
@@ -43,13 +40,11 @@ class FossilRepo(
             Internal attribute indicating if this represents a newly created
             repository or an existing one.
     """
+
     __slots__ = model_config.fossil_repo_config().slots()
 
     def __init__(
-        self,
-        file: Path | str,
-        workdir: Path | str,
-        is_new: bool
+        self, file: Path | str, workdir: Path | str, is_new: bool
     ) -> None:
         """Initializes a new FossilRepo instance.
 
@@ -85,9 +80,7 @@ class FossilRepo(
         Returns:
             pathlib.Path: The path object representing the repository file.
         """
-        return cast(
-            Path, getattr(self, model_config.fossil_repo_config().file)
-        )
+        return cast(Path, getattr(self, model_config.fossil_repo_config().file))
 
     @property
     def is_new(self) -> bool:
@@ -130,8 +123,8 @@ class FossilRepo(
             error_context=meta_ec.MetaErrorPath.IMMUTABLE_INSTANCE,
             error_code=meta_ec.MetaErrorCode.IMMUTABILITY_VIOLATION,
             arg=self,
-            field= name,
-            info=meta_config.attribute_modifier_type().set_attribute
+            field=name,
+            info=meta_config.attribute_modifier_type().set_attribute,
         )
         error_data = builder.data()
         raise meta_exception.ImmutableError(**error_data.to_exception())
@@ -153,8 +146,8 @@ class FossilRepo(
             error_context=meta_ec.MetaErrorPath.IMMUTABLE_INSTANCE,
             error_code=meta_ec.MetaErrorCode.IMMUTABILITY_VIOLATION,
             arg=self,
-            field= name,
-            info=meta_config.attribute_modifier_type().delete_attribute
+            field=name,
+            info=meta_config.attribute_modifier_type().delete_attribute,
         )
         error_data = builder.data()
         raise meta_exception.ImmutableError(**error_data.to_exception())
@@ -171,8 +164,7 @@ class FossilRepo(
         )
 
     def __repr__(self) -> str:
-        """The representation of a FossilRepo instance for logging/debugging.
-        """
+        """The representation of a FossilRepo instance for logging/debugging."""
         return (
             f'{self.__class__.__name__}(file={self.file!r}, '
             f'is_new={self.is_new!r}, '
@@ -215,9 +207,9 @@ class FossilRepo(
 
 
 class FossilCommit(
-    immutable.ImmutableInstance,
-    metaclass=immutable.ImmutableMetaClass):
-    """ Represents an immutable Fossil commit object, encapsulating all its
+    immutable.ImmutableInstance, metaclass=immutable.ImmutableMetaClass
+):
+    """Represents an immutable Fossil commit object, encapsulating all its
         metadata and associated changes.
 
     Attributes:
@@ -242,6 +234,7 @@ class FossilCommit(
             Internal attribute storing a list of tuples,
             where each tuple represents a file change: (status, filename).
     """
+
     __slots__ = model_config.fossil_commit_config().slots()
 
     def __init__(
@@ -250,21 +243,33 @@ class FossilCommit(
         date: str,
         author: str,
         comment: str,
-        branch: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        phase: Optional[List[str]] = None,
-        changes: Optional[List[Tuple[str,str]]] = None
+        branch: str | None = None,
+        tags: list[str] | None = None,
+        phase: list[str] | None = None,
+        changes: list[tuple[str, str]] | None = None,
     ):
-        (uuid_val, date_val, author_val, comment_val, branch_val, tags_val,
-         phase_val, changes_val) = (
-            model_util.viable_fossil_commit(
-                uuid=uuid, date=date, author=author, comment=comment,
-                branch=branch, tags=tags, phase=phase, changes=changes,
-                exception=model_exception.FossilCommitError
-            )
+        (
+            uuid_val,
+            date_val,
+            author_val,
+            comment_val,
+            branch_val,
+            tags_val,
+            phase_val,
+            changes_val,
+        ) = model_util.viable_fossil_commit(
+            uuid=uuid,
+            date=date,
+            author=author,
+            comment=comment,
+            branch=branch,
+            tags=tags,
+            phase=phase,
+            changes=changes,
+            exception=model_exception.FossilCommitError,
         )
         config = model_config.fossil_commit_config()
-        object.__setattr__(self,config.uuid,uuid_val)
+        object.__setattr__(self, config.uuid, uuid_val)
         object.__setattr__(self, config.date, date_val)
         object.__setattr__(self, config.author, author_val)
         object.__setattr__(self, config.comment, comment_val)
@@ -274,9 +279,7 @@ class FossilCommit(
         )
         object.__setattr__(self, config.phase, phase_val)
         object.__setattr__(
-            self,
-            config.changes,
-            changes_val if changes_val is not None else []
+            self, config.changes, changes_val if changes_val is not None else []
         )
 
     @property
@@ -301,7 +304,6 @@ class FossilCommit(
             str, getattr(self, model_config.fossil_commit_config().date)
         )
 
-
     @property
     def author(self) -> str:
         """The author of the commit.
@@ -312,7 +314,6 @@ class FossilCommit(
         return cast(
             str, getattr(self, model_config.fossil_commit_config().author)
         )
-
 
     @property
     def comment(self) -> str:
@@ -325,9 +326,8 @@ class FossilCommit(
             str, getattr(self, model_config.fossil_commit_config().comment)
         )
 
-
     @property
-    def branch(self) -> Optional[str]:
+    def branch(self) -> str | None:
         """The branch name associated with the commit.
 
         Returns:
@@ -337,21 +337,19 @@ class FossilCommit(
             str, getattr(self, model_config.fossil_commit_config().branch)
         )
 
-
     @property
-    def tags(self) -> Optional[List[str]]:
+    def tags(self) -> list[str] | None:
         """A list of tags applied to the commit.
 
         Returns:
             List[str]: A list of tag strings. Can be empty if no tags.
         """
         return cast(
-            List[str], getattr(self, model_config.fossil_commit_config().tags)
+            list[str], getattr(self, model_config.fossil_commit_config().tags)
         )
 
-
     @property
-    def phase(self) -> Optional[List[str]]:
+    def phase(self) -> list[str] | None:
         """The commit phase,  zero or more of:
         *CURRENT*, *MERGE*, *FORK*, *UNPUBLISHED*, *LEAF*, *BRANCH*
 
@@ -359,12 +357,11 @@ class FossilCommit(
             Optional[str]: The commit phase string, or None if not specified.
         """
         return cast(
-            List[str], getattr(self, model_config.fossil_commit_config().phase)
+            list[str], getattr(self, model_config.fossil_commit_config().phase)
         )
 
-
     @property
-    def changes(self) -> List[Tuple[str, str]]:
+    def changes(self) -> list[tuple[str, str]]:
         """A list of file changes in the commit.
 
         Each tuple contains (status, filename), e.g., ('ADDED', 'file.txt').
@@ -375,8 +372,8 @@ class FossilCommit(
                 Can be empty if no changes.
         """
         return cast(
-            List[Tuple[str, str]],
-            getattr(self, model_config.fossil_commit_config().changes)
+            list[tuple[str, str]],
+            getattr(self, model_config.fossil_commit_config().changes),
         )
 
     def get_hash(self) -> str:
@@ -407,8 +404,8 @@ class FossilCommit(
             error_context=meta_ec.MetaErrorPath.IMMUTABLE_INSTANCE,
             error_code=meta_ec.MetaErrorCode.IMMUTABILITY_VIOLATION,
             arg=self,
-            field= name,
-            info=meta_config.attribute_modifier_type().set_attribute
+            field=name,
+            info=meta_config.attribute_modifier_type().set_attribute,
         )
         error_data = builder.data()
         raise meta_exception.ImmutableError(**error_data.to_exception())
@@ -430,8 +427,8 @@ class FossilCommit(
             error_context=meta_ec.MetaErrorPath.IMMUTABLE_INSTANCE,
             error_code=meta_ec.MetaErrorCode.IMMUTABILITY_VIOLATION,
             arg=self,
-            field= name,
-            info=meta_config.attribute_modifier_type().delete_attribute
+            field=name,
+            info=meta_config.attribute_modifier_type().delete_attribute,
         )
         error_data = builder.data()
         raise meta_exception.ImmutableError(**error_data.to_exception())
@@ -454,13 +451,11 @@ class FossilCommit(
             elif isinstance(attr_value, list):
                 if all(isinstance(item, str) for item in attr_value):
                     list_items = [f'{item!r}' for item in attr_value]
-                    attrs.append(f"{prop_name}=[{', '.join(list_items)}]")
+                    attrs.append(f'{prop_name}=[{", ".join(list_items)}]')
                 elif all(isinstance(item, tuple) for item in attr_value):
                     tuple_items = []
                     for t_item in attr_value:
-                        if isinstance(
-                                t_item, tuple
-                        ) and all(
+                        if isinstance(t_item, tuple) and all(
                             isinstance(s, str) for s in t_item
                         ):
                             tuple_items.append(
@@ -468,12 +463,12 @@ class FossilCommit(
                             )
                         else:
                             tuple_items.append(repr(t_item))
-                    attrs.append(f"{prop_name}=[{', '.join(tuple_items)}]")
+                    attrs.append(f'{prop_name}=[{", ".join(tuple_items)}]')
                 else:
                     attrs.append(f'{prop_name}={repr(attr_value)}')
             else:
                 attrs.append(f'{prop_name}={attr_value}')
-        return f"{self.__class__.__name__}({', '.join(attrs)})"
+        return f'{self.__class__.__name__}({", ".join(attrs)})'
 
     def __str__(self) -> str:
         """Standard string output for a Commit (user-friendly summary).
@@ -490,7 +485,6 @@ class FossilCommit(
             f'author: {self.author}\n'
             f'comment: {self.comment}'
         )
-
 
     def __hash__(self) -> int:
         """Get a hash for a commit.
@@ -513,9 +507,10 @@ class FossilTimeline:
         commits (List[FossilCommit]): A list of all timeline commits, ordered
                                       chronologically (oldest to newest).
     """
+
     __slots__ = (model_config.fossil_timeline_config().commits,)
 
-    def __init__(self, commits: Optional[List[FossilCommit]] = None):
+    def __init__(self, commits: list[FossilCommit] | None = None):
         """Initializes a FossilTimeline instance.
 
         Args:
@@ -538,39 +533,30 @@ class FossilTimeline:
                 error_code=ec.GenericError.TYPE_ERROR,
                 arg=commits,
                 field=fossil_timeline_config.commits,
-                info=(f"Argument 'commits' must be a list, but got "
-                      f"'{type(commits).__name__}'.")
+                info=(
+                    f"Argument 'commits' must be a list, but got "
+                    f"'{type(commits).__name__}'."
+                ),
             )
             error_data = builder.data()
             raise model_exception.FossilTimelineError(
                 **error_data.to_exception()
             )
-        if not all(
-            isinstance(commit, FossilCommit) for commit in valid
-        ):
+        if not all(isinstance(commit, FossilCommit) for commit in valid):
             invalid = next(
-                (c for c in valid if not isinstance(
-                    c, FossilCommit
-                )),
-                None
-
+                (c for c in valid if not isinstance(c, FossilCommit)), None
             )
             info = (
-                'All items in "commits" list must be '
-                '"FossilCommit" instances.'
+                'All items in "commits" list must be "FossilCommit" instances.'
             )
             if invalid is not None:
-                info += (
-                    f' Found an item of type "{type(invalid).__name__}".'
-                )
+                info += f' Found an item of type "{type(invalid).__name__}".'
             builder = model_ec.FossilTimelineErrorBuilder(
-                error_context=(
-                    model_ec.ModelErrorPath.FOSSIL_TIMELINE_INIT
-                ),
+                error_context=(model_ec.ModelErrorPath.FOSSIL_TIMELINE_INIT),
                 error_code=ec.GenericError.TYPE_ERROR,
                 arg=commits,
                 field=fossil_timeline_config.commits,
-                info=info
+                info=info,
             )
             error_data = builder.data()
             raise model_exception.FossilTimelineError(
@@ -580,9 +566,7 @@ class FossilTimeline:
         valid.reverse()
 
         object.__setattr__(
-            self,
-            model_config.fossil_timeline_config().commits,
-            valid
+            self, model_config.fossil_timeline_config().commits, valid
         )
 
     def add(self, commit: FossilCommit) -> None:
@@ -592,16 +576,16 @@ class FossilTimeline:
             commit (FossilCommit): The commit object to add.
         """
         cast(
-            List[FossilCommit],
-            getattr(self,model_config.fossil_timeline_config().commits)
+            list[FossilCommit],
+            getattr(self, model_config.fossil_timeline_config().commits),
         ).append(commit)
 
     def __len__(self) -> int:
         """Returns the number of commits in the timeline."""
         return len(
             cast(
-                List[FossilCommit],
-                getattr(self,model_config.fossil_timeline_config().commits)
+                list[FossilCommit],
+                getattr(self, model_config.fossil_timeline_config().commits),
             )
         )
 
@@ -615,16 +599,16 @@ class FossilTimeline:
             FossilCommit: The commit object at the specified index.
         """
         return cast(
-            List[FossilCommit],
-            getattr(self,model_config.fossil_timeline_config().commits)
+            list[FossilCommit],
+            getattr(self, model_config.fossil_timeline_config().commits),
         )[index]
 
     def __iter__(self) -> Any:
         """Allows iteration over the commits."""
         return iter(
             cast(
-                List[FossilCommit],
-                getattr(self,model_config.fossil_timeline_config().commits)
+                list[FossilCommit],
+                getattr(self, model_config.fossil_timeline_config().commits),
             )
         )
 
@@ -637,13 +621,11 @@ class FossilTimeline:
                 of commits.
         """
         commits = cast(
-            List[FossilCommit],
-            getattr(self,model_config.fossil_timeline_config().commits)
+            list[FossilCommit],
+            getattr(self, model_config.fossil_timeline_config().commits),
         )
 
-        return (
-            f'{self.__class__.__name__}(commits={len(commits)} commits)'
-        )
+        return f'{self.__class__.__name__}(commits={len(commits)} commits)'
 
     def __str__(self) -> str:
         """User-friendly string representation of the timeline.
@@ -652,7 +634,7 @@ class FossilTimeline:
             str: A string summarizing the timeline's content.
         """
         commits = cast(
-            List[FossilCommit],
-            getattr(self,model_config.fossil_timeline_config().commits)
+            list[FossilCommit],
+            getattr(self, model_config.fossil_timeline_config().commits),
         )
         return f'Fossil Timeline with {len(commits)} commits.'
