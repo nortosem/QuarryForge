@@ -7,15 +7,15 @@ directories), and readable/writable paths. It also includes functions for
 validating list types and the content of lists based on specific error
 conditions.
 """
+
 from pathlib import Path
-from typing import List, Optional, Tuple, Type, TypeVar
+from typing import TypeVar
 
 from quarryforge.config import model_config
 from quarryforge.config.exception_conf import exception_config as ec
 from quarryforge.config.exception_conf import model_exception_config as model_ec
 from quarryforge.exception import base_exception
 from quarryforge.util import validation_util
-
 
 _ModelError = TypeVar('_ModelError', bound=base_exception.ModelError)
 
@@ -24,8 +24,8 @@ def viable_fossil_repo(
     file: Path | str,
     workdir: Path | str,
     is_new: bool,
-    exception: Type[_ModelError]
-) -> Tuple[Path, Path]:
+    exception: type[_ModelError],
+) -> tuple[Path, Path]:
     """Validates if the path points to a viable Fossil repository.
 
     For an existing repository (is_new=False):
@@ -67,8 +67,8 @@ def viable_fossil_repo(
             error_code=ec.GenericError.TYPE_ERROR,
             arg=file,
             field=fossil_repo_config.file,
-            info=f'arg: {file} type: {type(file)}'
-        )
+            info=f'arg: {file} type: {type(file)}',
+        ),
     )
     workdir = validation_util.is_type_path(
         arg=workdir,
@@ -78,8 +78,8 @@ def viable_fossil_repo(
             error_code=ec.GenericError.TYPE_ERROR,
             arg=workdir,
             field=fossil_repo_config.workdir,
-            info=f'arg: {workdir} type: {type(workdir)}'
-        )
+            info=f'arg: {workdir} type: {type(workdir)}',
+        ),
     )
     # second ensure path object
     file = validation_util.resolve_path_arg(
@@ -90,8 +90,8 @@ def viable_fossil_repo(
             error_code=ec.PathError.PATH_RESOLUTION_ERROR,
             arg=file,
             field=fossil_repo_config.file,
-            info=f'arg: {file} type: {type(file)}'
-        )
+            info=f'arg: {file} type: {type(file)}',
+        ),
     )
     workdir = validation_util.resolve_path_arg(
         arg=workdir,
@@ -101,11 +101,11 @@ def viable_fossil_repo(
             error_code=ec.PathError.PATH_RESOLUTION_ERROR,
             arg=workdir,
             field=fossil_repo_config.workdir,
-            info=f'arg: {workdir} type: {type(workdir)}'
-        )
+            info=f'arg: {workdir} type: {type(workdir)}',
+        ),
     )
     # third is_new or not?
-    if is_new: # new is the target repo
+    if is_new:  # new is the target repo
         file = validation_util.not_exist(
             arg=file,
             exception=exception,
@@ -114,8 +114,8 @@ def viable_fossil_repo(
                 error_code=ec.PathError.PATH_EXISTING_ERROR,
                 arg=file,
                 field=fossil_repo_config.file,
-                info=f'arg: {file} type: {type(file)}'
-                )
+                info=f'arg: {file} type: {type(file)}',
+            ),
         )
         parent_dir = validation_util.exist(
             arg=file.parent,
@@ -125,8 +125,8 @@ def viable_fossil_repo(
                 error_code=ec.PathError.PATH_NONEXISTENT_ERROR,
                 arg=file.parent,
                 field=fossil_repo_config.file,
-                info=f'arg: {file.parent} type: {type(file.parent)}'
-                )
+                info=f'arg: {file.parent} type: {type(file.parent)}',
+            ),
         )
         parent_dir = validation_util.is_dir(
             arg=file.parent,
@@ -136,8 +136,8 @@ def viable_fossil_repo(
                 error_code=ec.PathError.PATH_NOT_A_DIRECTORY_ERROR,
                 arg=file.parent,
                 field=fossil_repo_config.file,
-                info=f'arg: {file.parent} type: {type(file.parent)}'
-                )
+                info=f'arg: {file.parent} type: {type(file.parent)}',
+            ),
         )
         parent_dir = validation_util.is_write_ok(
             arg=file.parent,
@@ -147,28 +147,25 @@ def viable_fossil_repo(
                 error_code=ec.PathError.PATH_NOT_WRITABLE_ERROR,
                 arg=file.parent,
                 field=fossil_repo_config.file,
-                info=f'arg: {file.parent} type: {type(file.parent)}'
-                )
+                info=f'arg: {file.parent} type: {type(file.parent)}',
+            ),
         )
         if parent_dir == workdir:
-            error_builder=model_ec.FossilRepoErrorBuilder(
+            error_builder = model_ec.FossilRepoErrorBuilder(
                 error_context=model_ec.ModelErrorPath.FOSSIL_REPO_INIT,
                 error_code=ec.PathError.SAME_REPO_DIR_AND_WORK_DIR,
                 arg=file.parent,
                 field=str(
-                    f'{fossil_repo_config.file},'
-                    f'{fossil_repo_config.workdir}'
+                    f'{fossil_repo_config.file},{fossil_repo_config.workdir}'
                 ),
-                info=(
-                    f'repo dir: {str(file.parent)}'
-                    f'workdir: {str(workdir)}'
-                ),
-                extra_details={ec.DescMsg.REASON: (
-                        'The repository file\'s parent directory cannot be the '
+                info=(f'repo dir: {str(file.parent)}workdir: {str(workdir)}'),
+                extra_details={
+                    ec.DescMsg.REASON: (
+                        "The repository file's parent directory cannot be the "
                         'same as the working directory to prevent checkout '
                         'conflicts.'
                     )
-                }
+                },
             )
             error_data = error_builder.data()
             raise exception(**error_data.to_exception())
@@ -181,8 +178,8 @@ def viable_fossil_repo(
                 error_context=model_ec.ModelErrorPath.FOSSIL_REPO_INIT,
                 error_code=ec.PathError.PATH_NONEXISTENT_ERROR,
                 field=fossil_repo_config.file,
-                info=f'arg: {file} type: {type(file)}'
-            )
+                info=f'arg: {file} type: {type(file)}',
+            ),
         )
         file = validation_util.is_file(
             arg=file,
@@ -191,8 +188,8 @@ def viable_fossil_repo(
                 error_context=model_ec.ModelErrorPath.FOSSIL_REPO_INIT,
                 error_code=ec.PathError.PATH_NOT_A_FILE_ERROR,
                 field=fossil_repo_config.file,
-                info=f'arg: {file} type: {type(file)}'
-            )
+                info=f'arg: {file} type: {type(file)}',
+            ),
         )
         file = validation_util.is_read_ok(
             arg=file,
@@ -201,20 +198,20 @@ def viable_fossil_repo(
                 error_context=model_ec.ModelErrorPath.FOSSIL_REPO_INIT,
                 error_code=ec.PathError.PATH_NOT_READABLE_ERROR,
                 field=fossil_repo_config.file,
-                info=f'arg: {file} type: {type(file)}'
-            )
+                info=f'arg: {file} type: {type(file)}',
+            ),
         )
     # validate the working directory
     workdir = validation_util.exist(
-            arg=workdir,
-            exception=exception,
-            error_builder=model_ec.FossilRepoErrorBuilder(
-                error_context=model_ec.ModelErrorPath.FOSSIL_REPO_INIT,
-                error_code=ec.PathError.PATH_NONEXISTENT_ERROR,
-                field=fossil_repo_config.workdir,
-                info=f'arg: {workdir} type: {type(workdir)}'
-            )
-        )
+        arg=workdir,
+        exception=exception,
+        error_builder=model_ec.FossilRepoErrorBuilder(
+            error_context=model_ec.ModelErrorPath.FOSSIL_REPO_INIT,
+            error_code=ec.PathError.PATH_NONEXISTENT_ERROR,
+            field=fossil_repo_config.workdir,
+            info=f'arg: {workdir} type: {type(workdir)}',
+        ),
+    )
     workdir = validation_util.is_dir(
         arg=workdir,
         exception=exception,
@@ -222,8 +219,8 @@ def viable_fossil_repo(
             error_context=model_ec.ModelErrorPath.FOSSIL_REPO_INIT,
             error_code=ec.PathError.PATH_NOT_A_DIRECTORY_ERROR,
             field=fossil_repo_config.workdir,
-            info=f'arg: {workdir} type: {type(workdir)}'
-        )
+            info=f'arg: {workdir} type: {type(workdir)}',
+        ),
     )
     workdir = validation_util.is_write_ok(
         arg=workdir,
@@ -232,8 +229,8 @@ def viable_fossil_repo(
             error_context=model_ec.ModelErrorPath.FOSSIL_REPO_INIT,
             error_code=ec.PathError.PATH_NOT_WRITABLE_ERROR,
             field=fossil_repo_config.workdir,
-            info=f'arg: {workdir} type: {type(workdir)}'
-        )
+            info=f'arg: {workdir} type: {type(workdir)}',
+        ),
     )
     return file, workdir
 
@@ -244,20 +241,20 @@ def viable_fossil_commit(
     date: str,
     author: str,
     comment: str,
-    branch: Optional[str] = None,
-    tags: Optional[List[str]] = None,
-    phase: Optional[List[str]] = None,
-    changes: Optional[List[Tuple[str, str]]] = None,
-    exception: Type[_ModelError],
-) -> Tuple[
+    branch: str | None = None,
+    tags: list[str] | None = None,
+    phase: list[str] | None = None,
+    changes: list[tuple[str, str]] | None = None,
+    exception: type[_ModelError],
+) -> tuple[
     str,
     str,
     str,
     str,
-    Optional[str],
-    Optional[List[str]],
-    Optional[List[str]],
-    Optional[List[Tuple[str,str]]],
+    str | None,
+    list[str] | None,
+    list[str] | None,
+    list[tuple[str, str]] | None,
 ]:
     """Validates the arguements fields for FossilCommit on Initialization."""
     fossil_commit_config = model_config.fossil_commit_config()
@@ -270,16 +267,16 @@ def viable_fossil_commit(
                 error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
                 error_code=ec.GenericError.TYPE_ERROR,
                 field=fossil_commit_config.uuid,
-                info=f'arg: {uuid} type: {type(uuid)}'
-            )
+                info=f'arg: {uuid} type: {type(uuid)}',
+            ),
         ),
         exception=exception,
         error_builder=model_ec.FossilCommitErrorBuilder(
             error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
             error_code=ec.StringError.EMPTY_STRING_ERROR,
             field=fossil_commit_config.uuid,
-            info=f'arg: {uuid} type: {type(uuid)}'
-        )
+            info=f'arg: {uuid} type: {type(uuid)}',
+        ),
     )
     date = validation_util.is_str_not_empty(
         arg=validation_util.is_type_str(
@@ -289,16 +286,16 @@ def viable_fossil_commit(
                 error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
                 error_code=ec.GenericError.TYPE_ERROR,
                 field=fossil_commit_config.date,
-                info=f'arg: {date} type: {type(date)}'
-            )
+                info=f'arg: {date} type: {type(date)}',
+            ),
         ),
         exception=exception,
         error_builder=model_ec.FossilCommitErrorBuilder(
             error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
             error_code=ec.StringError.EMPTY_STRING_ERROR,
             field=fossil_commit_config.date,
-            info=f'arg: {date} type: {type(date)}'
-        )
+            info=f'arg: {date} type: {type(date)}',
+        ),
     )
     author = validation_util.is_str_not_empty(
         arg=validation_util.is_type_str(
@@ -308,16 +305,16 @@ def viable_fossil_commit(
                 error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
                 error_code=ec.GenericError.TYPE_ERROR,
                 field=fossil_commit_config.author,
-                info=f'arg: {author} type: {type(author)}'
-            )
+                info=f'arg: {author} type: {type(author)}',
+            ),
         ),
         exception=exception,
         error_builder=model_ec.FossilCommitErrorBuilder(
             error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
             error_code=ec.StringError.EMPTY_STRING_ERROR,
             field=fossil_commit_config.author,
-            info=f'arg: {author} type: {type(author)}'
-        )
+            info=f'arg: {author} type: {type(author)}',
+        ),
     )
     comment = validation_util.is_str_not_empty(
         arg=validation_util.is_type_str(
@@ -327,16 +324,16 @@ def viable_fossil_commit(
                 error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
                 error_code=ec.GenericError.TYPE_ERROR,
                 field=fossil_commit_config.comment,
-                info=f'arg: {comment} type: {type(comment)}'
-            )
+                info=f'arg: {comment} type: {type(comment)}',
+            ),
         ),
         exception=exception,
         error_builder=model_ec.FossilCommitErrorBuilder(
             error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
             error_code=ec.StringError.EMPTY_STRING_ERROR,
             field=fossil_commit_config.comment,
-            info=f'arg: {comment} type: {type(comment)}'
-        )
+            info=f'arg: {comment} type: {type(comment)}',
+        ),
     )
     if branch:
         branch = validation_util.is_str_not_empty(
@@ -347,16 +344,16 @@ def viable_fossil_commit(
                     error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
                     error_code=ec.GenericError.TYPE_ERROR,
                     field=fossil_commit_config.branch,
-                    info=f'arg: {branch} type: {type(branch)}'
-                )
+                    info=f'arg: {branch} type: {type(branch)}',
+                ),
             ),
             exception=exception,
             error_builder=model_ec.FossilCommitErrorBuilder(
                 error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
                 error_code=ec.StringError.EMPTY_STRING_ERROR,
                 field=fossil_commit_config.branch,
-                info=f'arg: {branch} type: {type(branch)}'
-            )
+                info=f'arg: {branch} type: {type(branch)}',
+            ),
         )
     if tags:
         tags = validation_util.content_empty_error_str_list(
@@ -370,7 +367,7 @@ def viable_fossil_commit(
                     info=(
                         f'arg: {tags}, element_types: '
                         f'{[type(t).__name__ for t in tags if tags]}'
-                    )
+                    ),
                 ),
             ),
             exception=exception,
@@ -378,9 +375,8 @@ def viable_fossil_commit(
                 error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
                 error_code=ec.StringError.EMPTY_STRING_ERROR,
                 field=fossil_commit_config.tags,
-                info=f'arg: {tags}'
-            )
-
+                info=f'arg: {tags}',
+            ),
         )
     if phase:
         phase = validation_util.content_empty_error_str_list(
@@ -394,16 +390,16 @@ def viable_fossil_commit(
                     info=(
                         f'arg: {phase}, element_types: '
                         f'{[type(p).__name__ for p in phase if phase]}'
-                    )
-                )
+                    ),
+                ),
             ),
             exception=exception,
             error_builder=model_ec.FossilCommitErrorBuilder(
                 error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
                 error_code=ec.StringError.EMPTY_STRING_ERROR,
                 field=fossil_commit_config.phase,
-                info=f'arg: {phase}'
-            )
+                info=f'arg: {phase}',
+            ),
         )
     if changes:
         changes = validation_util.content_empty_error_str_tuple_list(
@@ -416,20 +412,23 @@ def viable_fossil_commit(
                     field=fossil_commit_config.changes,
                     info=(
                         f'arg: {changes}, content_types: '
-                        f'{[str(tuple(
-                            type(i).__name__ for i in c
-                            )) if isinstance(
-                                c, tuple
-                            ) else type(c).__name__ for c in changes]}'
-                    )
-                )
+                        f'{
+                            [
+                                str(tuple(type(i).__name__ for i in c))
+                                if isinstance(c, tuple)
+                                else type(c).__name__
+                                for c in changes
+                            ]
+                        }'
+                    ),
+                ),
             ),
             exception=exception,
             error_builder=model_ec.FossilCommitErrorBuilder(
                 error_context=model_ec.ModelErrorPath.FOSSIL_COMMIT_INIT,
                 error_code=ec.StringError.EMPTY_STRING_ERROR,
                 field=fossil_commit_config.changes,
-                info=f'arg: {changes}'
-            )
+                info=f'arg: {changes}',
+            ),
         )
     return (uuid, date, author, comment, branch, tags, phase, changes)
