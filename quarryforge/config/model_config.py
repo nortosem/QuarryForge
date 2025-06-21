@@ -3,13 +3,13 @@
 This module provides detailed configurations for the classes defined in the
 model module.
 """
-from typing import List, NamedTuple, Tuple
 
+from typing import NamedTuple
 
-__all__: List[str] = [
+__all__: list[str] = [
     'fossil_repo_config',
     'fossil_commit_config',
-    'fossil_timeline_config'
+    'fossil_timeline_config',
 ]
 
 
@@ -24,11 +24,12 @@ class ConfigFossilRepo(NamedTuple):
         file (str): Stores the string '_file'. This is the internal attribute
         name for the immutable FossilRepo class.
     """
+
     file: str = '_file'
     is_new: str = '_is_new'
     workdir: str = '_workdir'
 
-    def slots(self) -> Tuple[str]:
+    def slots(self) -> tuple[str]:
         """Get field values to define FossilRepo slots.
 
         Returns:
@@ -58,6 +59,7 @@ class ConfigFossilCommit(NamedTuple):
         phase (str): Field name for the commit's phase
         changes (str): Field name for the summary of changes in the commit.
     """
+
     uuid: str = '_uuid'
     date: str = '_date'
     author: str = '_author'
@@ -67,7 +69,7 @@ class ConfigFossilCommit(NamedTuple):
     phase: str = '_phase'
     changes: str = '_changes'
 
-    def slots(self) -> Tuple[str]:
+    def slots(self) -> tuple[str]:
         """Get field values to define FossilCommit slots.
 
         Returns:
@@ -83,9 +85,22 @@ def fossil_commit_config() -> ConfigFossilCommit:
 
 class ConfigFossilTimeline(NamedTuple):
     """Configuration for the FossilTimeline model"""
+
     commits: str = 'commits'
 
 
 def fossil_timeline_config() -> ConfigFossilTimeline:
     """Provides the configuration for the FossilTimeline model."""
     return ConfigFossilTimeline()
+
+
+class ConfigValidation(NamedTuple):
+    """Defined constants for model validation."""
+    PAIR = 2
+    KEY = 0
+    VALUE = 1
+
+
+def validation_config() -> ConfigValidation:
+    """Provides an instance for validation constants."""
+    return ConfigValidation()
