@@ -1,8 +1,5 @@
 # ===================================================================
 # pyproject.toml for the quarryforge package
-#
-# This file is the single source of truth for project metadata,
-# dependencies, and tool configurations.
 # ===================================================================
 
 [build-system]
@@ -11,10 +8,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quarryforge"
-version = "0.0.0"
+version = "0.0.0dev0"
 description = "A Python package for interacting with and migrating Fossil SCM repositories."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = { file = "LICENSE" }
 authors = [
   { name = "mesotron.dev", email = "mail@mesotron.dev" },
@@ -24,19 +21,18 @@ maintainers = [
 ]
 keywords = ["fossil", "export", "scm", "vcs", "git", "migration", "github"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 1 - Planning",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Build Tools",
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Topic :: Software Development :: Version Control",
-  "Topic :: Utilities",
   "Typing :: Typed",
+  "Topic :: Utilities",
 ]
 
 # --- Runtime Dependencies ---
