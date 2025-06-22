@@ -3,7 +3,7 @@
 # ===================================================================
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=80.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -56,7 +56,6 @@ dev = [
 Repository = "https://github.com/nortosem/quarryforge"
 #"Bug Tracker" = "https://github.com/user/quarryforge/issues"
 
-
 # ===================================================================
 # Tool Configurations
 # ===================================================================
@@ -93,7 +92,6 @@ exclude = ["tests/", "build/", "dist/", ".venv/"]
 target-version = "py310"
 line-length = 80
 exclude = [".venv", ".git", "__pycache__", "build", "dist"]
-
 
 # --- Linter Configuration ---
 [tool.ruff.lint]
