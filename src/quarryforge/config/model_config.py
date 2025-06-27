@@ -96,6 +96,7 @@ def fossil_timeline_config() -> ConfigFossilTimeline:
 
 class ConfigValidation(NamedTuple):
     """Defined constants for model validation."""
+
     PAIR = 2
     KEY = 0
     VALUE = 1
