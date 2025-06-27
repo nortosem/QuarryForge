@@ -1,7 +1,6 @@
 # ===================================================================
 # pyproject.toml for the quarryforge package
 # ===================================================================
-
 [build-system]
 requires = ["setuptools>=80.0", "wheel"]
 build-backend = "setuptools.build_meta"
@@ -56,72 +55,123 @@ dev = [
 Repository = "https://github.com/nortosem/quarryforge"
 #"Bug Tracker" = "https://github.com/user/quarryforge/issues"
 
+[project.scripts]
+format-code = "scripts:format_code"
+lint = "scripts:lint"
+type-check = "scripts:type_check"
+quality = "scripts:quality_check"
+
 # ===================================================================
 # Tool Configurations
 # ===================================================================
-
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["quarryforge*"]
-
-[tool.pytest.ini_options]
-minversion = "7.0"
-testpaths = ["tests"]
-addopts = "-ra --strict-markers --cov=quarryforge --cov-report=term-missing"
-
-[tool.coverage.run]
-source = ["quarryforge"]
-branch = true
-
-[tool.coverage.report]
-fail_under = 100
-show_missing = true
-
-[tool.mypy]
-python_version = "3.10"
-strict = true
-warn_unreachable = true
-exclude = ["tests/", "build/", "dist/", ".venv/"]
+where = ["src"]
+include = ["quarryforge*", "scripts.py"]
 
 # ===================================================================
 # Ruff Configuration (Linter and Formatter)
 # ===================================================================
-
 [tool.ruff]
 # Global settings for both linter and formatter
-target-version = "py310"
+target-version = "py313"
 line-length = 80
 exclude = [".venv", ".git", "__pycache__", "build", "dist"]
+cache-dir = "./dist/.ruff_cache"
 
-# --- Linter Configuration ---
 [tool.ruff.lint]
-select = ["E", "W", "F", "I", "UP", "B", "PL", "D"] 
+select = ["E", "W", "F", "I", "UP", "B", "PL", "D"]
 ignore = [
-    # --- Docstring Rules (from pylint's missing-*-docstring) ---
-    # Allow test functions to be complex
-    "PLR0904", # too-many-public-methods
-    "PLR2004", # magic-value-comparison
-    # Docstring rules to ignore globally (can be enabled later)
-    "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107",
-    # --- Disabled Style & Refactoring Rules ---
-    "PLR1722", # pylint: useless-suppression
+    "PLR0904", "PLR2004", "D100", "D101", "D102", "D103", "D104",
+    "D105", "D106", "D107", "D203", "D213", "PLR1722",
 ]
-
 dummy-variable-rgx = "^(_|main)$"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D100", "D101", "D102", "D103", "D104", "D107", "PLR0904"] 
-# No docs, too many public methods in tests
-# --- Pylint-specific rule settings ---
+
 [tool.ruff.lint.pylint]
 max-args = 10
 max-returns = 15
 max-branches = 18
-# --- Naming Conventions (from pylintrc [BASIC]) ---
+
 [tool.ruff.lint.pep8-naming]
 classmethod-decorators = ["classmethod", "classproperty"]
-# --- Formatter Configuration ---
+
 [tool.ruff.format]
 quote-style = "single"
 indent-style = "space"
 docstring-code-line-length = 80
+
+
+# ===================================================================
+# MyPy Configuration
+# ===================================================================
+[tool.mypy]
+mypy_path = "src"
+python_version = "3.13"
+plugins = "mypy_django_plugin.main"
+pretty = true
+cache_dir = "./dist/.mypy_cache"
+sqlite_cache = true
+cache_fine_grained = true
+exclude = [
+    "tests/", "build/", "dist/", "dev_env/", "prod_env/",
+    "src/portfolio_project.egg-info/", "requirements.py",
+]
+
+strict = true
+show_error_context = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unreachable = true
+ignore_missing_imports = true
+disallow_any_unimported = false
+disallow_any_expr = false
+disallow_any_decorated = false
+disallow_any_explicit = false
+disallow_any_generics = false
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+
+
+# ===================================================================
+# PyTest & Coverage Configuration
+# ===================================================================
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+cache_dir = ".dist/.pytest_cache"
+
+[tool.coverage.run]
+source = ["quarryforge", "tests"]
+data_file = "./dist/.coverage"
+branch = true
+omit = [
+    "*/__init__.py",
+    "*/dev_env/*",
+    "*/prod_env/*",
+    "*/dist/*",
+]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+skip_covered = false
+precision = 2
+exclude_lines = [
+    "raise AssertionError",
+    "raise NotImplementedError",
+    'if __name__ == "__main__:"',
+    "@(abc\\.)?abstractmethod",
+    "^\\s*pass\\s*$",
+]
+
+[tool.coverage.html]
+skip_empty = true
+skip_covered = false
+directory = "dist/coverage_report"
