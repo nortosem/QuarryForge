@@ -1,7 +1,7 @@
-"""Assembler Module
+"""Assembler module provides abstract base classes and utility functions.
 
-This module provides abstract base classes and utility functions for
-constructing structured error messages and comprehensive error data objects.
+The assembler module constructs structured error messages and comprehensive
+error data objects.
 """
 
 import abc
@@ -15,7 +15,7 @@ __all__: list[str] = ['ErrorBuilder']
 
 
 def _valid_str_type(value: str) -> str:
-    """Validates if the input value is a string.
+    """Validate if the input value is a string.
 
     Args:
         value: The value to check.
@@ -25,6 +25,7 @@ def _valid_str_type(value: str) -> str:
 
     Raises:
         TypeError: If the value is not a string.
+
     """
     if not isinstance(value, str):
         raise TypeError(
@@ -35,7 +36,7 @@ def _valid_str_type(value: str) -> str:
 
 
 def _valid_str_value(value: str) -> str:
-    """Validates if the input string value is non-empty.
+    """Validate if the input string value is non-empty.
 
     Args:
         value: The string value to check.
@@ -45,6 +46,7 @@ def _valid_str_value(value: str) -> str:
 
     Raises:
         ValueError: If the value is an empty string.
+
     """
     if not value:
         raise ValueError(
@@ -60,22 +62,24 @@ def _validate_init(
     field_value: Any = None,
     info_value: Any = None,
 ) -> tuple[str, str, str | None, str | None]:
-    """Applies type and non-empty validation to two string values.
+    """Apply type and non-empty validation to two string values.
 
     This helper is used in __init__ methods for common string arguments.
 
     Args:
         context_value: The first string value (e.g., error context).
         code_value: The second string value (e.g., error type or code).
-        field: The specific field name related to the error (optional).
+        field_value: The specific field name related to the error (optional).
         info_value: error specific info hints (optional)
         (e.g., 'str', 'int', 'Path', 'action: state etc.').
+
     Returns:
         A tuple containing the validated context_value and type_value.
 
     Raises:
         TypeError: If either value is not a string.
         ValueError: If either value is an empty string.
+
     """
     context_value = _valid_str_value(_valid_str_type(context_value))
     code_value = _valid_str_value(_valid_str_type(code_value))
@@ -105,6 +109,7 @@ class ErrorBuilder(abc.ABC):
             A dictionary for additional error details.
         info (str): The error info associated with an error.
         field (str): The class field or attribute affected by the error.
+
     """
 
     __slots__ = meta_config.error_builder().slots()
@@ -119,7 +124,7 @@ class ErrorBuilder(abc.ABC):
         info: str | None = None,
         extra_details: dict[str, Any] | None = None,
     ):
-        """Default exception constructor initialization.
+        """Intiialize the default exception constructor.
 
         Args:
             error_context: The package path context for the error.
@@ -134,6 +139,7 @@ class ErrorBuilder(abc.ABC):
         Raises:
             TypeError: If error_context or error_code are not strings.
             ValueError: If error_context or error_code are empty strings.
+
         """
         self.arg = arg
 
@@ -162,6 +168,7 @@ class ErrorBuilder(abc.ABC):
 
         Returns:
             The unique exception code as a string.
+
         """
         pass
 
@@ -171,6 +178,7 @@ class ErrorBuilder(abc.ABC):
 
         Returns:
         A string representing the detailed error message
+
         """
         pass
 
@@ -180,11 +188,12 @@ class ErrorBuilder(abc.ABC):
 
         Returns:
         A string representing the user-friendly error message.
+
         """
         pass
 
     def _base_message(self) -> str:
-        """Generates a common error message prefix.
+        """Generate a common error message prefix.
 
         This provides a consistent header for all technical error messages.
         """
@@ -198,8 +207,8 @@ class ErrorBuilder(abc.ABC):
 
         Returns:
             A dictionary containing specific error details.
-        """
 
+        """
         details = {
             error.builder_config().error_context: self.error_context,
             error.builder_config().error_code: self.error_code,
@@ -218,7 +227,7 @@ class ErrorBuilder(abc.ABC):
         return details
 
     def data(self) -> error.ValidErrorData:
-        """Constructs a ValidErrorData object from the provided details.
+        """Construct a ValidErrorData object from the provided details.
 
         This method combines the instance's inherent error context, code,
         and arg with additional parameters to form a comprehensive
@@ -228,6 +237,7 @@ class ErrorBuilder(abc.ABC):
         Returns:
             A `quarryforge.config.exception_conf.exception_data.ValidErrorData`
             object containing the structured error information.
+
         """
         code = self.code()
         details = self.details()

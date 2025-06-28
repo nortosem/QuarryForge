@@ -1,4 +1,4 @@
-"""Immutable class Module"""
+"""Immutable class module."""
 
 from typing import Any
 
@@ -6,11 +6,7 @@ __all__: list[str] = ['Namespace', 'ImmutableInstance']
 
 
 class ImmutableMetaClass(type):
-    """Immutable MetaClass
-
-    Metaclass to prevent setting or deleting attributes on the class itself
-    after initial class creation.
-    """
+    """Prevent setting or deleting attributes after class creation."""
 
     def __setattr__(cls, name: str, value: Any) -> None:
         raise AttributeError('Immutable')
@@ -20,9 +16,7 @@ class ImmutableMetaClass(type):
 
 
 class Namespace(ImmutableMetaClass):
-    """Namespace
-
-    Namespaces provide immutable structures with types and methods.
+    """Provide immutable structures with types and methods.
 
     Example of a class using this metaclass:
     ```
@@ -41,7 +35,7 @@ class Namespace(ImmutableMetaClass):
         bases: tuple[type, ...],
         attrs: dict[str, Any],
     ) -> 'Namespace':
-        """"""
+        """Override new constructer with a default exception."""
 
         def _uninstantiable(
             self: Any, *args: Any, **kwargs: dict[str, Any]
@@ -57,10 +51,7 @@ class Namespace(ImmutableMetaClass):
 
 
 class ImmutableInstance:
-    """ImmutableInstance
-
-    A mixin class to enforce immutability for instances.
-    """
+    """Enforce immutability for instances mixin class."""
 
     def __setattr__(cls, name: str, value: Any) -> None:
         raise TypeError('Immutable')
