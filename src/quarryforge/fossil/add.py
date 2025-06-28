@@ -93,7 +93,7 @@ def add_files(files: list[Path]) -> str:
             error_context=fossil_ec.FossilErrorPath.FOSSIL_ADD,
             error_code=ec.GENERIC_ERROR.invalid_state,
             arg=f'files: {[str(f) for f in files]}',
-            info=timeout_error.details[e_data.BUILDER_FIELD.info],
+            info=timeout_error.details[e_data.builder_config().info],
             extra_details={
                 _.FOSSIL.args: timeout_error.details[_.FOSSIL.args],
                 _.FOSSIL.cmd: timeout_error.details[_.FOSSIL.cmd],
