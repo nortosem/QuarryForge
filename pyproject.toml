@@ -41,6 +41,7 @@ dependencies = []
 # Development dependencies for testing, linting, and formatting.
 # Install with: pip install -e .[dev]
 dev = [
+  "click",
   "coverage>=7.9",
   "coverage[toml]>=7.5.0", 
   "pytest>=8.0",
@@ -59,7 +60,7 @@ Repository = "https://github.com/nortosem/quarryforge"
 format-code = "scripts:format_code"
 lint = "scripts:lint"
 type-check = "scripts:type_check"
-quality = "scripts:quality_check"
+quality = "scripts:quality"
 
 # ===================================================================
 # Tool Configurations
@@ -109,7 +110,6 @@ docstring-code-line-length = 80
 [tool.mypy]
 mypy_path = "src"
 python_version = "3.13"
-plugins = "mypy_django_plugin.main"
 pretty = true
 cache_dir = "./dist/.mypy_cache"
 sqlite_cache = true
@@ -125,7 +125,7 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 warn_return_any = true
 warn_unreachable = true
-ignore_missing_imports = true
+ignore_missing_imports = false
 disallow_any_unimported = false
 disallow_any_expr = false
 disallow_any_decorated = false
@@ -136,7 +136,6 @@ disallow_untyped_calls = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 disallow_untyped_decorators = true
-
 
 # ===================================================================
 # PyTest & Coverage Configuration
