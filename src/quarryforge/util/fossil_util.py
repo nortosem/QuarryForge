@@ -1,6 +1,5 @@
-"""Fossil Command Utility Module
+"""Fossil Command Utility module provides functions to rebuild a repository.
 
-This module provides functions for rebuilding a Fossil repository.
 It includes functions to generate commands (as lists of strings) for use with
 `subprocess.run` to perform various Fossil operations.
 """
@@ -14,7 +13,7 @@ __all__: list[str] = []
 
 
 def get_raw_timeline(source: model.FossilRepo) -> list[str]:
-    """Creates a command to retrieve timeline data from a fossil repo.
+    """Create a command to retrieve timeline data from a fossil repo.
 
     Args:
         source: GetTimelineArg containing the repository path.
@@ -22,6 +21,7 @@ def get_raw_timeline(source: model.FossilRepo) -> list[str]:
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -46,7 +46,7 @@ def rebuild_init(
     project_name: str | None,
     project_desc: str | None,
 ) -> list[str]:
-    """Creates command to initialize the target repo to rebuild a source repo.
+    """Create command to initialize the target repo to rebuild a source repo.
 
     Args:
         username: Primary username for the new repo
@@ -59,6 +59,7 @@ def rebuild_init(
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -94,7 +95,7 @@ def rebuild_init(
 
 
 def set_default_user(username: str, new_repo: model.FossilRepo) -> list[str]:
-    """Creates a command to set the default user for a Fossil repository.
+    """Create a command to set the default user for a Fossil repository.
 
     Args:
         username: Primary username for the new repo.
@@ -103,6 +104,7 @@ def set_default_user(username: str, new_repo: model.FossilRepo) -> list[str]:
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -118,17 +120,17 @@ def set_default_user(username: str, new_repo: model.FossilRepo) -> list[str]:
 def set_user_contact(
     username: str, email: str, source: model.FossilRepo
 ) -> list[str]:
-    """Creates a command to set the user's contact information (email)
-    in a Fossil repository.
+    """Create a command to set the user's contact information (email).
 
     Args:
         username: Primary username for the new repo.
         email: The updated email contact.
-        new_repo: Name for new updated repository.
+        source: Name for new updated repository.
 
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -143,7 +145,7 @@ def set_user_contact(
 
 
 def open_rebuild(new_repo: model.FossilRepo, workdir: Path) -> list[str]:
-    """Creates a command to open a Fossil repository.
+    """Create a command to open a Fossil repository.
 
     Args:
         new_repo (model.FossilRepo): The Fossil repository file to open.
@@ -151,6 +153,7 @@ def open_rebuild(new_repo: model.FossilRepo, workdir: Path) -> list[str]:
 
     Returns:
         A list of strings representing the command.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -167,6 +170,7 @@ def close_rebuild() -> list[str]:
 
     Returns:
         A list of string representing the command.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -176,16 +180,17 @@ def close_rebuild() -> list[str]:
 
 
 def get_parent_hash(version: str, source: model.FossilRepo) -> list[str]:
-    """Creates a command to get the parent hash of a specific commit
-    in a Fossil repository.
+    """Create command to get the parent hash of a specific commit.
 
     Args:
         version (str): provide info about the object in the repository.
         source (model.FossilRepo):
             The source repository being used for the target rebuild repo.
+
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -200,8 +205,7 @@ def get_parent_hash(version: str, source: model.FossilRepo) -> list[str]:
 def get_file_changes(
     from_arg: str, to_arg: str, source: model.FossilRepo
 ) -> list[str]:
-    """Creates a command to retrieve the list of files changed in a
-    specific commit.
+    """Create command to retrieve a list of files changed in a commit.
 
     Args:
         from_arg (str): the source check-in, or the parent version.
@@ -212,6 +216,7 @@ def get_file_changes(
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -230,8 +235,7 @@ def get_file_changes(
 def get_file_content(
     filename: str, outfile: str, version: str, source: model.FossilRepo
 ) -> list[str]:
-    """Creates a command to retrieve the content of a file at a specific
-    version in a Fossil repository.
+    """Create command to retrieve the content by specific file version.
 
     Args:
         filename (str): Source file to extract the content from.
@@ -243,6 +247,7 @@ def get_file_content(
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -259,7 +264,7 @@ def get_file_content(
 
 
 def ls_branches(source: model.FossilRepo) -> list[str]:
-    """Creates a command to list all branches in a Fossil timeline.
+    """Create a command to list all branches in a Fossil timeline.
 
     Args:
         source (model.FossilRepo):
@@ -268,6 +273,7 @@ def ls_branches(source: model.FossilRepo) -> list[str]:
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -281,7 +287,7 @@ def ls_branches(source: model.FossilRepo) -> list[str]:
 
 
 def closed_branches(source: model.FossilRepo) -> list[str]:
-    """Creates a command to list all closed branches in a Fossil timeline.
+    """Create a command to list all closed branches in a Fossil timeline.
 
     Args:
         source (model.FossilRepo):
@@ -290,6 +296,7 @@ def closed_branches(source: model.FossilRepo) -> list[str]:
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -303,7 +310,7 @@ def closed_branches(source: model.FossilRepo) -> list[str]:
 
 
 def add_files(files: list[Path]) -> list[str]:
-    """Creates a command to add files to an open fossil target repository.
+    """Create a command to add files to an open fossil target repository.
 
     The fossil module caller handles running this command in the target repo
     working directory.
@@ -311,6 +318,7 @@ def add_files(files: list[Path]) -> list[str]:
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
@@ -328,7 +336,7 @@ def commit(
     tag: str | None,
     files: list[Path],
 ) -> list[str]:
-    """Creaes a commnad to commit changes to an open fossil targe repository.
+    """Create a commnad to commit changes to an open fossil targe repository.
 
     The fossil module caller handles running this command in the target repo
     working directory.
@@ -336,6 +344,7 @@ def commit(
     Returns:
         A list of strings representing the command and its arguments for use
         with `subprocess.run`.
+
     """
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
