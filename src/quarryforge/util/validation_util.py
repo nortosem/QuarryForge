@@ -15,10 +15,6 @@ from quarryforge.config import model_config
 from quarryforge.exception import base_exception
 from quarryforge.meta import assembler
 
-#_QFE = TypeVar('_QFE', bound=base_exception.QuarryForgeError)
-#_EB = TypeVar('_EB', bound=assembler.ErrorBuilder)
-
-
 def is_type_str[
         QFE: base_exception.QuarryForgeError,
         EB: assembler.ErrorBuilder
