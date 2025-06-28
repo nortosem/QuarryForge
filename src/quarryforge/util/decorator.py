@@ -1,27 +1,17 @@
-"""Decorator module
-
-The decorator utilities or quarryforge.
-"""
+"""The decorator utility module."""
 
 from collections.abc import Callable
 from functools import wraps
-from typing import ParamSpec, TypeVar
 
 from quarryforge.config.exception_conf import exception_config as config
 
 __all__: list[str] = ['validate_str_parameters']
 
 
-_PARAM = ParamSpec('_PARAM')
-_FUNC = TypeVar('_FUNC')
-
-
-def validate_str_parameters(
-    method: Callable[_PARAM, _FUNC],
-) -> Callable[_PARAM, _FUNC]:
-    """Decorator for functions with all string arguments.
-
-    The decorator validates all arguments are non-empty strings.
+def validate_str_parameters[**PARAM, FUNC](
+    method: Callable[PARAM, FUNC],
+) -> Callable[PARAM, FUNC]:
+    """Validate that all arguments are non-empty strings.
 
     Args:
         method: The method being decorated.
@@ -33,10 +23,11 @@ def validate_str_parameters(
         TypeError: If a keyword argument is provided.
         TypeError: If the argument is not a string.
         ValueError: If the argument is an empty string.
+
     """
 
     @wraps(method)
-    def wrapper(*args: _PARAM.args, **kwargs: _PARAM.kwargs) -> _FUNC:
+    def wrapper(*args: PARAM.args, **kwargs: PARAM.kwargs) -> FUNC:
         if kwargs:
             raise TypeError(
                 f'Function {method.__name__}: keyword arguments not supported.'
