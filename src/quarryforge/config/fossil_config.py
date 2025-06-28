@@ -1,8 +1,7 @@
-"""Fossil Configuration
+"""Fossil Configuration module defines configuration for Fossil SCM operations.
 
-This module defines configurations specific to Fossil SCM operations,
-including default timeouts, command structures, and output parsing patterns.
-It centralizes all Fossil-related constant definitions.
+Operations such as default timeouts, command structures, and output parsing
+patterns. This module also centralizes all Fossil-related constant definitions.
 """
 
 import re
@@ -57,10 +56,7 @@ class Command(StrEnum):
 
 
 class TimelineDataConfig(NamedTuple):
-    """Timeline Data
-
-    The fields and patterns used to parse commits from the timeline output.
-    """
+    """Define the fields & patterns to parse the timeline output."""
 
     INIT_CHECKIN: str = 'initial empty check-in'
     END_MARK: str = '+++ end of timeline'
@@ -127,7 +123,7 @@ class TimelineDataConfig(NamedTuple):
 
 
 def timeline_data() -> TimelineDataConfig:
-    """Provides the configuration for the Timeline data."""
+    """Provide the configuration for the Timeline data."""
     return TimelineDataConfig()
 
 
@@ -148,15 +144,12 @@ class InfoDataConfig(NamedTuple):
 
 
 def info_data() -> InfoDataConfig:
-    """Provides the configuration for the Info data."""
+    """Provide the configuration for the Info data."""
     return InfoDataConfig()
 
 
 class Fossil(StrEnum):
-    """Config Fossil
-
-    Define the constants used with fossil commands and exceptions.
-    """
+    """Define the constants used with fossil commands and exceptions."""
 
     DEFAULT_TIMEOUT = 180  # seconds
     PROCESS_ERROR = 'FOSSIL_PROCESS_ERROR'

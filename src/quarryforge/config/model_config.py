@@ -1,6 +1,6 @@
 """Model-Specific Configuration Module.
 
-This module provides detailed configurations for the classes defined in the
+This module Provide detailed configurations for the classes defined in the
 model module.
 """
 
@@ -16,13 +16,14 @@ __all__: list[str] = [
 class ConfigFossilRepo(NamedTuple):
     """Configuration for the FossilRepo model.
 
-    Defines the file attribute and provides utility methods related to the
-    `FossilRepo` model. Field_name metho provides public name property for a
+    Defines the file attribute and Provide utility methods related to the
+    `FossilRepo` model. Field_name metho Provide public name property for a
     Fossil Repository.
 
     Attributes:
         file (str): Stores the string '_file'. This is the internal attribute
         name for the immutable FossilRepo class.
+
     """
 
     file: str = '_file'
@@ -34,19 +35,20 @@ class ConfigFossilRepo(NamedTuple):
 
         Returns:
             tuple: Returns the internal field names for FossilRepo class.
+
         """
         return tuple(getattr(self, field) for field in self._fields)
 
 
 def fossil_repo_config() -> ConfigFossilRepo:
-    """Provides the configuration for the FossilRepo model."""
+    """Provide the configuration for the FossilRepo model."""
     return ConfigFossilRepo()
 
 
 class ConfigFossilCommit(NamedTuple):
     """Configuration for the FossilCommit model.
 
-    Defines attributes (field names) and provides utility methods related to the
+    Defines attributes (field names) and Provide utility methods related to the
     `FossilCommit` model.
 
     Attributes:
@@ -58,6 +60,7 @@ class ConfigFossilCommit(NamedTuple):
         tags (str): Field name for the commit's tags.
         phase (str): Field name for the commit's phase
         changes (str): Field name for the summary of changes in the commit.
+
     """
 
     uuid: str = '_uuid'
@@ -74,23 +77,24 @@ class ConfigFossilCommit(NamedTuple):
 
         Returns:
             tuple: Returns the internal field names for FossilCommit class.
+
         """
         return tuple(getattr(self, field) for field in self._fields)
 
 
 def fossil_commit_config() -> ConfigFossilCommit:
-    """Provides the configuration for the FossilCommit model."""
+    """Provide the configuration for the FossilCommit model."""
     return ConfigFossilCommit()
 
 
 class ConfigFossilTimeline(NamedTuple):
-    """Configuration for the FossilTimeline model"""
+    """Configuration for the FossilTimeline model."""
 
     commits: str = 'commits'
 
 
 def fossil_timeline_config() -> ConfigFossilTimeline:
-    """Provides the configuration for the FossilTimeline model."""
+    """Provide the configuration for the FossilTimeline model."""
     return ConfigFossilTimeline()
 
 
@@ -103,5 +107,5 @@ class ConfigValidation(NamedTuple):
 
 
 def validation_config() -> ConfigValidation:
-    """Provides an instance for validation constants."""
+    """Provide an instance for validation constants."""
     return ConfigValidation()

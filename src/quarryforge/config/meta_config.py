@@ -36,10 +36,11 @@ class ErrorBuilderConfig(NamedTuple):
     field: str = builder_config().field
 
     def slots(self) -> tuple[str]:
-        """The meta.assembler.BuildError slots.
+        """Get the meta.assembler.BuildError slots.
 
         Returns:
             tuple: Returns the internal field names for FossilCommit class.
+
         """
         return tuple(getattr(self, field) for field in self._fields)
 
