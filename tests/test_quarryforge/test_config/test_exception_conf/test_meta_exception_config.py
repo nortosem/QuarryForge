@@ -1,14 +1,19 @@
 """tests/test_config/test_meta_exception_config.py"""
+
 import pytest
 
 from quarryforge.config import root
-from quarryforge.config.exception_conf import meta_exception_config as mec
 from quarryforge.config.exception_conf import base_exception_config as bec
 from quarryforge.config.exception_conf import exception_config as ec
+from quarryforge.config.exception_conf import meta_exception_config as mec
 
 
-class TestDummyClass: pass
-class TestDummyInstance: pass
+class TestDummyClass:
+    pass
+
+
+class TestDummyInstance:
+    pass
 
 
 class TestMetaExceptionConfigModule:
@@ -21,9 +26,7 @@ class TestMetaExceptionConfigModule:
 
     def test_meta_error_code_attributes(self):
         """Test attributes of MetaErrorCode."""
-        assert mec.META_ERROR_CODE.ASSEMBLER_ERROR == (
-            'ASSEMBLER_ERROR'
-        )
+        assert mec.META_ERROR_CODE.ASSEMBLER_ERROR == ('ASSEMBLER_ERROR')
         assert mec.META_ERROR_CODE.IMMUTABILITY_VIOLATION == (
             'IMMUTABILITY_VIOLATION'
         )
@@ -67,7 +70,7 @@ class TestMetaErrorBuilder:
 
     @pytest.mark.parametrize(
         'error_code, error_context, arg, field, info, expected_message',
-        [   # === IMMUTABILITY_VIOLATION Tests ===
+        [  # === IMMUTABILITY_VIOLATION Tests ===
             (
                 mec.META_ERROR_CODE.IMMUTABILITY_VIOLATION,
                 mec.MetaErrorPath.IMMUTABLE_INSTANCE,
@@ -94,7 +97,7 @@ class TestMetaErrorBuilder:
                     ' attribute: attr2.'
                 ),
             ),
-            (   # === ASSEMBLER_ERROR Tests ===
+            (  # === ASSEMBLER_ERROR Tests ===
                 mec.META_ERROR_CODE.ASSEMBLER_ERROR,
                 mec.MetaErrorPath.ASSEMBLER_CONTEXT,
                 None,
@@ -106,7 +109,7 @@ class TestMetaErrorBuilder:
                     'data provided. Issue with field: field1.'
                 ),
             ),
-            (   # === Fallback to BaseErrorBuilder Tests ===
+            (  # === Fallback to BaseErrorBuilder Tests ===
                 ec.GENERIC_ERROR.type_error,
                 mec.MetaErrorPath.META_ROOT_CONTEXT,
                 123,
@@ -114,7 +117,8 @@ class TestMetaErrorBuilder:
                 'a string',
                 (
                     'Error in `quarryforge.meta` (Code: TYPE_ERROR): Expected'
-                    ' type: a string. Got type int with value "123" instead.'                ),
+                    ' type: a string. Got type int with value "123" instead.'
+                ),
             ),
             (
                 ec.GENERIC_ERROR.value_error,
@@ -125,59 +129,57 @@ class TestMetaErrorBuilder:
                 (
                     'Error in `quarryforge.meta.assembler` (Code: VALUE_ERROR):'
                     ' Value "\'bad\'" is invalid. Expected value: good.'
-                )
+                ),
             ),
-        ]
+        ],
     )
     def test_message_mcdc(
-            self,
-            error_code,
-            error_context,
-            arg, field,
-            info,
-            expected_message
+        self, error_code, error_context, arg, field, info, expected_message
     ):
         """Test the message() method with MC/DC approach."""
         builder = mec.MetaErrorBuilder(
-            error_context=error_context, error_code=error_code,
-            arg=arg, field=field, info=info
+            error_context=error_context,
+            error_code=error_code,
+            arg=arg,
+            field=field,
+            info=info,
         )
         print(
-            (
-                'built message: \n'
-                f'\t{builder.message()}\n'
-                'expected: \n'
-                f'\t{expected_message}'
-            )
+            'built message: \n'
+            f'\t{builder.message()}\n'
+            'expected: \n'
+            f'\t{expected_message}'
         )
         assert builder.message() == expected_message
 
     @pytest.mark.parametrize(
         'error_code, expected_message',
         [
-            (   # Test specific meta error codes
+            (  # Test specific meta error codes
                 mec.META_ERROR_CODE.IMMUTABILITY_VIOLATION,
-                mec.META_MSG.immutable_violation_user
+                mec.META_MSG.immutable_violation_user,
             ),
             (
                 mec.META_ERROR_CODE.ASSEMBLER_ERROR,
-                mec.META_MSG.assembler_error_user
+                mec.META_MSG.assembler_error_user,
             ),
-            (   # Test fallback to BaseErrorBuilder for generic codes
+            (  # Test fallback to BaseErrorBuilder for generic codes
                 ec.GENERIC_ERROR.value_error,
-                'An input value is not valid for this operation.'
+                'An input value is not valid for this operation.',
             ),
             (
                 ec.GENERIC_ERROR.configuration_error,
-                'There is an issue with the configuration.'
+                'There is an issue with the configuration.',
             ),
-            (   # Test the final default case for unknown meta-specific codes
+            (  # Test the final default case for unknown meta-specific codes
                 'UNKNOWN_META_CODE',
-                mec.META_MSG.default_meta_user
+                mec.META_MSG.default_meta_user,
             ),
-        ]
+        ],
     )
     def test_user_message_mcdc(self, error_code, expected_message):
         """Test the user_message() method with MC/DC approach."""
-        builder = mec.MetaErrorBuilder(error_context='any.meta.context', error_code=error_code)
+        builder = mec.MetaErrorBuilder(
+            error_context='any.meta.context', error_code=error_code
+        )
         assert builder.user_message() == expected_message

@@ -3,14 +3,16 @@
 This suite provides comprehensive, MC/DC-focused coverage for the
 QuarryForgeError base class and verifies the inheritance of its subclasses.
 """
-import pytest
+
 import datetime
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-from quarryforge.exception import base_exception as be
+import pytest
+
 from quarryforge.config.exception_conf import exception_data as ed
+from quarryforge.exception import base_exception as be
 
-FIXED_DATETIME = datetime.datetime(2023, 10, 27, 10, 0, 0, tzinfo=datetime.timezone.utc)
+FIXED_DATETIME = datetime.datetime(2023, 10, 27, 10, 0, 0, tzinfo=datetime.UTC)
 FIXED_ISO_FORMAT = FIXED_DATETIME.isoformat()
 
 
@@ -19,7 +21,7 @@ def mock_datetime_now():
     """Fixture to patch datetime.datetime.now to return a fixed time."""
     with patch('datetime.datetime') as mock_dt:
         mock_dt.now.return_value = FIXED_DATETIME
-        mock_dt.UTC = datetime.timezone.utc
+        mock_dt.UTC = datetime.UTC
         yield mock_dt
 
 
@@ -37,7 +39,7 @@ class TestQuarryForgeError:
             message='Technical message',
             code='E1001',
             user_message='User-friendly message',
-            details=details
+            details=details,
         )
         assert err.code == 'E1001'
         assert err.details == details
@@ -52,7 +54,7 @@ class TestQuarryForgeError:
         err = be.QuarryForgeError(
             message='Minimal message',
             code='E1002',
-            user_message='Minimal user message'
+            user_message='Minimal user message',
         )
         assert err.code == 'E1002'
         assert err.details == {}
@@ -66,75 +68,75 @@ class TestQuarryForgeError:
                 {
                     'code': 'C1',
                     'message': 'Msg1',
-                     'user_message': 'UM1',
-                     'details': {'extra': 'info'}
-                 },
-                '[C1] Msg1 (extra: info)'
+                    'user_message': 'UM1',
+                    'details': {'extra': 'info'},
+                },
+                '[C1] Msg1 (extra: info)',
             ),
             (
                 {
                     'code': '',
                     'message': 'Msg2',
                     'user_message': 'UM2',
-                    'details': {'arg': 42}
+                    'details': {'arg': 42},
                 },
-                'Msg2 (arg: 42)'
+                'Msg2 (arg: 42)',
             ),
             (
                 {
                     'code': 'C3',
                     'message': '',
                     'user_message': 'UM3',
-                    'details': {'extra': 'info'}\
+                    'details': {'extra': 'info'},
                 },
-                '[C3] (extra: info)'
+                '[C3] (extra: info)',
             ),
             (
                 {
                     'code': 'C4',
                     'message': 'Msg4',
                     'user_message': 'UM4',
-                    'details': None
+                    'details': None,
                 },
-                '[C4] Msg4'
+                '[C4] Msg4',
             ),
             (
                 {
                     'code': 'C5',
                     'message': 'Msg5',
                     'user_message': 'UM5',
-                    'details': {'code': 'C5', 'message': 'Msg5'}
+                    'details': {'code': 'C5', 'message': 'Msg5'},
                 },
-                '[C5] Msg5'
+                '[C5] Msg5',
             ),
             (
                 {
                     'code': 'C6',
-                     'message': '',
+                    'message': '',
                     'user_message': 'UM6',
-                    'details': None
+                    'details': None,
                 },
-                 '[C6]'
+                '[C6]',
             ),
             (
                 {
                     'code': '',
-                    'message': 'Msg7'
-                    , 'user_message': 'UM7',
-                    'details': None
+                    'message': 'Msg7',
+                    'user_message': 'UM7',
+                    'details': None,
                 },
-                'Msg7'
+                'Msg7',
             ),
             (
                 {
                     'code': '',
                     'message': '',
                     'user_message': 'UM8',
-                    'details': None
+                    'details': None,
                 },
-                ''
+                '',
             ),
-        ]
+        ],
     )
     def test_str_representation_mcdc(self, init_kwargs, expected_str):
         """Test __str__ method with various combinations of arguments for
@@ -150,7 +152,7 @@ class TestQuarryForgeError:
             message='Technical message',
             code='E1001',
             user_message='User-friendly message',
-            details=details.copy()
+            details=details.copy(),
         )
 
         expected_dict = {
@@ -172,7 +174,7 @@ class TestQuarryForgeError:
         be.MainError,
         be.MetaError,
         be.UtilError,
-    ]
+    ],
 )
 class TestSubclassInheritance:
     """Tests to ensure all specific error classes inherit from QuarryForgeError."""

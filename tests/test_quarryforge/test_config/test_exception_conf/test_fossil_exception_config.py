@@ -1,9 +1,10 @@
 import pytest
 
 from quarryforge.config import fossil_config as fc
-from quarryforge.config.exception_conf import fossil_exception_config as fec
 from quarryforge.config.exception_conf import base_exception_config as bec
 from quarryforge.config.exception_conf import exception_config as ec
+from quarryforge.config.exception_conf import fossil_exception_config as fec
+
 
 class TestFossilExceptionConfigModule:
     """Tests for module-level content in fossil_exception_config."""
@@ -18,7 +19,7 @@ class TestFossilExceptionConfigModule:
         assert isinstance(fm, fec.FossilMessage)
         assert fm.no_cmd == f'{fc.FOSSIL.cmd}: {ec.DESC_MSG.none}'
         assert fm.no_output == f'{fc.FOSSIL.output}: {ec.DESC_MSG.none}'
-        assert fm.no_stderr ==  f'{fc.FOSSIL.stderr}: {ec.DESC_MSG.none}'
+        assert fm.no_stderr == f'{fc.FOSSIL.stderr}: {ec.DESC_MSG.none}'
         assert fm.expected_str_list == 'Expected str or list, got'
         assert fm.expected_int == 'Expected int, got'
         assert fm.expected_str_or_none == 'Expected str or None, got'
@@ -39,7 +40,9 @@ class TestFossilExceptionConfigModule:
             'Could not generate or process differences for the Fossil '
             'repository.'
         )
-        assert fm.cat_detail == 'while retrieving file content using Fossil cat.'
+        assert (
+            fm.cat_detail == 'while retrieving file content using Fossil cat.'
+        )
         assert fm.cat_user == (
             'Could not retrieve file content from the Fossil repository.'
         )
@@ -86,14 +89,14 @@ class TestFossilErrorBuilder:
     @pytest.mark.parametrize(
         'error_context, error_code, extra_details, expected_message',
         [
-            (   # FOSSIL_PROCESS
+            (  # FOSSIL_PROCESS
                 fec.FossilErrorPath.FOSSIL_PROCESS,
                 'PROC_ERR',
                 {
                     'cmd': 'fossil version',
                     'return_code': 1,
                     'output': 'out',
-                    'stderr': 'err'
+                    'stderr': 'err',
                 },
                 (
                     'Error in `quarryforge.fossil.FossilProcess` '
@@ -104,7 +107,7 @@ class TestFossilErrorBuilder:
             (
                 fec.FossilErrorPath.FOSSIL_PROCESS,
                 'PROC_ERR',
-                {}, # Missing details
+                {},  # Missing details
                 (
                     'Error in `quarryforge.fossil.FossilProcess` '
                     '(Code: PROC_ERR). Fossil command failed. Command: '
@@ -112,165 +115,144 @@ class TestFossilErrorBuilder:
                     '"output: None". STDERR: "stderr: None".'
                 ),
             ),
-            (   # FOSSIL_TIMEOUT
+            (  # FOSSIL_TIMEOUT
                 fec.FossilErrorPath.FOSSIL_TIMEOUT,
                 'TIME_ERR',
                 {
                     'cmd': 'fossil pull',
                     'timeout': 60,
                     'output': 'out',
-                    'stderr': 'err'
+                    'stderr': 'err',
                 },
                 (
                     'Error in `quarryforge.fossil.FossilTimeoutExpired` '
                     '(Code: TIME_ERR). Fossil command timed out after 60 '
                     'seconds. Command: "fossil pull". STDOUT: "out".'
                     ' STDERR: "err".'
-                )
+                ),
             ),
             (
                 fec.FossilErrorPath.FOSSIL_TIMEOUT,
                 'TIME_ERR',
-                {}, # Missing details
+                {},  # Missing details
                 (
                     'Error in `quarryforge.fossil.FossilTimeoutExpired` '
                     '(Code: TIME_ERR). Fossil command timed out after unknown '
                     'seconds. Command: "cmd: None". STDOUT: "output: None".'
                     ' STDERR: "stderr: None".'
-                )
+                ),
             ),
-            (   # FOSSIL_TIMELINE
+            (  # FOSSIL_TIMELINE
                 fec.FossilErrorPath.FOSSIL_TIMELINE,
                 'PARSE_FAIL',
-                {
-                    ec.DESC_MSG.reason: 'bad format'
-                },
+                {ec.DESC_MSG.reason: 'bad format'},
                 (
                     'Error in `quarryforge.fossil.Timeline` '
                     '(Code: PARSE_FAIL). Failure while processing Fossil '
                     'timeline. Reason: bad format.'
-                )
+                ),
             ),
             (
                 fec.FossilErrorPath.FOSSIL_TIMELINE,
                 'PARSE_FAIL',
-                None, # No reason
+                None,  # No reason
                 (
                     'Error in `quarryforge.fossil.Timeline` '
                     '(Code: PARSE_FAIL). Failure while processing Fossil '
                     'timeline.'
-                )
+                ),
             ),
-            (   # FOSSIL_SETUP
+            (  # FOSSIL_SETUP
                 fec.FossilErrorPath.FOSSIL_SETUP,
                 'SETUP_FAIL',
-                {
-                    ec.DESC_MSG.reason: 'no admin',
-                    'step': 'user creation'
-                },
+                {ec.DESC_MSG.reason: 'no admin', 'step': 'user creation'},
                 (
                     'Error in `quarryforge.fossil.Setup` '
                     '(Code: SETUP_FAIL). Failure during Fossil repository '
                     'setup during user creation. Reason: no admin.'
-                )
+                ),
             ),
             (
                 fec.FossilErrorPath.FOSSIL_SETUP,
                 'SETUP_FAIL',
-                {
-                    ec.DESC_MSG.reason: 'no admin'
-                }, # No step
+                {ec.DESC_MSG.reason: 'no admin'},  # No step
                 (
                     'Error in `quarryforge.fossil.Setup` '
                     '(Code: SETUP_FAIL). Failure during Fossil '
                     'repository setup. Reason: no admin.'
-                )
+                ),
             ),
             (
                 fec.FossilErrorPath.FOSSIL_SETUP,
                 'SETUP_FAIL',
-                {
-                    'step': 'user creation'
-                }, # No reason
+                {'step': 'user creation'},  # No reason
                 (
                     'Error in `quarryforge.fossil.Setup` '
                     '(Code: SETUP_FAIL). Failure during Fossil '
                     'repository setup during user creation.'
-                )
+                ),
             ),
-            (   # FOSSIL_INFO
+            (  # FOSSIL_INFO
                 fec.FossilErrorPath.FOSSIL_INFO,
                 'FETCH_FAIL',
-                {
-                    ec.DESC_MSG.reason: 'not found'
-                },
+                {ec.DESC_MSG.reason: 'not found'},
                 (
                     'Error in `quarryforge.fossil.Info` '
                     '(Code: FETCH_FAIL). Failure while fetching Fossil '
                     'artifact information. Reason: not found.'
-                )
+                ),
             ),
-            (   # FOSSIL_DIFF
+            (  # FOSSIL_DIFF
                 fec.FossilErrorPath.FOSSIL_DIFF,
                 'GEN_FAIL',
-                {
-                    ec.DESC_MSG.reason: 'too large'
-                },
+                {ec.DESC_MSG.reason: 'too large'},
                 (
                     'Error in `quarryforge.fossil.Diff` '
                     '(Code: GEN_FAIL). Failure during Fossil diff operation. '
                     'Reason: too large.'
-                )
+                ),
             ),
-            (   # FOSSIL_CAT
+            (  # FOSSIL_CAT
                 fec.FossilErrorPath.FOSSIL_CAT,
                 'READ_FAIL',
-                {
-                    ec.DESC_MSG.reason: 'permission denied'
-                },
+                {ec.DESC_MSG.reason: 'permission denied'},
                 (
                     'Error in `quarryforge.fossil.Cat` '
                     '(Code: READ_FAIL). Failure while retrieving file content'
                     ' using Fossil cat. Reason: permission denied.'
-                )
+                ),
             ),
-            (   # FOSSIL_BRANCH
+            (  # FOSSIL_BRANCH
                 fec.FossilErrorPath.FOSSIL_BRANCH,
                 'OP_FAIL',
-                {
-                    ec.DESC_MSG.reason: 'conflict'
-                },
+                {ec.DESC_MSG.reason: 'conflict'},
                 (
                     'Error in `quarryforge.fossil.Branch` '
                     '(Code: OP_FAIL). Failure during Fossil branch operation'
                     '. Reason: conflict.'
-                )
+                ),
             ),
-            (   # FOSSIL_ADD
+            (  # FOSSIL_ADD
                 fec.FossilErrorPath.FOSSIL_ADD,
                 'ADD_FAIL',
-                {
-                    ec.DESC_MSG.reason: 'file locked'
-                },
+                {ec.DESC_MSG.reason: 'file locked'},
                 (
                     'Error in `quarryforge.fossil.Add` '
                     '(Code: ADD_FAIL). Failure while adding files using '
                     'Fossil add. Reason: file locked.'
-                )
+                ),
             ),
-            (   # FOSSIL_COMMIT
+            (  # FOSSIL_COMMIT
                 fec.FossilErrorPath.FOSSIL_COMMIT,
                 'COMMIT_FAIL',
-                {
-                    ec.DESC_MSG.reason: 'check-in failed'
-                },
+                {ec.DESC_MSG.reason: 'check-in failed'},
                 (
                     'Error in `quarryforge.fossil.Commit` '
                     '(Code: COMMIT_FAIL). Failure during Fossil commit '
                     'operation. Reason: check-in failed.'
-                )
+                ),
             ),
-            (   # Default case (Fossil specific) - uses generic error code
+            (  # Default case (Fossil specific) - uses generic error code
                 'quarryforge.fossil.Unknown',
                 ec.GENERIC_ERROR.type_error,
                 {
@@ -283,19 +265,17 @@ class TestFossilErrorBuilder:
                     'Got type NoneType with value None instead.'
                 ),
             ),
-            (   # Default case (Fossil specific) - uses specific error code
+            (  # Default case (Fossil specific) - uses specific error code
                 'quarryforge.fossil.Unknown',
                 'SPECIFIC_FOSSIL_ERR',
-                {
-                    ec.DESC_MSG.reason: 'custom issue'
-                },
+                {ec.DESC_MSG.reason: 'custom issue'},
                 (
                     'Error in `quarryforge.fossil.Unknown` '
                     '(Code: SPECIFIC_FOSSIL_ERR). An unspecified Fossil '
                     'operation failed Reason: custom issue.'
-                )
+                ),
             ),
-            (   # Default case - fallback to BaseErrorBuilder generic error codes
+            (  # Default case - fallback to BaseErrorBuilder generic error codes
                 'some.other.context.outside.fossil',
                 ec.GENERIC_ERROR.value_error,
                 {
@@ -306,26 +286,21 @@ class TestFossilErrorBuilder:
                     'Error in `some.other.context.outside.fossil` '
                     '(Code: VALUE_ERROR). Value None is invalid. '
                     'Expected value: test info.'
-                )
+                ),
             ),
-        ]
+        ],
     )
     def test_fossil_error_builder_message_mcdc(
-            self,
-            error_context,
-            error_code,
-            extra_details,
-            expected_message
+        self, error_context, error_code, extra_details, expected_message
     ):
         builder = fec.FossilErrorBuilder(
             error_context=error_context,
             error_code=error_code,
             extra_details=extra_details,
             arg=extra_details.get('arg') if extra_details else None,
-            info=extra_details.get('info') if extra_details else None
+            info=extra_details.get('info') if extra_details else None,
         )
         assert builder.message() == expected_message
-
 
     # MC/DC for user_message()
     @pytest.mark.parametrize(
@@ -334,73 +309,58 @@ class TestFossilErrorBuilder:
             (
                 fec.FossilErrorPath.FOSSIL_PROCESS,
                 'ERR',
-                'An issue occurred while running a Fossil command. Please check logs for details.'
+                'An issue occurred while running a Fossil command. Please check logs for details.',
             ),
-
-            (fec.FossilErrorPath.FOSSIL_TIMEOUT,
-             'ERR',
-             'A Fossil command took too long to complete and was stopped.'
-             ),
+            (
+                fec.FossilErrorPath.FOSSIL_TIMEOUT,
+                'ERR',
+                'A Fossil command took too long to complete and was stopped.',
+            ),
             (
                 fec.FossilErrorPath.FOSSIL_TIMELINE,
                 'ERR',
-                fec.FOSSIL_MSG.timeline_user
+                fec.FOSSIL_MSG.timeline_user,
             ),
             (
                 fec.FossilErrorPath.FOSSIL_SETUP,
                 'ERR',
-                fec.FOSSIL_MSG.setup_user
+                fec.FOSSIL_MSG.setup_user,
             ),
-            (
-                fec.FossilErrorPath.FOSSIL_INFO,
-                'ERR',
-                fec.FOSSIL_MSG.info_user
-            ),
-            (
-                fec.FossilErrorPath.FOSSIL_DIFF,
-                'ERR',
-                fec.FOSSIL_MSG.diff_user
-            ),
-            (
-                fec.FossilErrorPath.FOSSIL_CAT,
-                'ERR',
-                fec.FOSSIL_MSG.cat_user
-            ),
+            (fec.FossilErrorPath.FOSSIL_INFO, 'ERR', fec.FOSSIL_MSG.info_user),
+            (fec.FossilErrorPath.FOSSIL_DIFF, 'ERR', fec.FOSSIL_MSG.diff_user),
+            (fec.FossilErrorPath.FOSSIL_CAT, 'ERR', fec.FOSSIL_MSG.cat_user),
             (
                 fec.FossilErrorPath.FOSSIL_BRANCH,
                 'ERR',
-                fec.FOSSIL_MSG.branch_user
+                fec.FOSSIL_MSG.branch_user,
             ),
-            (
-                fec.FossilErrorPath.FOSSIL_ADD,
-                'ERR',
-                fec.FOSSIL_MSG.add_user
-            ),
+            (fec.FossilErrorPath.FOSSIL_ADD, 'ERR', fec.FOSSIL_MSG.add_user),
             (
                 fec.FossilErrorPath.FOSSIL_COMMIT,
                 'ERR',
-                fec.FOSSIL_MSG.commit_user
+                fec.FOSSIL_MSG.commit_user,
             ),  # Default case - uses generic error code
-            (   # fallback to BaseErrorBuilder
+            (  # fallback to BaseErrorBuilder
                 'quarryforge.fossil.Unknown',
                 ec.GENERIC_ERROR.value_error,
-                'An input value is not valid for this operation.'
+                'An input value is not valid for this operation.',
             ),  # Default case - uses specific error code
-            (   # fallback to BaseErrorBuilder default user message
+            (  # fallback to BaseErrorBuilder default user message
                 'quarryforge.fossil.Unknown',
                 'SPECIFIC_FOSSIL_ERR',
-                bec.BASE_ERROR_MSG.default_user_message
+                bec.BASE_ERROR_MSG.default_user_message,
             ),
-            (   # Default case for non-fossil context
+            (  # Default case for non-fossil context
                 'some.other.context',
                 ec.GENERIC_ERROR.not_implemented_error,
-                'This feature is not available.'
+                'This feature is not available.',
             ),
-        ]
+        ],
     )
-    def test_fossil_error_builder_user_message_mcdc(self, error_context, error_code, expected_message):
+    def test_fossil_error_builder_user_message_mcdc(
+        self, error_context, error_code, expected_message
+    ):
         builder = fec.FossilErrorBuilder(
-            error_context=error_context,
-            error_code=error_code
+            error_context=error_context, error_code=error_code
         )
         assert builder.user_message() == expected_message

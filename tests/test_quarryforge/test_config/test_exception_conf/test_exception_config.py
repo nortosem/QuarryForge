@@ -1,6 +1,7 @@
 """Exception Config Module Test Suite"""
-import pytest
+
 from enum import StrEnum
+
 from quarryforge.config.exception_conf import exception_config as ec
 
 
@@ -21,7 +22,10 @@ class TestExceptionConfig:
         assert ec.GenericError.UNEXPECTED_ERROR == 'UNEXPECTED_ERROR'
         assert ec.GenericError.INVALID_STATE_ERROR == 'INVALID_STATE_ERROR'
         assert ec.GenericError.CONFIGURATION_ERROR == 'CONFIGURATION_ERROR'
-        assert ec.GenericError.EXTERNAL_DEPENDENCY_ERROR == 'EXTERNAL_DEPENDENCY_ERROR'
+        assert (
+            ec.GenericError.EXTERNAL_DEPENDENCY_ERROR
+            == 'EXTERNAL_DEPENDENCY_ERROR'
+        )
         assert ec.GenericError.NOT_IMPLEMENTED_ERROR == 'NOT_IMPLEMENTED_ERROR'
         assert len(list(ec.GenericError)) == 7
 
@@ -35,16 +39,28 @@ class TestExceptionConfig:
         """Verify members and values of the PathError StrEnum."""
         assert issubclass(ec.PathError, ec.ValidName)
         assert ec.PathError.NON_PATH_OBJECT_ERROR == 'NON_PATH_OBJECT_ERROR'
-        assert ec.PathError.INVALID_PATH_STRING_ERROR == 'INVALID_PATH_STRING_ERROR'
+        assert (
+            ec.PathError.INVALID_PATH_STRING_ERROR
+            == 'INVALID_PATH_STRING_ERROR'
+        )
         assert ec.PathError.PATH_RESOLUTION_ERROR == 'PATH_RESOLUTION_ERROR'
         assert ec.PathError.PATH_EXISTING_ERROR == 'PATH_EXISTING_ERROR'
         assert ec.PathError.PATH_NONEXISTENT_ERROR == 'PATH_NONEXISTENT_ERROR'
         assert ec.PathError.PATH_NOT_A_FILE_ERROR == 'PATH_NOT_A_FILE_ERROR'
-        assert ec.PathError.PATH_NOT_A_DIRECTORY_ERROR == 'PATH_NOT_A_DIRECTORY_ERROR'
+        assert (
+            ec.PathError.PATH_NOT_A_DIRECTORY_ERROR
+            == 'PATH_NOT_A_DIRECTORY_ERROR'
+        )
         assert ec.PathError.PATH_NOT_READABLE_ERROR == 'PATH_NOT_READABLE_ERROR'
         assert ec.PathError.PATH_NOT_WRITABLE_ERROR == 'PATH_NOT_WRITABLE_ERROR'
-        assert ec.PathError.PATH_NOT_EXECUTABLE_ERROR == 'PATH_NOT_EXECUTABLE_ERROR'
-        assert ec.PathError.SAME_REPO_DIR_AND_WORK_DIR == 'SAME_REPO_DIR_AND_WORK_DIR'
+        assert (
+            ec.PathError.PATH_NOT_EXECUTABLE_ERROR
+            == 'PATH_NOT_EXECUTABLE_ERROR'
+        )
+        assert (
+            ec.PathError.SAME_REPO_DIR_AND_WORK_DIR
+            == 'SAME_REPO_DIR_AND_WORK_DIR'
+        )
         assert len(list(ec.PathError)) == 11
 
     def test_desc_msg_attributes(self):

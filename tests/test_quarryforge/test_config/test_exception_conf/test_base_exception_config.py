@@ -1,4 +1,3 @@
-from tests.test_config.test_root import get_namedtuple_fields
 import pytest
 
 from quarryforge.config import root
@@ -19,9 +18,10 @@ class TestBaseExceptionConfigModule:
         assert bec.BaseConfig.path('test_module') == (
             f'{root.PACKAGE.name}.test_module'
         )
-        with pytest.raises(TypeError): bec.BaseConfig.path(123)
-        with pytest.raises(ValueError): bec.BaseConfig.path('')
-
+        with pytest.raises(TypeError):
+            bec.BaseConfig.path(123)
+        with pytest.raises(ValueError):
+            bec.BaseConfig.path('')
 
     def test_base_error_path_attributes_and_method(self):
         """Test BaseErrorPath attributes and get_full_error_code method."""
@@ -50,7 +50,6 @@ class TestBaseExceptionConfigModule:
         with pytest.raises(TypeError):
             bec.BaseErrorPath.get_full_error_code('context.path', None)
 
-
     def test_base_error_message_config_attributes(self):
         """Test BaseErrorMessageConfig attributes."""
         cfg = bec.BASE_ERROR_MSG
@@ -66,6 +65,7 @@ class TestBaseExceptionConfigModule:
             'An internal application error occurred.'
         )
 
+
 class TestBaseErrorBuilder:
     """Tests for the BaseErrorBuilder class."""
 
@@ -74,8 +74,7 @@ class TestBaseErrorBuilder:
 
     def test_code_generation(self):
         builder = bec.BaseErrorBuilder(
-            error_context='my.context',
-            error_code='MY_CODE'
+            error_context='my.context', error_code='MY_CODE'
         )
         assert builder.code() == 'my.context.MY_CODE'
 
@@ -83,7 +82,7 @@ class TestBaseErrorBuilder:
     @pytest.mark.parametrize(
         'error_context, error_code, arg, info, extra_details, expected_message',
         [
-            (   # TYPE_ERROR
+            (  # TYPE_ERROR
                 'ctx.type',
                 ec.GENERIC_ERROR.type_error,
                 123,
@@ -102,10 +101,10 @@ class TestBaseErrorBuilder:
                 None,
                 (
                     'Error in `ctx.type` (Code: TYPE_ERROR). Expected type:'
-                    ' unknown. Got type str with value \'abc\' instead.'
+                    " unknown. Got type str with value 'abc' instead."
                 ),
             ),
-            (   # VALUE_ERROR
+            (  # VALUE_ERROR
                 'ctx.value',
                 ec.GENERIC_ERROR.value_error,
                 'bad_val',
@@ -113,7 +112,7 @@ class TestBaseErrorBuilder:
                 None,
                 (
                     'Error in `ctx.value` (Code: VALUE_ERROR). Value '
-                    '\'bad_val\' is invalid. Expected value: a good value.'
+                    "'bad_val' is invalid. Expected value: a good value."
                 ),
             ),
             (
@@ -126,8 +125,8 @@ class TestBaseErrorBuilder:
                     'Error in `ctx.value` (Code: VALUE_ERROR). Value 10 is'
                     ' invalid. Expected value: unknown.'
                 ),
-             ),
-            (   # INVALID_STATE_ERROR
+            ),
+            (  # INVALID_STATE_ERROR
                 'ctx.state',
                 ec.GENERIC_ERROR.invalid_state,
                 None,
@@ -151,7 +150,7 @@ class TestBaseErrorBuilder:
                     ' This state is invalid for this operation.'
                 ),
             ),
-            (   # CONFIGURATION_ERROR
+            (  # CONFIGURATION_ERROR
                 'ctx.config',
                 ec.GENERIC_ERROR.configuration_error,
                 None,
@@ -181,7 +180,8 @@ class TestBaseErrorBuilder:
                 None,
                 {
                     'dependency': 'fossil',
-                    ec.DESC_MSG.reason: 'package not installed'},
+                    ec.DESC_MSG.reason: 'package not installed',
+                },
                 (
                     'Error in `ctx.dependency` (Code: '
                     'EXTERNAL_DEPENDENCY_ERROR).'
@@ -200,7 +200,7 @@ class TestBaseErrorBuilder:
                     ' `unknown dependency` failed due to: unknown reason.'
                 ),
             ),
-            (   # NOT_IMPLEMENTED_ERROR
+            (  # NOT_IMPLEMENTED_ERROR
                 'ctx.ni',
                 ec.GENERIC_ERROR.not_implemented_error,
                 None,
@@ -222,7 +222,7 @@ class TestBaseErrorBuilder:
                     f'{ec.DESC_MSG.unknown} feature is not implemented.'
                 ),
             ),
-            (   # UNEXPECTED_ERROR (package context)
+            (  # UNEXPECTED_ERROR (package context)
                 root.PACKAGE.name,
                 ec.GENERIC_ERROR.unexpected_error,
                 None,
@@ -233,7 +233,7 @@ class TestBaseErrorBuilder:
                     ' package.'
                 ),
             ),
-            (   # UNEXPECTED_ERROR (subpackage context)
+            (  # UNEXPECTED_ERROR (subpackage context)
                 f'{root.PACKAGE.name}.{root.SUB_PACKAGE.util}',
                 ec.GENERIC_ERROR.unexpected_error,
                 None,
@@ -244,7 +244,7 @@ class TestBaseErrorBuilder:
                     f'`{root.PACKAGE.name}.util` subpackage.'
                 ),
             ),
-            (   # UNEXPECTED_ERROR (module context)
+            (  # UNEXPECTED_ERROR (module context)
                 f'{root.PACKAGE.name}.model.FossilRepo',
                 ec.GENERIC_ERROR.unexpected_error,
                 None,
@@ -255,7 +255,7 @@ class TestBaseErrorBuilder:
                     f'`{root.PACKAGE.name}.model.FossilRepo` module.'
                 ),
             ),
-            (   # Default case for unknown error_code
+            (  # Default case for unknown error_code
                 'ctx.default',
                 'UNKNOWN_CODE',
                 None,
@@ -267,23 +267,25 @@ class TestBaseErrorBuilder:
                     ' error.'
                 ),
             ),
-        ]
+        ],
     )
     def test_message_mcdc(
-            self,
-            error_context,
-            error_code,
-            arg,
-            info,
-            extra_details,
-            expected_message
+        self,
+        error_context,
+        error_code,
+        arg,
+        info,
+        extra_details,
+        expected_message,
     ):
         builder = bec.BaseErrorBuilder(
-            error_context=error_context, error_code=error_code, arg=arg,
-            info=info, extra_details=extra_details
+            error_context=error_context,
+            error_code=error_code,
+            arg=arg,
+            info=info,
+            extra_details=extra_details,
         )
         assert builder.message() == expected_message
-
 
     # MC/DC for user_message()
     @pytest.mark.parametrize(
@@ -291,42 +293,40 @@ class TestBaseErrorBuilder:
         [
             (
                 ec.GENERIC_ERROR.type_error,
-                'An input was provided in an incorrect format.'
+                'An input was provided in an incorrect format.',
             ),
             (
                 ec.GENERIC_ERROR.value_error,
-                'An input value is not valid for this operation.'
+                'An input value is not valid for this operation.',
             ),
             (
                 ec.GENERIC_ERROR.invalid_state,
-                'An operation attempted in an invalid application state.'
+                'An operation attempted in an invalid application state.',
             ),
             (
                 ec.GENERIC_ERROR.configuration_error,
-                'There is an issue with the configuration.'
+                'There is an issue with the configuration.',
             ),
             (
                 ec.GENERIC_ERROR.external_dependency_error,
-                'An required tool or service encountered an issue.'
+                'An required tool or service encountered an issue.',
             ),
             (
                 ec.GENERIC_ERROR.not_implemented_error,
-                'This feature is not available.'
+                'This feature is not available.',
             ),
             (
                 ec.GENERIC_ERROR.unexpected_error,
-                bec.BASE_ERROR_MSG.default_user_message
+                bec.BASE_ERROR_MSG.default_user_message,
             ),
-            (   # Default case
+            (  # Default case
                 'UNKNOWN_CODE',
-                bec.BASE_ERROR_MSG.default_user_message
+                bec.BASE_ERROR_MSG.default_user_message,
             ),
-        ]
+        ],
     )
-    def test_user_message_mcdc(
-            self,
-            error_code,
-            expected_message
-    ):
-        builder = bec.BaseErrorBuilder(error_context='some.context', error_code=error_code)
+    def test_user_message_mcdc(self, error_code, expected_message):
+        builder = bec.BaseErrorBuilder(
+            error_context='some.context', error_code=error_code
+        )
         assert builder.user_message() == expected_message

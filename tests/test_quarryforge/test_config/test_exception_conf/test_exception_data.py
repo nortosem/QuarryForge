@@ -1,5 +1,7 @@
 """config.exeption_conf.exception_data test suite"""
+
 import pytest
+
 from quarryforge.config.exception_conf import exception_data as ed
 from quarryforge.meta import immutable as _
 
@@ -38,15 +40,15 @@ class TestExceptionData:
     def test_valid_error_data_instantiation_and_slots(self):
         """Test ValidErrorData instantiation and __slots__."""
         data = ed.ValidErrorData(
-            code="ERR001",
-            message="Test message",
-            user_message="User test message",
-            details={"key": "value"}
+            code='ERR001',
+            message='Test message',
+            user_message='User test message',
+            details={'key': 'value'},
         )
-        assert data.code == "ERR001"
-        assert data.message == "Test message"
-        assert data.user_message == "User test message"
-        assert data.details == {"key": "value"}
+        assert data.code == 'ERR001'
+        assert data.message == 'Test message'
+        assert data.user_message == 'User test message'
+        assert data.details == {'key': 'value'}
         cfg = ed.error_data_config()
         expected_slots = cfg._fields[:-1]
         assert ed.ValidErrorData.__slots__ == expected_slots
@@ -57,34 +59,32 @@ class TestExceptionData:
         assert default_data.user_message is None
         assert default_data.details is None
 
-
     def test_valid_error_data_immutability(self):
         """Test immutability of ValidErrorData."""
-        data = ed.ValidErrorData(code="ERR001")
+        data = ed.ValidErrorData(code='ERR001')
 
         with pytest.raises(TypeError, match='Immutable'):
-            data.code = "NEW_CODE"
+            data.code = 'NEW_CODE'
 
         with pytest.raises(TypeError, match='Immutable'):
-            setattr(data, 'new_attr', "test")
+            data.new_attr = 'test'
 
         assert issubclass(ed.ValidErrorData, _.ImmutableInstance)
 
-
     def test_valid_error_data_to_exception(self):
         """Test to_exception method of ValidErrorData."""
-        details_dict = {"key": "value", "num": 123}
+        details_dict = {'key': 'value', 'num': 123}
         data = ed.ValidErrorData(
-            code="ERR002",
-            message="Another message",
-            user_message="Another user message",
-            details=details_dict
+            code='ERR002',
+            message='Another message',
+            user_message='Another user message',
+            details=details_dict,
         )
         expected_dict = {
             'code': 'ERR002',
             'message': 'Another message',
             'user_message': 'Another user message',
-            'details': details_dict
+            'details': details_dict,
         }
         assert data.to_exception() == expected_dict
 
@@ -93,6 +93,6 @@ class TestExceptionData:
             'code': None,
             'message': None,
             'user_message': None,
-            'details': None
+            'details': None,
         }
         assert data_none.to_exception() == expected_dict_none

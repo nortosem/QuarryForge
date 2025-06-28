@@ -1,17 +1,22 @@
 """tests/test_config/test_model_exception_config.py"""
+
 import pytest
 
-from quarryforge.config.exception_conf import model_exception_config as moec
+from quarryforge.config import model_config, root
 from quarryforge.config.exception_conf import base_exception_config as bec
 from quarryforge.config.exception_conf import exception_config as ec
-from quarryforge.config import model_config, root
+from quarryforge.config.exception_conf import model_exception_config as moec
 
 
 class TestModelExceptionConfigModule:
     """Tests for module-level constants in model_exception_config."""
 
     def test_module_dunder_all(self):
-        expected = ['FossilRepoErrorBuilder', 'FossilCommitErrorBuilder', 'FossilTimelineErrorBuilder']
+        expected = [
+            'FossilRepoErrorBuilder',
+            'FossilCommitErrorBuilder',
+            'FossilTimelineErrorBuilder',
+        ]
         assert sorted(moec.__all__) == sorted(expected)
 
     def test_model_error_path_attributes(self):
@@ -26,10 +31,12 @@ class TestModelExceptionConfigModule:
         assert moec.ModelErrorPath.FOSSIL_TIMELINE == (
             f'{base_path}.{root.MODEL.fossil_timeline}'
         )
+
     def test_fossil_repo_path_attributes(self):
         assert moec.FossilRepoPath.INIT == (
             f'{moec.ModelErrorPath.FOSSIL_REPO}.__init__'
         )
+
     def test_fossil_commit_path_attributes(self):
         assert moec.FossilCommitPath.INIT == (
             f'{moec.ModelErrorPath.FOSSIL_COMMIT}.__init__'
@@ -40,6 +47,7 @@ class TestModelExceptionConfigModule:
         assert moec.FossilCommitPath.VALIDATION == (
             f'{moec.ModelErrorPath.FOSSIL_COMMIT}.validation'
         )
+
     def test_fossil_timeline_path_attributes(self):
         assert moec.FossilTimelinePath.INIT == (
             f'{moec.ModelErrorPath.FOSSIL_TIMELINE}.__init__'
@@ -69,7 +77,7 @@ class TestFossilRepoErrorBuilder:
                     'Error in `quarryforge.model.FossilRepo.__init__` '
                     '(Code: EMPTY_STRING_ERROR). String argument is empty or '
                     'only whitespace. Expected: a non-empty string.'
-                )
+                ),
             ),
             (
                 ec.PATH_ERROR.nonexistent,
@@ -77,9 +85,9 @@ class TestFossilRepoErrorBuilder:
                 None,
                 (
                     'Error in `quarryforge.model.FossilRepo.__init__` '
-                    '(Code: PATH_NONEXISTENT_ERROR). Path \'/fake/path\' is '
+                    "(Code: PATH_NONEXISTENT_ERROR). Path '/fake/path' is "
                     'expected to exist, but does not.'
-                )
+                ),
             ),
             (
                 ec.PATH_ERROR.existing,
@@ -87,9 +95,9 @@ class TestFossilRepoErrorBuilder:
                 None,
                 (
                     'Error in `quarryforge.model.FossilRepo.__init__` '
-                    '(Code: PATH_EXISTING_ERROR). Path \'/real/path\' is '
+                    "(Code: PATH_EXISTING_ERROR). Path '/real/path' is "
                     'expected not to exist (for creation), but already does.'
-                )
+                ),
             ),
             (
                 ec.PATH_ERROR.file_error,
@@ -97,9 +105,9 @@ class TestFossilRepoErrorBuilder:
                 None,
                 (
                     'Error in `quarryforge.model.FossilRepo.__init__` '
-                    '(Code: PATH_NOT_A_FILE_ERROR). Path \'/path/is/dir\' is '
+                    "(Code: PATH_NOT_A_FILE_ERROR). Path '/path/is/dir' is "
                     'expected to be a file, but it is a directory.'
-                )
+                ),
             ),
             (
                 ec.PATH_ERROR.dir_error,
@@ -108,9 +116,9 @@ class TestFossilRepoErrorBuilder:
                 (
                     'Error in `quarryforge.model.FossilRepo.__init__` '
                     '(Code: PATH_NOT_A_DIRECTORY_ERROR). Path '
-                    '\'/path/is/file\' is expected to be a directory, but it '
+                    "'/path/is/file' is expected to be a directory, but it "
                     'is a file.'
-                )
+                ),
             ),
             (
                 ec.PATH_ERROR.same_dir,
@@ -120,7 +128,7 @@ class TestFossilRepoErrorBuilder:
                     'Error in `quarryforge.model.FossilRepo.__init__` '
                     '(Code: SAME_REPO_DIR_AND_WORK_DIR). Fossil repository'
                     ' directory matches the working directory.'
-                )
+                ),
             ),
             # Fallback to base builder
             (
@@ -129,56 +137,46 @@ class TestFossilRepoErrorBuilder:
                 'good_value',
                 (
                     'Error in `quarryforge.model.FossilRepo.__init__` '
-                    '(Code: VALUE_ERROR). Value \'bad_value\' is invalid. '
+                    "(Code: VALUE_ERROR). Value 'bad_value' is invalid. "
                     'Expected value: good_value.'
-                )
+                ),
             ),
-        ]
+        ],
     )
-    def test_message_mcdc(
-        self,
-        error_code,
-        arg,
-        info,
-        expected_message
-    ):
+    def test_message_mcdc(self, error_code, arg, info, expected_message):
         builder = moec.FossilRepoErrorBuilder(
-            error_context=moec.FossilRepoPath.INIT, error_code=error_code,
-            arg=arg, info=info,
+            error_context=moec.FossilRepoPath.INIT,
+            error_code=error_code,
+            arg=arg,
+            info=info,
         )
         assert builder.message() == expected_message
-
 
     @pytest.mark.parametrize(
         'error_code, expected_user_message',
         [
             (
                 ec.PATH_ERROR.nonexistent,
-                'A required file or directory was not found.'
+                'A required file or directory was not found.',
             ),
             (
                 ec.PATH_ERROR.same_dir,
                 (
                     'The fossil repository parent directory is the '
                     'same directory as the workdir.'
-                )
+                ),
             ),
-            (
-                ec.STRING_ERROR.empty,
-                'A required text input was left empty.'
-            ),
+            (ec.STRING_ERROR.empty, 'A required text input was left empty.'),
             (
                 ec.GENERIC_ERROR.configuration_error,
-                'There is an issue with the configuration.'
-            ), # Fallback
-        ]
+                'There is an issue with the configuration.',
+            ),  # Fallback
+        ],
     )
-    def test_user_message_mcdc(
-            self,
-            error_code,
-            expected_user_message
-    ):
-        builder = moec.FossilRepoErrorBuilder(error_context='ctx', error_code=error_code)
+    def test_user_message_mcdc(self, error_code, expected_user_message):
+        builder = moec.FossilRepoErrorBuilder(
+            error_context='ctx', error_code=error_code
+        )
         assert builder.user_message() == expected_user_message
 
 
@@ -196,7 +194,7 @@ class TestFossilCommitErrorBuilder:
                 'a valid string (e.g., 40-char SHA-3 hex)',
                 (
                     'Error in `quarryforge.model.FossilCommit.validation` '
-                    '(Code: INVALID_CHARS_ERROR). Commit UUID \'bad-uuid\' is '
+                    "(Code: INVALID_CHARS_ERROR). Commit UUID 'bad-uuid' is "
                     'not a valid format. Expected: a valid string '
                     '(e.g., 40-char SHA-3 hex).'
                 ),
@@ -210,7 +208,7 @@ class TestFossilCommitErrorBuilder:
                 (
                     'Error in `quarryforge.model.FossilCommit.parse` '
                     '(Code: TYPE_ERROR). Failed to parse commit data from '
-                    '\'bad data\'. Reason: unknown.'
+                    "'bad data'. Reason: unknown."
                 ),
             ),
             (
@@ -223,9 +221,9 @@ class TestFossilCommitErrorBuilder:
                     'Error in `quarryforge.model.FossilCommit.validation` '
                     '(Code: INVALID_STATE_ERROR). Required field '
                     '"author" is missing or empty in commit data for '
-                    '\'some commit\'.'
-                )
-             ),
+                    "'some commit'."
+                ),
+            ),
             # Fallback
             (
                 moec.FossilCommitPath.INIT,
@@ -237,9 +235,9 @@ class TestFossilCommitErrorBuilder:
                     'Error in `quarryforge.model.FossilCommit.__init__` '
                     '(Code: TYPE_ERROR). Expected type: a valid string. Got '
                     'type int with value 123 instead.'
-                )
+                ),
             ),
-        ]
+        ],
     )
     def test_message_mcdc(
         self,
@@ -251,8 +249,11 @@ class TestFossilCommitErrorBuilder:
         expected_message,
     ):
         builder = moec.FossilCommitErrorBuilder(
-            error_context=error_context, error_code=error_code,
-            field=field, arg=arg, info='a valid string' # for uuid test
+            error_context=error_context,
+            error_code=error_code,
+            field=field,
+            arg=arg,
+            info='a valid string',  # for uuid test
         )
         assert builder.message() == expected_message
 
@@ -263,34 +264,30 @@ class TestFossilCommitErrorBuilder:
                 moec.FossilCommitPath.VALIDATION,
                 ec.STRING_ERROR.invalid_chars,
                 model_config.FOSSIL_COMMIT.uuid,
-                'The commit identifier (UUID) is in an invalid format.'
+                'The commit identifier (UUID) is in an invalid format.',
             ),
             (
                 moec.FossilCommitPath.PARSE,
                 ec.GENERIC_ERROR.value_error,
                 None,
-                'Could not understand the commit information provided.'
+                'Could not understand the commit information provided.',
             ),
             (
                 moec.FossilCommitPath.VALIDATION,
                 ec.GENERIC_ERROR.invalid_state,
                 'comment',
-                'A required piece of commit information (comment) was missing.'
+                'A required piece of commit information (comment) was missing.',
             ),
             (
                 moec.FossilCommitPath.INIT,
                 ec.GENERIC_ERROR.not_implemented_error,
                 None,
-                'This feature is not available.'
-            ), # Fallback
-        ]
+                'This feature is not available.',
+            ),  # Fallback
+        ],
     )
     def test_user_message_mcdc(
-            self,
-        error_context,
-        error_code,
-        field,
-        expected_user_message
+        self, error_context, error_code, field, expected_user_message
     ):
         builder = moec.FossilCommitErrorBuilder(
             error_context=error_context, error_code=error_code, field=field
@@ -310,9 +307,9 @@ class TestFossilTimelineErrorBuilder:
                 'bad data',
                 (
                     'Error in `quarryforge.model.FossilTimeline.parse` '
-                     '(Code: VALUE_ERROR). Failed to parse timeline data '
-                     'from \'bad data\'. Reason: unknown.'
-                )
+                    '(Code: VALUE_ERROR). Failed to parse timeline data '
+                    "from 'bad data'. Reason: unknown."
+                ),
             ),
             (
                 moec.FossilTimelinePath.NO_COMMITS_DATA,
@@ -322,9 +319,9 @@ class TestFossilTimelineErrorBuilder:
                     'Error in '
                     '`quarryforge.model.FossilTimeline.no_commits_data` '
                     '(Code: INVALID_STATE_ERROR). No commit data found in '
-                    'the timeline output for \'empty output\'. The timeline '
+                    "the timeline output for 'empty output'. The timeline "
                     'might be empty or in an unexpected format.'
-                )
+                ),
             ),
             # Fallback
             (
@@ -334,23 +331,18 @@ class TestFossilTimelineErrorBuilder:
                 (
                     'Error in `quarryforge.model.FossilTimeline.__init__` '
                     '(Code: TYPE_ERROR). Expected type: unknown. Got type int '
-                     'with value 123 instead.'
-                )
+                    'with value 123 instead.'
+                ),
             ),
-        ]
+        ],
     )
     def test_message_mcdc(
-            self,
-            error_context,
-            error_code,
-            arg,
-            expected_message
+        self, error_context, error_code, arg, expected_message
     ):
         builder = moec.FossilTimelineErrorBuilder(
             error_context=error_context, error_code=error_code, arg=arg
         )
         assert builder.message() == expected_message
-
 
     @pytest.mark.parametrize(
         'error_context, error_code, expected_user_message',
@@ -358,25 +350,22 @@ class TestFossilTimelineErrorBuilder:
             (
                 moec.FossilTimelinePath.PARSE,
                 ec.GENERIC_ERROR.value_error,
-                'Could not use the timeline information provided.'
+                'Could not use the timeline information provided.',
             ),
             (
                 moec.FossilTimelinePath.NO_COMMITS_DATA,
                 ec.GENERIC_ERROR.invalid_state,
-                'No commit history could be found for the repository.'
+                'No commit history could be found for the repository.',
             ),
             (
                 moec.FossilTimelinePath.INIT,
                 ec.GENERIC_ERROR.not_implemented_error,
-                'This feature is not available.'
-            ), # Fallback
-        ]
+                'This feature is not available.',
+            ),  # Fallback
+        ],
     )
     def test_user_message_mcdc(
-            self,
-            error_context,
-            error_code,
-            expected_user_message
+        self, error_context, error_code, expected_user_message
     ):
         builder = moec.FossilTimelineErrorBuilder(
             error_context=error_context, error_code=error_code
