@@ -1,15 +1,12 @@
-"""Model Utility Module
+"""Model Utility module provides functions for validating data model arguments.
 
-This module provides utility functions for validating different types of
-arguments used within the data models. It includes functions to check for
-valid string types, non-empty strings, valid and existing paths (files and
-directories), and readable/writable paths. It also includes functions for
-validating list types and the content of lists based on specific error
-conditions.
+It includes functions to check for valid string types, non-empty strings, valid
+and existing paths (files and directories), and readable/writable paths. It
+also includes functions for validating list types and the content of lists
+based on specific error conditions.
 """
 
 from pathlib import Path
-from typing import TypeVar
 
 from quarryforge.config import model_config
 from quarryforge.config.exception_conf import exception_config as ec
@@ -17,16 +14,16 @@ from quarryforge.config.exception_conf import model_exception_config as model_ec
 from quarryforge.exception import base_exception
 from quarryforge.util import validation_util
 
-_ModelError = TypeVar('_ModelError', bound=base_exception.ModelError)
 
-
-def viable_fossil_repo(
+def viable_fossil_repo[
+        ModelError: base_exception.ModelError
+](
     file: Path | str,
     workdir: Path | str,
     is_new: bool,
-    exception: type[_ModelError],
+    exception: type[ModelError],
 ) -> tuple[Path, Path]:
-    """Validates if the path points to a viable Fossil repository.
+    """Validate if the path points to a viable Fossil repository.
 
     For an existing repository (is_new=False):
     - Must be a Path or string.
@@ -49,12 +46,15 @@ def viable_fossil_repo(
         is_new:
             If True, validates for creating a new repository.
             If False (default), validates an existing repository.
+        exception:
+            The specific type of ModelError exception to raise on error.
 
     Returns:
         The validated and resolved Path object.
 
     Raises:
         exception: With specific codes and messages for different failures.
+
     """
     fossil_repo_config = model_config.fossil_repo_config()
 
@@ -235,7 +235,9 @@ def viable_fossil_repo(
     return file, workdir
 
 
-def viable_fossil_commit(
+def viable_fossil_commit[
+        ModelError: base_exception.ModelError
+](
     *,
     uuid: str,
     date: str,
@@ -245,7 +247,7 @@ def viable_fossil_commit(
     tags: list[str] | None = None,
     phase: list[str] | None = None,
     changes: list[tuple[str, str]] | None = None,
-    exception: type[_ModelError],
+    exception: type[ModelError],
 ) -> tuple[
     str,
     str,
@@ -256,7 +258,7 @@ def viable_fossil_commit(
     list[str] | None,
     list[tuple[str, str]] | None,
 ]:
-    """Validates the arguements fields for FossilCommit on Initialization."""
+    """Validate the arguements fields for FossilCommit on Initialization."""
     fossil_commit_config = model_config.fossil_commit_config()
 
     uuid = validation_util.is_str_not_empty(

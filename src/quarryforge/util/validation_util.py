@@ -15,14 +15,15 @@ from quarryforge.config import model_config
 from quarryforge.exception import base_exception
 from quarryforge.meta import assembler
 
+
 def is_type_str[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: Any,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> str:
     """Validate if the given argument is a string.
 
@@ -47,13 +48,13 @@ def is_type_str[
 
 
 def is_str_not_empty[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: str,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> str:
     """Validate if the given string argument is not empty.
 
@@ -80,13 +81,13 @@ def is_str_not_empty[
 
 
 def is_type_path[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: Path | str,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> Path:
     """Validate if the given argument is a pathlib.Path object.
 
@@ -120,13 +121,13 @@ def is_type_path[
 
 
 def resolve_path_arg[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: Path,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> Path:
     """Resolve a path argument to an absolute path, expanding uservars.
 
@@ -160,13 +161,13 @@ def resolve_path_arg[
 
 
 def exist[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: Path,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> Path:
     """Validate if the path specified exists.
 
@@ -190,13 +191,13 @@ def exist[
 
 
 def not_exist[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: Path,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> Path:
     """Validate if the path specified exists.
 
@@ -220,13 +221,13 @@ def not_exist[
 
 
 def is_file[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: Path,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> Path:
     """Validate if the path specified is a file.
 
@@ -253,13 +254,13 @@ def is_file[
 
 
 def is_dir[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: Path,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> Path:
     """Validate if the path specified is a directory.
 
@@ -286,13 +287,13 @@ def is_dir[
 
 
 def is_read_ok[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: Path,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> Path:
     """Validate if the path specified has read permissions.
 
@@ -317,13 +318,13 @@ def is_read_ok[
 
 
 def is_write_ok[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: Path,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> Path:
     """Validate if the path specified has write permissions.
 
@@ -351,13 +352,13 @@ def is_write_ok[
 
 
 def content_type_error_str_list[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: list[str] | None,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> list[str]:
     """Validate if all elements within the given list are strings.
 
@@ -382,13 +383,13 @@ def content_type_error_str_list[
 
 
 def content_empty_error_str_list[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: list[str] | None,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> list[str]:
     """Validate if all string elements within the given list are not empty.
 
@@ -418,13 +419,13 @@ def content_empty_error_str_list[
 
 
 def content_type_error_str_tuple_list[
-        QFE: base_exception.QuarryForgeError,
-        EB: assembler.ErrorBuilder
+        QuarryForgeError: base_exception.QuarryForgeError,
+        ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: list[tuple[str, str]] | None,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> list[tuple[str, str]]:
     """Validate elements within the given list are tuples of two strings.
 
@@ -456,13 +457,13 @@ def content_type_error_str_tuple_list[
 
 
 def content_empty_error_str_tuple_list[
-    QFE: base_exception.QuarryForgeError,
-    EB: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder
 ](
     *,
     arg: list[tuple[str, str]] | None,
-    exception: type[QFE],
-    error_builder: EB,
+    exception: type[QuarryForgeError],
+    error_builder: ErrorBuilder,
 ) -> list[tuple[str, str]]:
     """Validate string elements in the given list of string-tuples.
 
