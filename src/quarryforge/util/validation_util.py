@@ -1,32 +1,34 @@
-"""Validation Utility
+"""Validation Utility module provides a collection of utility functions.
 
-This module provides a collection of utility functions for performing common
-validation tasks, such as type checking, string emptiness checks, path
-validations (existence, type, permissions), and list content validation.
-These functions are designed to raise specific, configurable exceptions from
-the `quarryforge.exception` hierarchy upon validation failure, providing
-detailed error information.
+These utilities perform common validation tasks, such as type checking,
+string emptiness checks, path validations (existence, type, permissions),
+and list content validation. These functions are designed to raise specific,
+configurable exceptions from the `quarryforge.exception` hierarchy upon
+validation failure, providing detailed error information.
 """
 
 import os
 from pathlib import Path
-from typing import Any, TypeVar, assert_never
+from typing import Any, assert_never
 
 from quarryforge.config import model_config
 from quarryforge.exception import base_exception
 from quarryforge.meta import assembler
 
-_QFE = TypeVar('_QFE', bound=base_exception.QuarryForgeError)
-_EB = TypeVar('_EB', bound=assembler.ErrorBuilder)
+#_QFE = TypeVar('_QFE', bound=base_exception.QuarryForgeError)
+#_EB = TypeVar('_EB', bound=assembler.ErrorBuilder)
 
 
-def is_type_str(
+def is_type_str[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: Any,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> str:
-    """Validates if the given argument is a string.
+    """Validate if the given argument is a string.
 
     Args:
         arg: The argument to check.
@@ -40,6 +42,7 @@ def is_type_str(
 
     Raises:
         exception: If the argument `arg` is not a string.
+
     """
     if not isinstance(arg, str):
         error_data = error_builder.data()
@@ -47,13 +50,16 @@ def is_type_str(
     return arg
 
 
-def is_str_not_empty(
+def is_str_not_empty[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: str,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> str:
-    """Validates if the given string argument is not empty.
+    """Validate if the given string argument is not empty.
 
     This function checks if the string is not empty after stripping leading
     and trailing whitespace.
@@ -69,6 +75,7 @@ def is_str_not_empty(
 
     Raises:
         exception: If the argument `arg` is empty after stripping whitespace.
+
     """
     if not arg.strip():
         error_data = error_builder.data()
@@ -76,13 +83,16 @@ def is_str_not_empty(
     return arg
 
 
-def is_type_path(
+def is_type_path[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: Path | str,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> Path:
-    """Validates if the given argument is a pathlib.Path object.
+    """Validate if the given argument is a pathlib.Path object.
 
     Args:
         arg: The argument to check.
@@ -98,6 +108,7 @@ def is_type_path(
         exception:
             If the argument `arg` is not a `pathlib.Path` object or a valid
             string represenatation of a path.
+
     """
     if isinstance(arg, str):
         valid_str = is_str_not_empty(
@@ -112,13 +123,16 @@ def is_type_path(
         assert_never(arg)
 
 
-def resolve_path_arg(
+def resolve_path_arg[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: Path,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> Path:
-    """Resolves a path argument to an absolute path, expanding uservars.
+    """Resolve a path argument to an absolute path, expanding uservars.
 
     Checks if the argument is a `pathlib.Path` object, then attempts to
     expand the user directory (e.g., '~') and resolve it to an absolute path.
@@ -137,6 +151,7 @@ def resolve_path_arg(
             resolution fails due to `RuntimeError` (e.g., home directory
             cannot be determined) or `OSError` (e.g., permission issues,
             path does not exist and cannot be resolved).
+
     """
     try:
         return arg.expanduser().resolve()
@@ -148,13 +163,16 @@ def resolve_path_arg(
         raise exception(**error_data.to_exception()) from os_error
 
 
-def exist(
+def exist[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: Path,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> Path:
-    """Validates if the path specified exists.
+    """Validate if the path specified exists.
 
     Args:
         arg: The `pathlib.Path` object to check.
@@ -167,6 +185,7 @@ def exist(
 
     Raises:
         exception: If the path specified by `arg` does not exist.
+
     """
     if not arg.exists():
         error_data = error_builder.data()
@@ -174,13 +193,16 @@ def exist(
     return arg
 
 
-def not_exist(
+def not_exist[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: Path,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> Path:
-    """Validates if the path specified exists.
+    """Validate if the path specified exists.
 
     Args:
         arg: The `pathlib.Path` object to check.
@@ -193,6 +215,7 @@ def not_exist(
 
     Raises:
         exception: If the path specified by `arg` does not exist.
+
     """
     if arg.exists():
         error_data = error_builder.data()
@@ -200,13 +223,16 @@ def not_exist(
     return arg
 
 
-def is_file(
+def is_file[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: Path,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> Path:
-    """Validates if the path specified is a file.
+    """Validate if the path specified is a file.
 
     Assumes `arg` is already a `pathlib.Path` object and exists.
     It's recommended to call `exists(arg, ...)` before this function.
@@ -222,6 +248,7 @@ def is_file(
 
     Raises:
         exception: If the path specified by `arg` is not a file.
+
     """
     if not arg.is_file():
         error_data = error_builder.data()
@@ -229,13 +256,16 @@ def is_file(
     return arg
 
 
-def is_dir(
+def is_dir[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: Path,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> Path:
-    """Validates if the path specified is a directory.
+    """Validate if the path specified is a directory.
 
     Assumes `arg` is already a `pathlib.Path` object and exists.
     It's recommended to call `exists(arg, ...)` before this function.
@@ -251,6 +281,7 @@ def is_dir(
 
     Raises:
         exception: If the path specified by `arg` is not a directory.
+
     """
     if not arg.is_dir():
         error_data = error_builder.data()
@@ -258,13 +289,16 @@ def is_dir(
     return arg
 
 
-def is_read_ok(
+def is_read_ok[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: Path,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> Path:
-    """Validates if the path specified has read permissions.
+    """Validate if the path specified has read permissions.
 
     Args:
         arg: The `pathlib.Path` object to check for read permissions.
@@ -278,6 +312,7 @@ def is_read_ok(
     Raises:
         exception:
             If the path specified by `arg` does not have read permissions.
+
     """
     if not os.access(arg, os.R_OK):
         error_data = error_builder.data()
@@ -285,13 +320,16 @@ def is_read_ok(
     return arg
 
 
-def is_write_ok(
+def is_write_ok[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: Path,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> Path:
-    """Validates if the path specified has write permissions.
+    """Validate if the path specified has write permissions.
 
     For directories, this checks if files can be created in them.
     For files, this checks if the file itself can be written to.
@@ -308,6 +346,7 @@ def is_write_ok(
     Raises:
         exception:
             If the path specified by `arg` does not have write permissions.
+
     """
     if not os.access(arg, os.W_OK):
         error_data = error_builder.data()
@@ -315,13 +354,16 @@ def is_write_ok(
     return arg
 
 
-def content_type_error_str_list(
+def content_type_error_str_list[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: list[str] | None,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> list[str]:
-    """Validates if all elements within the given list are strings.
+    """Validate if all elements within the given list are strings.
 
     Args:
         arg: The list of items to check.
@@ -334,6 +376,7 @@ def content_type_error_str_list(
 
     Raises:
         exception: If any element in `arg` is not a string.
+
     """
     valid = arg or []
     if not all(isinstance(item, str) for item in valid):
@@ -342,13 +385,16 @@ def content_type_error_str_list(
     return valid
 
 
-def content_empty_error_str_list(
+def content_empty_error_str_list[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: list[str] | None,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> list[str]:
-    """Validates if all string elements within the given list are not empty.
+    """Validate if all string elements within the given list are not empty.
 
     This function checks if each string in the list is not empty after
     stripping leading and trailing whitespace. Assumes `args_list` contains
@@ -366,6 +412,7 @@ def content_empty_error_str_list(
     Raises:
         exception: If any string in `args_list` is empty after stripping
             whitespace.
+
     """
     valid = arg or []
     if not all(item.strip() for item in valid):
@@ -374,11 +421,14 @@ def content_empty_error_str_list(
     return valid
 
 
-def content_type_error_str_tuple_list(
+def content_type_error_str_tuple_list[
+        QFE: base_exception.QuarryForgeError,
+        EB: assembler.ErrorBuilder
+](
     *,
     arg: list[tuple[str, str]] | None,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> list[tuple[str, str]]:
     """Validate elements within the given list are tuples of two strings.
 
@@ -393,6 +443,7 @@ def content_type_error_str_tuple_list(
 
     Raises:
         exception: If any element in `arg` is not a tuple of two strings.
+
     """
     valid_config = model_config.validation_config()
     valid = arg or []
@@ -408,13 +459,16 @@ def content_type_error_str_tuple_list(
     return valid
 
 
-def content_empty_error_str_tuple_list(
+def content_empty_error_str_tuple_list[
+    QFE: base_exception.QuarryForgeError,
+    EB: assembler.ErrorBuilder
+](
     *,
     arg: list[tuple[str, str]] | None,
-    exception: type[_QFE],
-    error_builder: _EB,
+    exception: type[QFE],
+    error_builder: EB,
 ) -> list[tuple[str, str]]:
-    """Validates string elements in the given list of string-tuples.
+    """Validate string elements in the given list of string-tuples.
 
     This function checks if each string within each tuple in the list is not
     empty after stripping leading and trailing whitespace.
@@ -435,6 +489,7 @@ def content_empty_error_str_tuple_list(
         exception:
             If any string within any tuple in `arg` is empty after stripping
             whitespace.
+
     """
     valid = arg or []
     if not all(
