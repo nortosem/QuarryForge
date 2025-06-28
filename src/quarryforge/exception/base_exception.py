@@ -1,6 +1,5 @@
-"""Exceptions Module
+"""Base exception module defines the custom exception hierarchy.
 
-This module defines the custom exception hierarchy for the quarryforge package.
 It includes a base exception class and specific exceptions for different
 modules & subpackages within the QuarryForge package.
 """
@@ -12,7 +11,7 @@ from quarryforge.config.exception_conf import exception_data as _
 
 
 class QuarryForgeError(Exception):
-    """Base Exception Class for quarryforge
+    """Define Base Exception Class for quarryforge.
 
     Provides all common attributes and methods for QuarryForge exceptions.
 
@@ -31,6 +30,7 @@ class QuarryForgeError(Exception):
     Methods:
         to_dict(): Returns a dictionary representation of the exception.
         __str__(): Returns a formatted string representation of the exception.
+
     """
 
     def __init__(
@@ -52,6 +52,7 @@ class QuarryForgeError(Exception):
             details:
                 An optional dictionary containing more detailed error
                 information.
+
         """
         super().__init__(message)
         self.code = code
@@ -60,7 +61,7 @@ class QuarryForgeError(Exception):
         self.user_message = user_message
 
     def to_dict(self) -> dict[str, Any]:
-        """Returns a dictionary representation of the exception."""
+        """Return a dictionary representation of the exception."""
         return {
             _.error_data_config().message: str(self),
             _.error_data_config().code: self.code,
@@ -70,7 +71,7 @@ class QuarryForgeError(Exception):
         }
 
     def __str__(self) -> str:
-        """Returns a formatted string representation of the exception."""
+        """Return a formatted string representation of the exception."""
         message = super().__str__()
         parts = []
         if self.code:
@@ -100,45 +101,30 @@ class QuarryForgeError(Exception):
 
 
 class ModelError(QuarryForgeError):
-    """Models Error
-
-    Base exception class for all exceptions in the model module.
-    """
+    """Base exception class for all exceptions in the model module."""
 
     pass
 
 
 class FossilError(QuarryForgeError):
-    """Fossil Error
-
-    Base exception class for all exceptions for the fossil module.
-    """
+    """Base exception class for all exceptions for the fossil module."""
 
     pass
 
 
 class MainError(QuarryForgeError):
-    """Main Error
-
-    Base exception class for all exceptions in the main module.
-    """
+    """Base exception class for all exceptions in the main module."""
 
     pass
 
 
 class MetaError(QuarryForgeError):
-    """Meta Error
-
-    Base exception class for all exceptions for the meta subpackage.
-    """
+    """Base exception class for all exceptions for the meta subpackage."""
 
     pass
 
 
 class UtilError(QuarryForgeError):
-    """Meta Error
-
-    Base exception class for all exceptions for the util subpackage.
-    """
+    """Base exception class for all exceptions for the util subpackage."""
 
     pass

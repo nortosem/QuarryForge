@@ -1,8 +1,4 @@
-"""Model Exceptions
-
-This module defines specific exception classes for errors encountered within
-the data models, leveraging builders for structured error data.
-"""
+"""Model Exceptions module defines specific exceptions for the data models."""
 
 from typing import Any
 
@@ -10,9 +6,8 @@ from quarryforge.exception import base_exception
 
 
 class FossilRepoError(base_exception.ModelError):
-    """FossilRepo Error
+    """Raise for errors related to the FossilRepo data model.
 
-    Exception raised for errors related to the FossilRepo data model.
     This includes issues with path validation, file access, and repository
     state.
     """
@@ -24,13 +19,14 @@ class FossilRepoError(base_exception.ModelError):
         user_message: str,
         details: dict[str, Any],
     ):
-        """Initializes the FossilRepoError.
+        """Initialize the FossilRepoError.
 
         Args:
             code: The unique error code identifier.
             message: The detailed technical error message.
             user_message: A user-friendly message for display.
             details: A dictionary containing detailed error information.
+
         """
         super().__init__(
             code=code,
@@ -41,9 +37,8 @@ class FossilRepoError(base_exception.ModelError):
 
 
 class FossilCommitError(base_exception.ModelError):
-    """FossilCommit Error
+    """Raise for errors related to the FossilCommit data model.
 
-    Exception raised for errors related to the FossilCommit data model.
     This includes issues with commit data validation, parsing, and immutability.
     """
 
@@ -54,13 +49,14 @@ class FossilCommitError(base_exception.ModelError):
         user_message: str,
         details: dict[str, Any],
     ):
-        """Initializes the FossilCommitError.
+        """Initialize the FossilCommitError.
 
         Args:
             code: The unique error code identifier.
             message: The detailed technical error message.
             user_message: A user-friendly message for display.
             details: A dictionary containing detailed error information.
+
         """
         super().__init__(
             code=code,
@@ -71,9 +67,8 @@ class FossilCommitError(base_exception.ModelError):
 
 
 class FossilTimelineError(base_exception.ModelError):
-    """Fossil Timeline Error
+    """Raise for errors related to the FossilTimeline data model.
 
-    Exception raised for errors related to the FossilTimeline data model.
     This typically involves issues with parsing timeline data or constructing
     the timeline object.
     """
@@ -85,13 +80,14 @@ class FossilTimelineError(base_exception.ModelError):
         user_message: str,
         details: dict[str, Any],
     ):
-        """Initializes the FossilTimelineError.
+        """Initialize the FossilTimelineError.
 
         Args:
             code: The unique error code identifier.
             message: The detailed technical error message.
             user_message: A user-friendly message for display.
             details: A dictionary containing detailed error information.
+
         """
         super().__init__(
             code=code,

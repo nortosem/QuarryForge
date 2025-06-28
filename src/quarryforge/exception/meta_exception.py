@@ -1,4 +1,4 @@
-"""Meta Exception Module"""
+"""Meta Exception Module."""
 
 from typing import Any
 
