@@ -108,3 +108,43 @@ def quality(ctx: click.Context) -> None:
             '--- 🎉 All quality checks passed! ---', bold=True, fg='green'
         )
     )
+
+
+@click.command()
+@click.argument('pytest_args', nargs=-1, type=click.Path())
+def run_coverage(pytest_args: tuple[str, ...]) -> None:
+    """Run pytest with coverage measurement."""
+    cmd = ['coverage', 'run', '-m', 'pytest', *pytest_args]
+    _run_command(cmd, 'Running tests under coverage')
+
+
+@click.command()
+@click.option(
+    '--show-missing', is_flag=True, help='Show missing lines in the report.'
+)
+def report_coverage(show_missing: bool) -> None:
+    """Generate terminal and HTML coverage reports."""
+    report_cmd = ['coverage', 'report']
+    if show_missing:
+        report_cmd.append('-m')
+    _run_command(report_cmd, 'Generating terminal coverage report')
+
+    html_cmd = ['coverage', 'html']
+    _run_command(html_cmd, 'Generating HTML coverage report')
+
+
+@click.command()
+@click.pass_context
+@click.argument('pytest_args', nargs=-1, type=click.Path())
+def full_coverage(ctx: click.Context, pytest_args: tuple[str, ...]) -> None:
+    """Run the full test coverage and reporting pipeline."""
+    click.echo(
+        click.style(
+            '--- Running full coverage pipeline ---', bold=True, fg='blue'
+        )
+    )
+    ctx.invoke(run_coverage, pytest_args=pytest_args)
+    ctx.invoke(report_coverage)
+    click.echo(
+        click.style('--- ✅ Coverage pipeline complete! ---', bold=True, fg='green')
+    )

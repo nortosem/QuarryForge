@@ -43,9 +43,9 @@ dependencies = []
 dev = [
   "click",
   "coverage>=7.9",
-  "coverage[toml]>=7.5.0", 
+  "coverage[toml]>=7.5.0",
   "pytest>=8.0",
-  "pytest-mock>=3.14", 
+  "pytest-mock>=3.14",
   "mypy>=1.16.0",
   "mypy_extensions>=1.0.0",
   "ruff>=0.12",
@@ -57,10 +57,16 @@ Repository = "https://github.com/nortosem/quarryforge"
 #"Bug Tracker" = "https://github.com/user/quarryforge/issues"
 
 [project.scripts]
+# ruff scripts
 format-code = "scripts:format_code"
 lint = "scripts:lint"
+# mypy scripts
 type-check = "scripts:type_check"
 quality = "scripts:quality"
+# pytest & coverage
+run-coverage = "scripts:run_coverage"
+report-coverage = "scripts:report_coverage"
+full-coverage = "scripts:full_coverage"
 
 # ===================================================================
 # Tool Configurations
@@ -88,7 +94,7 @@ ignore = [
 dummy-variable-rgx = "^(_|main)$"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D100", "D101", "D102", "D103", "D104", "D107", "PLR0904"] 
+"tests/*" = ["D100", "D101", "D102", "D103", "D104", "D107", "PLR0904"]
 
 [tool.ruff.lint.pylint]
 max-args = 10
@@ -147,7 +153,7 @@ addopts = "-ra --strict-markers"
 cache_dir = ".dist/.pytest_cache"
 
 [tool.coverage.run]
-source = ["quarryforge", "tests"]
+source = ["quarryforge"]
 data_file = "./dist/.coverage"
 branch = true
 omit = [
@@ -173,4 +179,4 @@ exclude_lines = [
 [tool.coverage.html]
 skip_empty = true
 skip_covered = false
-directory = "dist/coverage_report"
+directory = "dist/docs/coverage_report"
