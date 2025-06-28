@@ -1,7 +1,7 @@
-"""Exception Data Module
+"""Defines the data structures valid error data.
 
-This module defines the data structures for holding configuration constants
-and the final, validated error data used in exceptions.
+These structure hold configuration constants and the final, validated error
+data used in exceptions.
 """
 
 from typing import Any, NamedTuple
@@ -22,7 +22,7 @@ class ConfigErrorData(NamedTuple):
 
 
 def error_data_config() -> ConfigErrorData:
-    """Returns the configuration of error data fields."""
+    """Return the configuration of error data fields."""
     return ConfigErrorData()
 
 
@@ -40,7 +40,7 @@ class ConfigBuilder(NamedTuple):
 
 
 def builder_config() -> ConfigBuilder:
-    """Returns the configuration for an ErrorBuilder."""
+    """Return the configuration for an ErrorBuilder."""
     return ConfigBuilder()
 
 

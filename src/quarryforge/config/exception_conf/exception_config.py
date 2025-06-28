@@ -1,7 +1,7 @@
-"""Exception Configuration Module
+"""Defines various StrEnum configurations.
 
-This module defines various StrEnum configurations for standard error types
-and common descriptive phrases used across the application's exception handling.
+These enums are for standard error types and common descriptive phrases
+used across the application's exception handling.
 """
 
 from enum import StrEnum, auto
@@ -36,6 +36,7 @@ class GenericError(ValidName):
         configuration_error: Application configuration issue
         external_dependency_error: External tool or service not found or failed
         not_implemented_error: Feature not implemented
+
     """
 
     TYPE_ERROR = auto()
@@ -53,6 +54,7 @@ class StringError(ValidName):
     Attributes:
         empty: For empty or whitespace-only strings
         invalid_chars: For strings with unaccepted chars or patterns
+
     """
 
     EMPTY_STRING_ERROR = auto()
@@ -86,6 +88,7 @@ class PathError(ValidName):
         unreadable: Path doesn't have read permissions
         unwritable: Path doesn't have write permissions
         unexecutable: Path doesn't have execute permissions
+
     """
 
     NON_PATH_OBJECT_ERROR = auto()

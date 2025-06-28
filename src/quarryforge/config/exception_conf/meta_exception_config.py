@@ -1,7 +1,4 @@
-"""Meta Exception Configuration
-
-The configuration for teh exception meta_error exceptions.
-"""
+"""Meta Exception Configuration for meta_error exceptions."""
 
 from enum import StrEnum, auto
 from typing import NamedTuple
@@ -54,7 +51,7 @@ class MetaErrorPath(StrEnum):
 
 
 class MetaErrorBuilder(base_conf.BaseErrorBuilder):
-    """Builds error data for meta-subpackage exceptions.
+    """Build error data for meta-subpackage exceptions.
 
     Types of errors:
         assembler errors
@@ -62,8 +59,8 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
     """
 
     def _immutable_error_message(self) -> str:
-        """
-        Generates a message for `meta.immutable.ImmutableError`
+        """Generate a message for `meta.immutable.ImmutableError`.
+
         - self.arg should be the object (class or instance) being modified.
         - self.field should be the attribute name.
         - self.info can describe the operation
@@ -94,7 +91,7 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
         )
 
     def _assembler_error_message(self) -> str:
-        """Generates a message for meta.assembler.ErrorBuilder errors."""
+        """Generate a message for meta.assembler.ErrorBuilder errors."""
         base_msg: str = self._base_message()
         reason = self.info or 'an unspecified issue'
         return (
@@ -103,7 +100,7 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
         )
 
     def message(self) -> str:
-        """Builds a detailed, technical error message."""
+        """Build a detailed, technical error message."""
         match self.error_code:
             case MetaErrorCode.IMMUTABILITY_VIOLATION:
                 return self._immutable_error_message()
@@ -113,7 +110,7 @@ class MetaErrorBuilder(base_conf.BaseErrorBuilder):
                 return super().message()
 
     def user_message(self) -> str:
-        """Builds a user-friendly error message."""
+        """Build a user-friendly error message."""
         match self.error_code:
             case MetaErrorCode.IMMUTABILITY_VIOLATION:
                 return meta_error_message().immutable_violation_user

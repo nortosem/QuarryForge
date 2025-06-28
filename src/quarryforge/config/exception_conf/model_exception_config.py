@@ -1,7 +1,7 @@
-"""Model Exception Configuration
+"""Model exception configuration provide exception builders.
 
-Configures and provides builders for FossilRepo, FossilCommit, & Fossil
-Timeline exceptions.
+the builders provided are for FossilRepo, FossilCommit, & Fossil Timeline
+exceptions.
 """
 
 from enum import StrEnum
@@ -33,6 +33,7 @@ class ModelErrorPath(StrEnum):
         INIT: Full model error path with `__init__` context.
         PARSE: Context for errors during timeline data parsing.
         NO_COMMITS_DATA: Context when timeline parsing yields no commit data.
+
     """
 
     # path roots
@@ -67,7 +68,7 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
     """
 
     def _string_error_message(self) -> str:
-        """Generates a message for string errors specific to FossilRepo."""
+        """Generate a message for string errors specific to FossilRepo."""
         base_msg = self._base_message()
         match self.error_code:
             case config.StringError.EMPTY_STRING_ERROR:
@@ -89,7 +90,7 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
                 )
 
     def _path_error_message(self) -> str:
-        """Generates a message for errors with FossilRepo file paths."""
+        """Generate a message for errors with FossilRepo file paths."""
         base_msg = self._base_message()
         path_info = self.info or config.DescMsg.A_VALID_PATH
         details = self.extra_details or {}
@@ -152,7 +153,7 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
                 )
 
     def message(self) -> str:
-        """Builds a detailed, technical error message for FossilRepo exceptions.
+        """Build a detailed, technical error message for FossilRepo exceptions.
 
         Overrides BaseErrorBuilder's message to provide specific details for
         string and path related errors common in FossilRepo, then falls back
@@ -184,7 +185,7 @@ class FossilRepoErrorBuilder(base_config.BaseErrorBuilder):
                 return super().message()
 
     def user_message(self) -> str:
-        """Builds a user-friendly error message for FossilRepo exceptions.
+        """Build a user-friendly error message for FossilRepo exceptions.
 
         Overrides the base implementation to provide more specific user messages
         where applicable, then falls back to generic messages.
@@ -246,7 +247,7 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
     """
 
     def _invalid_uuid_message(self) -> str:
-        """Generates a message for invalid UUID format errors."""
+        """Generate a message for invalid UUID format errors."""
         base_msg = self._base_message()
         info = self.info or config.DescMsg.A_VALID_STRING
         return (
@@ -255,7 +256,7 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
         )
 
     def _parse_error_message(self) -> str:
-        """Generates a message for commit data parsing errors."""
+        """Generate a message for commit data parsing errors."""
         base_msg = self._base_message()
         details = self.extra_details or {}
         reason: str = details.get(config.DescMsg.REASON, config.DescMsg.UNKNOWN)
@@ -265,7 +266,7 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
         )
 
     def _missing_field_message(self) -> str:
-        """Generates a message for missing required fields in commit data."""
+        """Generate a message for missing required fields in commit data."""
         base_msg = self._base_message()
         return (
             f'{base_msg} Required field "{self.field}" is missing or empty '
@@ -273,7 +274,7 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
         )
 
     def message(self) -> str:
-        """Builds a detailed, technical message for FossilCommit exceptions."""
+        """Build a detailed, technical message for FossilCommit exceptions."""
         match self.error_code:
             case config.StringError.INVALID_CHARS_ERROR if (
                 self.field == model_config.fossil_commit_config().uuid
@@ -293,7 +294,7 @@ class FossilCommitErrorBuilder(base_config.BaseErrorBuilder):
                 return super().message()
 
     def user_message(self) -> str:
-        """Builds a user-friendly error message for FossilCommit exceptions."""
+        """Build a user-friendly error message for FossilCommit exceptions."""
         match self.error_code:
             case config.StringError.INVALID_CHARS_ERROR if (
                 self.field == model_config.fossil_commit_config().uuid
@@ -324,7 +325,7 @@ class FossilTimelineErrorBuilder(base_config.BaseErrorBuilder):
     """
 
     def _parse_error_message(self) -> str:
-        """Generates a message for timeline data parsing errors."""
+        """Generate a message for timeline data parsing errors."""
         base_msg = self._base_message()
         details = self.extra_details or {}
         reason: str = details.get(config.DescMsg.REASON, config.DescMsg.UNKNOWN)
@@ -334,7 +335,7 @@ class FossilTimelineErrorBuilder(base_config.BaseErrorBuilder):
         )
 
     def _no_commits_data_message(self) -> str:
-        """Generates a message when no commit data is found in timeline."""
+        """Generate a message when no commit data is found in timeline."""
         base_msg = self._base_message()
         return (
             f'{base_msg} No commit data found in the timeline output for '
@@ -343,7 +344,7 @@ class FossilTimelineErrorBuilder(base_config.BaseErrorBuilder):
         )
 
     def message(self) -> str:
-        """Builds detailed, technical message for FossilTimeline exceptions."""
+        """Build detailed, technical message for FossilTimeline exceptions."""
         match self.error_code:
             case config.GenericError.VALUE_ERROR if (
                 self.error_context == ModelErrorPath.FOSSIL_TIMELINE_PARSE
@@ -361,7 +362,7 @@ class FossilTimelineErrorBuilder(base_config.BaseErrorBuilder):
                 return super().message()
 
     def user_message(self) -> str:
-        """Builds a user-friendly message for FossilTimeline exceptions."""
+        """Build a user-friendly message for FossilTimeline exceptions."""
         match self.error_code:
             case config.GenericError.VALUE_ERROR if (
                 self.error_context == ModelErrorPath.FOSSIL_TIMELINE_PARSE

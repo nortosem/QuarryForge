@@ -1,8 +1,7 @@
-"""Fossil Exception Configuration Module
+"""Defines the builder pattern for constructing detailed error data.
 
-This module defines the builder pattern for constructing detailed error data
-for Fossil SCM-related exceptions. It centralizes error contexts and message
-generation logic specific to Fossil operations.
+Fossil SCM-related exceptions are centralized to provide error contexts and
+message generation logic specific to Fossil operations.
 """
 
 from enum import StrEnum
@@ -98,13 +97,13 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
     """
 
     def _get_reason_suffix(self) -> str:
-        """Helper to get a reason suffix from extra_details if available."""
+        """Use helper to get reason suffix from extra_details if available."""
         details = self.extra_details or {}
         reason = details.get(config.DescMsg.REASON)
         return f' Reason: {reason}.' if reason else ''
 
     def _process_error_message(self) -> str:
-        """Generates a message for `subprocess.CalledProcessError`."""
+        """Generate a message for `subprocess.CalledProcessError`."""
         base_msg: str = self._base_message()
         details: dict[str, Any] = self.extra_details or {}
 
@@ -127,7 +126,7 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
         )
 
     def _timeout_expired_message(self) -> str:
-        """Generates a message for `subprocess.TimeoutExpired` errors."""
+        """Generate a message for `subprocess.TimeoutExpired` errors."""
         base_msg = self._base_message()
         details: dict[str, Any] = self.extra_details or {}
 
@@ -149,7 +148,7 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
         )
 
     def message(self) -> str:
-        """Builds a detailed, technical error message for Fossil exceptions.
+        """Build a detailed, technical error message for Fossil exceptions.
 
         Overrides `BaseErrorBuilder`'s message to provide specific details for
         Fossil process and timeout related errors.
@@ -214,7 +213,7 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
                 )
 
     def user_message(self) -> str:
-        """Builds a user-friendly error message for Fossil exceptions.
+        """Build a user-friendly error message for Fossil exceptions.
 
         Overrides the base implementation to provide more specific user messages
         for Fossil process and timeout errors.
