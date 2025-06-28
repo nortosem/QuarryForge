@@ -1,0 +1,51 @@
+Pygments
+2.19.2
+BSD License
+
+click
+8.2.1
+UNKNOWN
+
+coverage
+7.9.1
+Apache-2.0
+
+iniconfig
+2.1.0
+MIT License
+
+mypy
+1.16.1
+MIT License
+
+mypy_extensions
+1.1.0
+UNKNOWN
+
+packaging
+25.0
+Apache Software License; BSD License
+
+pathspec
+0.12.1
+Mozilla Public License 2.0 (MPL 2.0)
+
+pluggy
+1.6.0
+MIT License
+
+pytest
+8.4.1
+MIT License
+
+pytest-mock
+3.14.1
+MIT License
+
+ruff
+0.12.1
+MIT License
+
+typing_extensions
+4.14.0
+UNKNOWN
