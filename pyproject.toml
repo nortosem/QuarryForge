@@ -153,7 +153,7 @@ addopts = "-ra --strict-markers"
 cache_dir = ".dist/.pytest_cache"
 
 [tool.coverage.run]
-source = ["quarryforge"]
+source = ["quarryforge", "scripts"]
 data_file = "./dist/.coverage"
 branch = true
 omit = [
