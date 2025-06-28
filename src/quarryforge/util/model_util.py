@@ -15,9 +15,7 @@ from quarryforge.exception import base_exception
 from quarryforge.util import validation_util
 
 
-def viable_fossil_repo[
-        ModelError: base_exception.ModelError
-](
+def viable_fossil_repo[ModelError: base_exception.ModelError](
     file: Path | str,
     workdir: Path | str,
     is_new: bool,
@@ -235,9 +233,7 @@ def viable_fossil_repo[
     return file, workdir
 
 
-def viable_fossil_commit[
-        ModelError: base_exception.ModelError
-](
+def viable_fossil_commit[ModelError: base_exception.ModelError](
     *,
     uuid: str,
     date: str,

@@ -17,8 +17,8 @@ from quarryforge.meta import assembler
 
 
 def is_type_str[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: Any,
@@ -48,8 +48,8 @@ def is_type_str[
 
 
 def is_str_not_empty[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: str,
@@ -81,8 +81,8 @@ def is_str_not_empty[
 
 
 def is_type_path[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: Path | str,
@@ -121,8 +121,8 @@ def is_type_path[
 
 
 def resolve_path_arg[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: Path,
@@ -161,8 +161,8 @@ def resolve_path_arg[
 
 
 def exist[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: Path,
@@ -191,8 +191,8 @@ def exist[
 
 
 def not_exist[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: Path,
@@ -221,8 +221,8 @@ def not_exist[
 
 
 def is_file[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: Path,
@@ -254,8 +254,8 @@ def is_file[
 
 
 def is_dir[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: Path,
@@ -287,8 +287,8 @@ def is_dir[
 
 
 def is_read_ok[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: Path,
@@ -318,8 +318,8 @@ def is_read_ok[
 
 
 def is_write_ok[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: Path,
@@ -352,8 +352,8 @@ def is_write_ok[
 
 
 def content_type_error_str_list[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: list[str] | None,
@@ -383,8 +383,8 @@ def content_type_error_str_list[
 
 
 def content_empty_error_str_list[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: list[str] | None,
@@ -419,8 +419,8 @@ def content_empty_error_str_list[
 
 
 def content_type_error_str_tuple_list[
-        QuarryForgeError: base_exception.QuarryForgeError,
-        ErrorBuilder: assembler.ErrorBuilder
+    QuarryForgeError: base_exception.QuarryForgeError,
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: list[tuple[str, str]] | None,
@@ -458,7 +458,7 @@ def content_type_error_str_tuple_list[
 
 def content_empty_error_str_tuple_list[
     QuarryForgeError: base_exception.QuarryForgeError,
-    ErrorBuilder: assembler.ErrorBuilder
+    ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
     arg: list[tuple[str, str]] | None,
