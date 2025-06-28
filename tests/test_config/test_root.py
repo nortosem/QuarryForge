@@ -1,103 +1,130 @@
+"""Tests for the root configuration module.
+
+This test suite uses a parameterized approach to ensure that all StrEnum
+classes in quarryforge.config.root are correctly defined, have the
+expected members, and that their values (whether explicit or from auto())
+are correct.
+"""
+
 import pytest
-from typing import NamedTuple
 
 from quarryforge.config import root
 
-def get_namedtuple_fields(nt_class):
-    """Get all fields from a NamedTuple class"""
-    return nt_class._fields
+
+ENUM_TEST_CASES = [
+    (
+        root.Package,
+        1,
+        [('NAME', 'quarryforge')],
+    ),
+    (
+        root.Module,
+        2,
+        [
+            ('MAIN', 'main'),
+            ('MODEL', 'model'),
+        ],
+    ),
+    (
+        root.SubPackage,
+        5,
+        [
+            ('CONFIG', 'config'),
+            ('EXCEPTION', 'exception'),
+            ('FOSSIL', 'fossil'),
+            ('META', 'meta'),
+            ('UTIL', 'util'),
+        ],
+    ),
+    (
+        root.MetaModule,
+        2,
+        [
+            ('ASSEMBLER', 'assembler'),
+            ('IMMUTABLE', 'immutable'),
+        ],
+    ),
+    (
+        root.Model,
+        3,
+        [
+            ('FOSSIL_COMMIT', 'FossilCommit'),
+            ('FOSSIL_REPO', 'FossilRepo'),
+            ('FOSSIL_TIMELINE', 'FossilTimeline'),
+        ],
+    ),
+    (
+        root.FossilModule,
+        8,
+        [
+            ('TIMELINE', 'Timeline'),
+            ('SETUP', 'Setup'),
+            ('INFO', 'Info'),
+            ('DIFF', 'Diff'),
+            ('CAT', 'Cat'),
+            ('BRANCH', 'Branch'),
+            ('ADD', 'Add'),
+            ('COMMIT', 'Commit'),
+        ],
+    ),
+    (
+        root.UtilModule,
+        5,
+        [
+            ('DECORATOR', 'decorator'),
+            ('FOSSIL_UTIL', 'fossil_util'),
+            ('MAIN_UTIL', 'main_util'),
+            ('MODEL_UTIL', 'model_util'),
+            ('VALIDATION_UTIL', 'validation_util'),
+        ],
+    ),
+]
 
 
 class TestRootConfig:
-    """Tests for quarryforge.config.root"""
+    """Tests for the configuration constants in quarryforge.config.root."""
 
-    def test_module_dunder_all(self):
-        """Test the __all__ variable."""
+    def test_module_dunder_all(self) -> None:
+        """Test the __all__ variable to ensure it exports all enums."""
         expected_all = [
-            'PACKAGE', 'MODULE', 'SUB_PACKAGE', 'META_MODULE',
-            'MODEL', 'FOSSIL', 'UTIL_MODULE'
+            'Package',
+            'Module',
+            'SubPackage',
+            'MetaModule',
+            'Model',
+            'FossilModule',
+            'UtilModule',
         ]
         assert sorted(root.__all__) == sorted(expected_all)
 
-    def test_package_attributes(self):
-        """Test attributes of Package."""
-        pkg = root.PACKAGE
-        assert isinstance(pkg, root.Package)
-        assert pkg.name == 'quarryforge'
-        assert get_namedtuple_fields(root.Package) == ('name',)
+    @pytest.mark.parametrize(
+        'enum_class, expected_count, expected_members', ENUM_TEST_CASES
+    )
+    def test_str_enum_definitions(
+        self,
+        enum_class: type[root.StrEnum],
+        expected_count: int,
+        expected_members: list[tuple[str, str]],
+    ) -> None:
+        """Verify enum members, values, and total count for all enums.
 
-    def test_module_attributes(self):
-        """Test attributes of Module."""
-        mod = root.MODULE
-        assert isinstance(mod, root.Module)
-        assert mod.fossil == 'fossil'
-        assert mod.main == 'main'
-        assert mod.model == 'model'
-        assert get_namedtuple_fields(root.Module) == ('fossil', 'main', 'model')
+        This single parameterized test covers all StrEnum classes defined in
+        the ENUM_TEST_CASES list, ensuring:
+        1. The total number of members in the enum is correct.
+        2. Every expected member exists.
+        3. The string value of each member is correct.
+        """
+        assert (
+            len(enum_class) == expected_count
+        ), f'Mismatch in member count for {enum_class.__name__}'
 
-    def test_sub_package_attributes(self):
-        """Test attributes of SubPackage."""
-        sub_pkg = root.SUB_PACKAGE
-        assert isinstance(sub_pkg, root.SubPackage)
-        assert sub_pkg.config == 'config'
-        assert sub_pkg.exception == 'exception'
-        assert sub_pkg.meta == 'meta'
-        assert sub_pkg.util == 'util'
-        assert get_namedtuple_fields(root.SubPackage) == ('config', 'exception', 'meta', 'util')
+        for member_name, expected_value in expected_members:
+            assert hasattr(
+                enum_class, member_name
+            ), f'{enum_class.__name__} is missing member {member_name}'
 
-    def test_meta_module_attributes(self):
-        """Test attributes of MetaModule."""
-        meta_mod = root.META_MODULE
-        assert isinstance(meta_mod, root.MetaModule)
-        assert meta_mod.assembler == 'assembler'
-        assert meta_mod.immutable == 'immutable'
-        assert get_namedtuple_fields(root.MetaModule) == ('assembler', 'immutable')
-
-    def test_model_attributes(self):
-        """Test attributes of Model."""
-        mdl = root.MODEL
-        assert isinstance(mdl, root.Model)
-        assert mdl.fossil_commit == 'FossilCommit'
-        assert mdl.fossil_repo == 'FossilRepo'
-        assert mdl.fossil_timeline == 'FossilTimeline'
-        assert get_namedtuple_fields(root.Model) == ('fossil_commit', 'fossil_repo', 'fossil_timeline')
-
-    def test_fossil_command_attributes(self):
-        """Test attributes of FossilCommand."""
-        fos_cmd = root.FOSSIL # Global constant is FOSSIL
-        assert isinstance(fos_cmd, root.FossilCommand)
-        assert fos_cmd.process == 'FossilProcess'
-        assert fos_cmd.timeout == 'FossilTimeoutExpired'
-        assert fos_cmd.timeline == 'Timeline'
-        assert fos_cmd.setup == 'Setup'
-        assert fos_cmd.info == 'Info'
-        assert fos_cmd.diff == 'Diff'
-        assert fos_cmd.cat == 'Cat'
-        assert fos_cmd.branch == 'Branch'
-        assert fos_cmd.add == 'Add'
-        assert fos_cmd.commit == 'Commit'
-        expected_fields = (
-            'process', 'timeout', 'timeline', 'setup', 'info', 'diff',
-            'cat', 'branch', 'add', 'commit'
-        )
-        assert get_namedtuple_fields(root.FossilCommand) == expected_fields
-
-    def test_util_module_attributes(self):
-        """Test attributes of UtilModule."""
-        util_mod = root.UTIL_MODULE
-        assert isinstance(util_mod, root.UtilModule)
-        assert util_mod.fossil_util == 'fossil_util'
-        assert util_mod.main_util == 'main_util'
-        assert util_mod.model_util == 'model_util'
-        expected_fields = ('fossil_util', 'main_util', 'model_util')
-        assert get_namedtuple_fields(root.UtilModule) == expected_fields
-
-    def test_global_constants_types(self):
-        """Test types of global constants."""
-        assert isinstance(root.PACKAGE, root.Package)
-        assert isinstance(root.MODULE, root.Module)
-        assert isinstance(root.SUB_PACKAGE, root.SubPackage)
-        assert isinstance(root.META_MODULE, root.MetaModule)
-        assert isinstance(root.MODEL, root.Model)
-        assert isinstance(root.FOSSIL, root.FossilCommand)
-        assert isinstance(root.UTIL_MODULE, root.UtilModule)
+            member = getattr(enum_class, member_name)
+            assert member == expected_value, (
+                f'Value mismatch for {enum_class.__name__}.{member_name}: '
+                f'Expected "{expected_value}", got "{member}"'
+            )
