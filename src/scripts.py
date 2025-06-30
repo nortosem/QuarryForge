@@ -96,7 +96,7 @@ def type_check(paths: tuple[str, ...]) -> None:
 @click.command()
 @click.pass_context
 def quality(ctx: click.Context) -> None:
-    """Run all quality checks in sequence: format-check, lint, and type-check."""
+    """Run all checks in sequence: format-check, lint, and type-check."""
     click.echo(
         click.style('--- Running all quality checks ---', bold=True, fg='blue')
     )
@@ -146,5 +146,7 @@ def full_coverage(ctx: click.Context, pytest_args: tuple[str, ...]) -> None:
     ctx.invoke(run_coverage, pytest_args=pytest_args)
     ctx.invoke(report_coverage)
     click.echo(
-        click.style('--- ✅ Coverage pipeline complete! ---', bold=True, fg='green')
+        click.style(
+            '--- ✅ Coverage pipeline complete! ---', bold=True, fg='green'
+        )
     )
