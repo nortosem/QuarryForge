@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, call
 import pytest
 from click.testing import CliRunner
 
-import quarryforge
+#import quarryforge
 import scripts
 
 
@@ -92,7 +92,8 @@ class TestScripts:
         assert result.exit_code == 1
         mock_subprocess.assert_called_once()
 
-    def test_quality_invokes_all_checks(self, mock_subprocess: MagicMock) -> None:
+    def test_quality_invokes_all_checks(
+        self, mock_subprocess: MagicMock) -> None:
         """Verify `quality` invokes all three checks with correct args."""
         runner = CliRunner()
         result = runner.invoke(scripts.quality)
