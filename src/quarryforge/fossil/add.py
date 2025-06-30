@@ -39,19 +39,19 @@ def add_files(files: list[Path]) -> str:
             fossil_util.add_files(files),
             capture_output=True,
             check=True,
-            timeout=_.FOSSIL.default_timeout,
+            timeout=int(_.Fossil.DEFAULT_TIMEOUT),
         )
         return add_process.stdout.decode()
     except subprocess.CalledProcessError as error:
         process_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_PROCESS,
-            error_code=_.FOSSIL.process_error,
+            error_code=_.Fossil.PROCESS_ERROR,
             arg=f'files: {[str(f) for f in files]}',
             extra_details={
-                _.FOSSIL.cmd: error.cmd,
-                _.FOSSIL.return_code: error.returncode,
-                _.FOSSIL.output: error.stdout,
-                _.FOSSIL.stderr: error.stderr,
+                _.Fossil.CMD: error.cmd,
+                _.Fossil.RETURN_CODE: error.returncode,
+                _.Fossil.OUTPUT: error.stdout,
+                _.Fossil.STDERR: error.stderr,
             },
         )
         process_data = process_builder.data()
@@ -60,11 +60,11 @@ def add_files(files: list[Path]) -> str:
         )
         add_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_ADD,
-            error_code=ec.GENERIC_ERROR.external_dependency_error,
+            error_code=ec.GenericError.EXTERNAL_DEPENDENCY_ERROR,
             arg=f'files: {[str(f) for f in files]}',
             extra_details={
-                ec.DESC_MSG.dependency: process_error.details[_.FOSSIL.cmd],
-                ec.DESC_MSG.reason: process_error.details[_.FOSSIL.stderr],
+                ec.DescMsg.DEPENDENCY: process_error.details[_.Fossil.CMD],
+                ec.DescMsg.REASON: process_error.details[_.Fossil.STDERR],
             },
         )
         add_data = add_builder.data()
@@ -74,15 +74,15 @@ def add_files(files: list[Path]) -> str:
     except subprocess.TimeoutExpired as error:
         timeout_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_TIMEOUT,
-            error_code=_.FOSSIL.timeout_error,
+            error_code=_.Fossil.TIMEOUT_ERROR,
             arg=f'files: {[str(f) for f in files]}',
             info=str(error),
             extra_details={
-                _.FOSSIL.args: error.args,
-                _.FOSSIL.cmd: error.cmd,
-                _.FOSSIL.timeout: error.timeout,
-                _.FOSSIL.output: error.stdout,
-                _.FOSSIL.stderr: error.stderr,
+                _.Fossil.ARGS: error.args,
+                _.Fossil.CMD: error.cmd,
+                _.Fossil.TIMEOUT: error.timeout,
+                _.Fossil.OUTPUT: error.stdout,
+                _.Fossil.STDERR: error.stderr,
             },
         )
         timeout_data = timeout_builder.data()
@@ -91,13 +91,13 @@ def add_files(files: list[Path]) -> str:
         )
         add_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_ADD,
-            error_code=ec.GENERIC_ERROR.invalid_state,
+            error_code=ec.GenericError.INVALID_STATE_ERROR,
             arg=f'files: {[str(f) for f in files]}',
             info=timeout_error.details[e_data.builder_config().info],
             extra_details={
-                _.FOSSIL.args: timeout_error.details[_.FOSSIL.args],
-                _.FOSSIL.cmd: timeout_error.details[_.FOSSIL.cmd],
-                _.FOSSIL.timeout: timeout_error.details[_.FOSSIL.timeout],
+                _.Fossil.ARGS: timeout_error.details[_.Fossil.ARGS],
+                _.Fossil.CMD: timeout_error.details[_.Fossil.CMD],
+                _.Fossil.TIMEOUT: timeout_error.details[_.Fossil.TIMEOUT],
             },
         )
         add_data = add_builder.data()
