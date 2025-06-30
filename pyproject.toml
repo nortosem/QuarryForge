@@ -61,7 +61,7 @@ Repository = "https://github.com/nortosem/quarryforge"
 format-code = "scripts:format_code"
 lint = "scripts:lint"
 # mypy scripts
-type-check = "scripts:type_check"
+check-types = "scripts:type_check"
 quality = "scripts:quality"
 # pytest & coverage
 run-coverage = "scripts:run_coverage"
