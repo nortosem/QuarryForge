@@ -20,13 +20,13 @@ class TestFossilRepo:
 
     @patch('quarryforge.util.model_util.viable_fossil_repo')
     def test_init_success(
-        self, mock_viable_repo: MagicMock, mock_repo_paths: tuple[Path, Path]
+        self, mock_viable_repo: MagicMock, sample_repo_paths: tuple[Path, Path]
     ) -> None:
         """Test successful initialization of FossilRepo for both new and
         existing repos. Verifies that validation is delegated and attributes
         are set correctly.
         """
-        file_path, workdir_path = mock_repo_paths
+        file_path, workdir_path = sample_repo_paths
         mock_viable_repo.return_value = (file_path, workdir_path)
 
         # MC/DC Case 1: is_new=False
@@ -65,11 +65,11 @@ class TestFossilRepo:
         ):
             FossilRepo(file='invalid', workdir='invalid', is_new=False)
 
-    def test_immutability(self, mock_repo_paths: tuple[Path, Path]) -> None:
+    def test_immutability(self, sample_repo_paths: tuple[Path, Path]) -> None:
         """Test that __setattr__ and __delattr__ raise ImmutableError after
         initialization.
         """
-        file_path, workdir_path = mock_repo_paths
+        file_path, workdir_path = sample_repo_paths
         with patch(
             'quarryforge.util.model_util.viable_fossil_repo',
             return_value=(file_path, workdir_path),
@@ -86,9 +86,9 @@ class TestFossilRepo:
         with pytest.raises(meta_exception.ImmutableError):
             del repo.workdir  # type: ignore
 
-    def test_representations(self, mock_repo_paths: tuple[Path, Path]) -> None:
+    def test_representations(self, sample_repo_paths: tuple[Path, Path]) -> None:
         """Test the __str__ and __repr__ representations."""
-        file_path, workdir_path = mock_repo_paths
+        file_path, workdir_path = sample_repo_paths
         with patch(
             'quarryforge.util.model_util.viable_fossil_repo',
             return_value=(file_path, workdir_path),
@@ -108,12 +108,12 @@ class TestFossilRepo:
         assert repr(repo) == expected_repr
 
     def test_equality_and_hash(
-        self, mock_repo_paths: tuple[Path, Path]
+        self, sample_repo_paths: tuple[Path, Path]
     ) -> None:
         """Test the __eq__ and __hash__ methods for correctness covering all
         MC/DC branches.
         """
-        file_path, workdir_path = mock_repo_paths
+        file_path, workdir_path = sample_repo_paths
         with patch(
             'quarryforge.util.model_util.viable_fossil_repo',
             return_value=(file_path, workdir_path),
@@ -164,17 +164,17 @@ class TestFossilCommit:
 
     @patch('quarryforge.util.model_util.viable_fossil_commit')
     def test_init_success(
-        self, mock_viable_commit: MagicMock, mock_commit_data: dict[str, Any]
+        self, mock_viable_commit: MagicMock, sample_commit_data: dict[str, Any]
     ) -> None:
         """Test successful initialization with full data."""
-        mock_viable_commit.return_value = tuple(mock_commit_data.values())
-        commit = FossilCommit(**mock_commit_data)
+        mock_viable_commit.return_value = tuple(sample_commit_data.values())
+        commit = FossilCommit(**sample_commit_data)
 
         mock_viable_commit.assert_called_once_with(
-            **mock_commit_data, exception=model_exception.FossilCommitError
+            **sample_commit_data, exception=model_exception.FossilCommitError
         )
-        assert commit.uuid == mock_commit_data['uuid']
-        assert commit.tags == mock_commit_data['tags']
+        assert commit.uuid == sample_commit_data['uuid']
+        assert commit.tags == sample_commit_data['tags']
 
     @patch('quarryforge.util.model_util.viable_fossil_commit')
     def test_init_minimal_data_and_none_handling(
@@ -219,15 +219,15 @@ class TestFossilCommit:
             FossilCommit(uuid='', date='', author='', comment='')
 
     def test_properties_and_get_hash(
-        self, mock_commit: FossilCommit, mock_commit_data: dict
+        self, sample_commit: FossilCommit, sample_commit_data: dict
     ) -> None:
         """Verify all properties and get_hash() return correct data."""
-        print(f'mockuuid: {mock_commit.uuid}')
-        print(f'mockdata: {mock_commit_data["uuid"]}')
-        print(f'mockgethash: {mock_commit.get_hash()}')
-        print(f'mockdata12: {mock_commit_data["uuid"][:12]}')
-        assert mock_commit.uuid == mock_commit_data['uuid']
-        assert mock_commit.get_hash() == mock_commit_data['uuid'][:12]
+        print(f'mockuuid: {sample_commit.uuid}')
+        print(f'mockdata: {sample_commit_data["uuid"]}')
+        print(f'mockgethash: {sample_commit.get_hash()}')
+        print(f'mockdata12: {sample_commit_data["uuid"][:12]}')
+        assert sample_commit.uuid == sample_commit_data['uuid']
+        assert sample_commit.get_hash() == sample_commit_data['uuid'][:12]
 
     @patch('quarryforge.util.model_util.viable_fossil_commit')
     def test_repr_representation_coverage(
@@ -265,7 +265,7 @@ class TestFossilCommit:
 class TestFossilTimeline:
     """Tests for the FossilTimeline container class."""
 
-    def test_init_mc_dc_cases(self, mock_commit: FossilCommit) -> None:
+    def test_init_mc_dc_cases(self, sample_commit: FossilCommit) -> None:
         """Covers all MC/DC paths for __init__."""
         # MC/DC Case 1: commits=None (evaluates to False in `commits or []`)
         timeline_none = FossilTimeline(commits=None)
@@ -281,13 +281,13 @@ class TestFossilTimeline:
 
         # MC/DC Case 4: Raises on invalid content (contains non-FossilCommit)
         with pytest.raises(model_exception.FossilTimelineError):
-            FossilTimeline(commits=[mock_commit, 'not a commit'])  # type: ignore
+            FossilTimeline(commits=[sample_commit, 'not a commit'])  # type: ignore
 
-    def test_init_reverses_order(self, mock_commit: FossilCommit) -> None:
+    def test_init_reverses_order(self, sample_commit: FossilCommit) -> None:
         """Test that the incoming commit list is reversed for chronological
         order.
         """
-        commit1 = mock_commit
+        commit1 = sample_commit
         commit2_data = {
             'uuid': '2',
             'date': '2',
@@ -307,16 +307,16 @@ class TestFossilTimeline:
         assert timeline[0] is commit1  # Should now be oldest
         assert timeline[1] is commit2  # Should now be newest
 
-    def test_dunder_methods(self, mock_commit: FossilCommit) -> None:
+    def test_dunder_methods(self, sample_commit: FossilCommit) -> None:
         """Test __len__, __getitem__, __iter__, __repr__, and __str__."""
-        timeline = FossilTimeline(commits=[mock_commit])
-        timeline.add(mock_commit)  # Test add method
+        timeline = FossilTimeline(commits=[sample_commit])
+        timeline.add(sample_commit)  # Test add method
 
         # __len__
         assert len(timeline) == 2
 
         # __getitem__
-        assert timeline[0] is mock_commit
+        assert timeline[0] is sample_commit
         with pytest.raises(IndexError):
             _ = timeline[2]
 
