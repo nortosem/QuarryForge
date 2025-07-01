@@ -160,7 +160,7 @@ class BaseErrorBuilder(assembler.ErrorBuilder):
         elif (
             len(context) > 1
             and context[0] == root.Package.NAME
-            and context[1] in root.SubPackage.__members__
+            and context[1] in root.SubPackage
         ):
             suffix = cfg.default_subpackage_suffix
         else:
