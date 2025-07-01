@@ -22,39 +22,6 @@ def mock_dependencies(mocker):
     mocker.patch('quarryforge.model.model_ec.FossilTimelineErrorBuilder')
 
 
-@pytest.fixture
-def sample_repo_paths(tmp_path):
-    """Provides sample Path objects for a repo file and workdir."""
-    return {'file': tmp_path / 'test.fossil', 'workdir': tmp_path / 'work'}
-
-
-@pytest.fixture
-def sample_commit_args():
-    """Provides a dictionary of valid arguments for a FossilCommit."""
-    return {
-        'uuid': 'a' * 40,
-        'date': '2023-01-01 12:00:00',
-        'author': 'tester',
-        'comment': 'Initial commit',
-        'branch': 'trunk',
-        'tags': ['v1.0'],
-        'phase': ['LEAF'],
-        'changes': [('ADDED', 'file.txt')],
-    }
-
-
-@pytest.fixture
-def sample_commit(sample_commit_args, mock_dependencies):
-    """Provides a valid FossilCommit instance."""
-    from quarryforge.util import model_util
-
-    # Configure mock to return the args, simulating successful validation
-    model_util.viable_fossil_commit.return_value = tuple(
-        sample_commit_args.values()
-    )
-    return FossilCommit(**sample_commit_args)
-
-
 @pytest.mark.usefixtures('mock_dependencies')
 class TestFossilRepo:
     def test_init_success(self, sample_repo_paths):

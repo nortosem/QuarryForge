@@ -15,38 +15,6 @@ from quarryforge.exception import meta_exception, model_exception
 from quarryforge.model import FossilCommit, FossilRepo, FossilTimeline
 
 
-@pytest.fixture
-def mock_repo_paths() -> tuple[Path, Path]:
-    """Provides mock Path objects for a repository file and workdir."""
-    return (Path('/tmp/test.fossil'), Path('/tmp/workdir'))
-
-
-@pytest.fixture
-def mock_commit_data() -> dict[str, Any]:
-    """Provides a dictionary of valid data for a FossilCommit instance."""
-    return {
-        'uuid': 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2',
-        'date': '2023-01-01 12:00:00',
-        'author': 'test_user',
-        'comment': 'Initial commit',
-        'branch': 'trunk',
-        'tags': ['v1.0', 'stable'],
-        'phase': ['LEAF'],
-        'changes': [('ADDED', 'file1.txt'), ('EDITED', 'file2.txt')],
-    }
-
-
-@pytest.fixture
-def mock_commit(mock_commit_data: dict[str, Any]) -> FossilCommit:
-    """Provides a fully-formed FossilCommit instance for testing."""
-    # The validator returns a tuple of the validated values
-    with patch(
-        'quarryforge.util.model_util.viable_fossil_commit',
-        return_value=tuple(mock_commit_data.values()),
-    ):
-        return FossilCommit(**mock_commit_data)
-
-
 class TestFossilRepo:
     """Tests for the immutable FossilRepo class."""
 

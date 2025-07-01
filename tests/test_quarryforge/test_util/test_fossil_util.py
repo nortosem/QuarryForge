@@ -16,14 +16,6 @@ from quarryforge.model import FossilRepo
 from quarryforge.util import fossil_util
 
 
-@pytest.fixture
-def mock_repo() -> MagicMock:
-    """Fixture to create a mock FossilRepo object."""
-    repo = MagicMock(spec=FossilRepo)
-    repo.__str__.return_value = '/mock/repo.fossil'
-    return repo
-
-
 class TestFossilUtilCommands:
     """Tests for each command-generating function in fossil_util."""
 
