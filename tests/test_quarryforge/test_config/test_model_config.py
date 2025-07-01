@@ -1,5 +1,4 @@
 from quarryforge.config import model_config
-from tests.test_config.test_root import get_namedtuple_fields
 
 
 class TestModelConfig:
@@ -11,35 +10,25 @@ class TestModelConfig:
             'fossil_repo_config',
             'fossil_commit_config',
             'fossil_timeline_config',
+            'validation_config',
         ]
         assert sorted(model_config.__all__) == sorted(expected_all)
 
-    def test_config_fossil_repo_attributes_and_method(self):
-        """Test attributes and slots() method of ConfigFossilRepo."""
+    def test_fossil_repo_config(self):
+        """Test attributes and methods of ConfigFossilRepo."""
         cfg = model_config.fossil_repo_config()
         assert isinstance(cfg, model_config.ConfigFossilRepo)
-
-        # Test attributes
         assert cfg.file == '_file'
         assert cfg.is_new == '_is_new'
         assert cfg.workdir == '_workdir'
-
-        # Test field definitions
-        expected_fields = ['file', 'is_new', 'workdir']
-        assert sorted(
-            get_namedtuple_fields(model_config.ConfigFossilRepo)
-        ) == sorted(expected_fields)
-
-        # Test slots() method
-        expected_slots = ('_file', '_is_new', '_workdir')
-        assert cfg.slots() == expected_slots
+        assert sorted(cfg._fields) == sorted(['file', 'is_new', 'workdir'])
+        assert cfg.slots() == ('_file', '_is_new', '_workdir')
 
     def test_config_fossil_commit_attributes(self):
         """Test attributes of ConfigFossilCommit."""
         cfg = model_config.fossil_commit_config()
         assert isinstance(cfg, model_config.ConfigFossilCommit)
 
-        # Test attributes
         assert cfg.uuid == '_uuid'
         assert cfg.date == '_date'
         assert cfg.author == '_author'
@@ -59,11 +48,8 @@ class TestModelConfig:
             'phase',
             'changes',
         ]
-        assert sorted(
-            get_namedtuple_fields(model_config.ConfigFossilCommit)
-        ) == sorted(expected_fields)
+        assert sorted(cfg._fields) == sorted(expected_fields)
 
-        # Test slots() method
         expected_slots = (
             '_uuid',
             '_date',
@@ -84,9 +70,7 @@ class TestModelConfig:
         assert cfg.commits == 'commits'
 
         expected_fields = ['commits']
-        assert sorted(
-            get_namedtuple_fields(model_config.ConfigFossilTimeline)
-        ) == sorted(expected_fields)
+        assert sorted(cfg._fields) == sorted(expected_fields)
 
     def test_config_functions_return_types(self):
         """Test the return types of the configuration factory functions."""
@@ -100,3 +84,11 @@ class TestModelConfig:
             model_config.fossil_timeline_config(),
             model_config.ConfigFossilTimeline,
         )
+
+    def test_validation_config(self):
+        """Test attributes of ConfigValidation."""
+        cfg = model_config.validation_config()
+        assert isinstance(cfg, model_config.ConfigValidation)
+        assert cfg.PAIR == 2
+        assert cfg.KEY == 0
+        assert cfg.VALUE == 1
