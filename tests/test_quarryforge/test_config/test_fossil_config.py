@@ -1,3 +1,5 @@
+"""Unit tests for the quarryforge.config.fossil_config module."""
+
 import re
 
 import pytest
@@ -10,170 +12,136 @@ class TestFossilConfig:
 
     def test_module_dunder_all(self):
         """Test the __all__ variable for completeness."""
-        expected_all = ['Command', 'TimelineData', 'InfoData', 'Fossil']
+        expected_all = ['Command', 'timeline_data', 'info_data', 'Fossil']
         assert sorted(fossil_config.__all__) == sorted(expected_all)
 
     def test_config_command_attributes(self):
         """Test attributes of Command."""
-        assert fossil_config.Command.FOSSIL.value == 'fossil'
-        assert fossil_config.Command.REPO.value == '-R'
-        assert fossil_config.Command.TIMELINE.value == 'timeline'
-        assert fossil_config.Command.VERBOSE.value == '--verbose'
-        assert fossil_config.Command.TYPE.value == '--type'
-        assert fossil_config.Command.CI.value == 'ci'
-        assert fossil_config.Command.LIMIT.value == '--limit'
-        assert fossil_config.Command.NO_LIMIT.value == '0'
-        assert fossil_config.Command.FULL.value == '--full'
-        assert fossil_config.Command.NEW.value == 'new'
-        assert fossil_config.Command.USER.value == 'user'
-        assert fossil_config.Command.DEFAULT.value == 'default'
-        assert fossil_config.Command.CONTACT.value == 'contact'
-        assert fossil_config.Command.TEMPLATE.value == '--template'
-        assert fossil_config.Command.ADMIN_USER.value == '--admin-user'
-        assert fossil_config.Command.DATE_OVERRIDE.value == '--date-override'
-        assert fossil_config.Command.PROJECT_NAME.value == '--project-name'
-        assert fossil_config.Command.PROJECT_DESC.value == '--project-desc'
-        assert fossil_config.Command.BRANCH.value == 'branch'
-        assert fossil_config.Command.LIST.value == 'list'
-        assert fossil_config.Command.ALL.value == '--all'
-        assert fossil_config.Command.OPEN.value == 'open'
-        assert fossil_config.Command.CLOSE.value == 'close'
-        assert fossil_config.Command.WORKDIR.value == '--workdir'
-        assert fossil_config.Command.CLOSED.value == '--closed'
-        assert fossil_config.Command.INFO.value == 'info'
-        assert fossil_config.Command.DIFF.value == 'diff'
-        assert fossil_config.Command.BRIEF.value == '--brief'
-        assert fossil_config.Command.FROM.value == '--from'
-        assert fossil_config.Command.TO.value == '--to'
-        assert fossil_config.Command.OUTFILE.value == '--out'
-        assert fossil_config.Command.CAT.value == 'cat'
-        assert fossil_config.Command.VERSION.value == '-r'
-        assert fossil_config.Command.ADD.value == 'add'
-        assert fossil_config.Command.COMMENT.value == '--comment'
-        assert fossil_config.Command.TAG.value == '--tag'
-        assert fossil_config.Command.USER_OVERRIDE.value == '--user-override'
-        assert fossil_config.Command.HASH.value == '--hash'
-        assert fossil_config.Command.COMMIT.value == 'commit'
+        assert fossil_config.Command.FOSSIL == 'fossil'
+        assert fossil_config.Command.REPO == '-R'
+        assert fossil_config.Command.TIMELINE == 'timeline'
+        assert fossil_config.Command.VERBOSE == '--verbose'
+        assert fossil_config.Command.TYPE == '--type'
+        assert fossil_config.Command.CI == 'ci'
+        assert fossil_config.Command.LIMIT == '--limit'
+        assert fossil_config.Command.NO_LIMIT == '0'
+        assert fossil_config.Command.FULL == '--full'
+        assert fossil_config.Command.NEW == 'new'
+        assert fossil_config.Command.USER == 'user'
+        assert fossil_config.Command.DEFAULT == 'default'
+        assert fossil_config.Command.CONTACT == 'contact'
+        assert fossil_config.Command.TEMPLATE == '--template'
+        assert fossil_config.Command.ADMIN_USER == '--admin-user'
+        assert fossil_config.Command.DATE_OVERRIDE == '--date-override'
+        assert fossil_config.Command.PROJECT_NAME == '--project-name'
+        assert fossil_config.Command.PROJECT_DESC == '--project-desc'
+        assert fossil_config.Command.BRANCH == 'branch'
+        assert fossil_config.Command.LIST == 'list'
+        assert fossil_config.Command.ALL == '--all'
+        assert fossil_config.Command.OPEN == 'open'
+        assert fossil_config.Command.CLOSE == 'close'
+        assert fossil_config.Command.WORKDIR == '--workdir'
+        assert fossil_config.Command.CLOSED == '--closed'
+        assert fossil_config.Command.INFO == 'info'
+        assert fossil_config.Command.DIFF == 'diff'
+        assert fossil_config.Command.BRIEF == '--brief'
+        assert fossil_config.Command.FROM == '--from'
+        assert fossil_config.Command.TO == '--to'
+        assert fossil_config.Command.OUTFILE == '--out'
+        assert fossil_config.Command.CAT == 'cat'
+        assert fossil_config.Command.VERSION == '-r'
+        assert fossil_config.Command.ADD == 'add'
+        assert fossil_config.Command.COMMENT == '--comment'
+        assert fossil_config.Command.TAG == '--tag'
+        assert fossil_config.Command.USER_OVERRIDE == '--user-override'
+        assert fossil_config.Command.HASH == '--hash'
+        assert fossil_config.Command.COMMIT == 'commit'
 
         assert isinstance(fossil_config.Command.FOSSIL, fossil_config.Command)
         assert len(fossil_config.Command) == 39
 
-    def test_config_timeline_data_attributes(self):
-        """Test attributes of TimelineData enum."""
-        td = fossil_config.TimelineData
-        assert td.INIT_CHECKIN.value == 'initial empty check-in'
-        assert td.END_MARK.value == '+++ end of timeline'
-        assert td.COMMITS_KEY.value == 'commits'
-        assert td.COMMIT_SEP.value == '\\n(?=Commit:\\s+)'
-        assert td.HASH_KEY.value == 'uuid'
-        assert td.DATE_KEY.value == 'date'
-        assert td.AUTHOR_KEY.value == 'author'
-        assert td.COMMENT_KEY.value == 'comment'
-        assert td.BRANCH_KEY.value == 'branch'
-        assert td.TAGS_KEY.value == 'tags'
-        assert td.PHASE_KEY.value == 'phase'
-        assert td.CHANGES_KEY.value == 'changes'
+    def test_timeline_data_factory_and_patterns(self):
+        """Verify the timeline_data factory and its pattern methods."""
+        td = fossil_config.timeline_data()
+        assert isinstance(td, fossil_config.TimelineDataConfig)
+        assert td.INIT_CHECKIN == 'initial empty check-in'
+        assert td.END_MARK == '+++ end of timeline'
+        assert td.COMMITS_KEY == 'commits'
+        assert td.COMMIT_SEP == '\\n(?=Commit:\\s+)'
+        assert td.HASH_KEY == 'uuid'
+        assert td.DATE_KEY == 'date'
+        assert td.AUTHOR_KEY == 'author'
+        assert td.COMMENT_KEY == 'comment'
+        assert td.BRANCH_KEY == 'branch'
+        assert td.TAGS_KEY == 'tags'
+        assert td.PHASE_KEY == 'phase'
+        assert td.CHANGES_KEY == 'changes'
         assert (
-            td.HASH_PATTERN.value
+            td.HASH_PATTERN
             == '^(?P<label>Commit:\\s+)(?P<uuid>[0-9a-f]+)$'
         )
-        assert td.DATE_PATTERN.value == '^(?P<label>Date):\\s+(?P<date>.+)$'
+        assert td.DATE_PATTERN == '^(?P<label>Date):\\s+(?P<date>.+)$'
         assert (
-            td.AUTHOR_PATTERN.value == '^(?P<label>Author):\\s+(?P<author>.+)?'
+            td.AUTHOR_PATTERN == '^(?P<label>Author):\\s+(?P<author>.+)?'
         )
         assert (
-            td.COMMENT_PATTERN.value
+            td.COMMENT_PATTERN
             == '^(?P<label>Comment):\\s+(?P<comment>.+)$'
         )
         assert (
-            td.BRANCH_PATTERN.value == '^(?P<label>Branch):\\s+(?P<branch>.+)$'
+            td.BRANCH_PATTERN == '^(?P<label>Branch):\\s+(?P<branch>.+)$'
         )
-        assert td.TAGS_PATTERN.value == '^(?P<label>Tags):\\s+(?P<tags>.+)$'
-        assert td.TAG_REGEX.value == '?P<tag>[\\w-]+'
+        assert td.TAGS_PATTERN == '^(?P<label>Tags):\\s+(?P<tags>.+)$'
+        assert td.TAG_REGEX == '?P<tag>[\\w-]+'
         assert (
-            td.PHASE_PATTERN.value
+            td.PHASE_PATTERN
             == '^(?P<label>Phase):\\s+\\*?(?P<phase>LEAF|PUBLISHED|FROZEN)?\\*?'
         )
         assert (
-            td.CHANGE_PATTERN.value
+            td.CHANGE_PATTERN
             == '^\\s+(?P<change>ADDED|EDITED|DELETED)\\s(?P<filename>.+)$'
         )
         assert (
-            td.PATH_PATTERN.value == '^(?P<path>.*[\\/])?(?P<file>[^/\\\\]+$)'
+            td.PATH_PATTERN == '^(?P<path>.*[\\/])?(?P<file>[^/\\\\]+$)'
         )
 
-        assert isinstance(td.HASH_KEY, fossil_config.TimelineData)
         assert len(td) == 22
 
-    @pytest.mark.parametrize(
-        'method_name, enum_member',
-        [
-            ('commit_pattern', 'COMMIT_SEP'),
-            ('hash_pattern', 'HASH_PATTERN'),
-            ('date_pattern', 'DATE_PATTERN'),
-            ('author_pattern', 'AUTHOR_PATTERN'),
-            ('comment_pattern', 'COMMENT_PATTERN'),
-            ('branch_pattern', 'BRANCH_PATTERN'),
-            ('tags_pattern', 'TAGS_PATTERN'),
-            ('phase_pattern', 'PHASE_PATTERN'),
-            ('change_pattern', 'CHANGE_PATTERN'),
-        ],
-    )
-    def test_config_timeline_data_pattern_methods(
-        self, method_name, enum_member
-    ):
-        """Test pattern compilation methods of TimelineData."""
-        member_instance = getattr(fossil_config.TimelineData, enum_member)
-        method = getattr(member_instance, method_name)
-        pattern_obj = method()
-        assert isinstance(pattern_obj, re.Pattern)
-        assert pattern_obj.pattern == member_instance.value
+        for method_name in [
+                m for m in dir(td) if m.endswith('_pattern')]:
+            pattern_method = getattr(td, method_name)
+            pattern_obj = pattern_method()
+            assert isinstance(pattern_obj, re.Pattern)
 
-    def test_config_info_data_attributes(self):
-        """Test member values of the InfoData enum."""
-        info_data = fossil_config.InfoData
-        assert info_data.INIT_HASH.value == '^comment:\\s+(?P<init>)\\s.+\\n'
-        assert info_data.PARENT_KEY.value == 'parent'
+    def test_info_data_factory_and_patterns(self):
+        """Verify the info_data factory and its pattern methods."""
+        id_config = fossil_config.info_data()
+        assert isinstance(id_config, fossil_config.InfoDataConfig)
+        assert id_config.INIT_HASH == '^comment:\\s+(?P<init>)\\s.+\\n'
+        assert id_config.PARENT_KEY == 'parent'
         assert (
-            info_data.PARENT_DATA_PATTERN.value
+            id_config.PARENT_DATA_PATTERN
             == '^parent:\\s+(?P<uuid>.+?)\\s.+\\n'
         )
-
-        assert isinstance(info_data.PARENT_KEY, fossil_config.InfoData)
-        assert len(info_data) == 3
-
-    @pytest.mark.parametrize(
-        'method_name, enum_member',
-        [
-            ('init_pattern', 'INIT_HASH'),
-            ('parent_pattern', 'PARENT_DATA_PATTERN'),
-        ],
-    )
-    def test_info_data_pattern_methods(self, method_name, enum_member):
-        """Test pattern compilation methods of InfoData."""
-        member_instance = getattr(fossil_config.InfoData, enum_member)
-        method = getattr(member_instance, method_name)
-        pattern_obj = method()
-        assert isinstance(pattern_obj, re.Pattern)
-        assert pattern_obj.pattern == member_instance.value
+        assert isinstance(id_config.init_pattern(), re.Pattern)
+        assert isinstance(id_config.parent_pattern(), re.Pattern)
 
     def test_config_fossil_attributes(self):
         """Test member values of the Fossil enum."""
-        f = fossil_config.Fossil
-        assert f.default_timeout.value == 180
-        assert f.process_error.value == 'FOSSIL_PROCESS_ERROR'
-        assert f.timeout_error.value == 'FOSSIL_TIMEOUT_ERROR'
-        assert f.args.value == 'args'
-        assert f.cmd.value == 'cmd'
-        assert f.output.value == 'output'
-        assert f.return_code.value == 'return_code'
-        assert f.default_return_code.value == 1
-        assert f.stderr.value == 'stderr'
-        assert f.timeout.value == 'timeout'
-        assert f.step.value == 'step'
-        assert f.init.value == 'New repository initialization'
-        assert f.username_setup.value == 'username_setup'
-        assert f.user_contact.value == 'user_contact'
+        fossil = fossil_config.Fossil
+        assert fossil.DEFAULT_TIMEOUT == '180'
+        assert fossil.PROCESS_ERROR == 'FOSSIL_PROCESS_ERROR'
+        assert fossil.TIMEOUT_ERROR == 'FOSSIL_TIMEOUT_ERROR'
+        assert fossil.ARGS == 'args'
+        assert fossil.CMD == 'cmd'
+        assert fossil.OUTPUT == 'output'
+        assert fossil.RETURN_CODE == 'return_code'
+        assert fossil.DEFAULT_RETURN_CODE == '1'
+        assert fossil.STDERR == 'stderr'
+        assert fossil.TIMEOUT == 'timeout'
+        assert fossil.STEP == 'step'
+        assert fossil.INIT == 'New repository initialization'
+        assert fossil.USERNAME_SETUP == 'username_setup'
+        assert fossil.USER_CONTACT == 'user_contact'
 
-        assert isinstance(f.step, fossil_config.Fossil)
-        assert len(f) == 14
+        assert len(fossil) == 14
