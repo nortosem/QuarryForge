@@ -151,14 +151,14 @@ def info_data() -> InfoDataConfig:
 class Fossil(StrEnum):
     """Define the constants used with fossil commands and exceptions."""
 
-    DEFAULT_TIMEOUT = 180  # seconds
+    DEFAULT_TIMEOUT = '180'  # seconds
     PROCESS_ERROR = 'FOSSIL_PROCESS_ERROR'
     TIMEOUT_ERROR = 'FOSSIL_TIMEOUT_ERROR'
     ARGS = 'args'
     CMD = 'cmd'
     OUTPUT = 'output'
     RETURN_CODE = 'return_code'
-    DEFAULT_RETURN_CODE = 1
+    DEFAULT_RETURN_CODE = '1'
     STDERR = 'stderr'
     TIMEOUT = 'timeout'
     STEP = 'step'
