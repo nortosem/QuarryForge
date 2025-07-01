@@ -10,6 +10,7 @@ __all__: list[str] = [
     'fossil_repo_config',
     'fossil_commit_config',
     'fossil_timeline_config',
+    'validation_config',
 ]
 
 
