@@ -1,4 +1,4 @@
-"""Unit tests for the quarryforge.config.fossil_config module."""
+"""Tests for quarryforge.config.exception_conf.fossil_exception_config module."""
 
 import re
 
