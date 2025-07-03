@@ -13,7 +13,7 @@ from quarryforge.exception import fossil_exception
 from quarryforge.util import fossil_util
 
 
-def add_files(files: list[Path]) -> str:
+def files(files: list[Path]) -> str:
     """Add files to the Fossil repository check-out.
 
     Args:
@@ -54,23 +54,9 @@ def add_files(files: list[Path]) -> str:
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        process_data = process_builder.data()
-        process_error = fossil_exception.FossilProcessError(
-            **process_data.to_exception()
-        )
-        add_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_ADD,
-            error_code=ec.GenericError.EXTERNAL_DEPENDENCY_ERROR,
-            arg=f'files: {[str(f) for f in files]}',
-            extra_details={
-                ec.DescMsg.DEPENDENCY: process_error.details[_.Fossil.CMD],
-                ec.DescMsg.REASON: process_error.details[_.Fossil.STDERR],
-            },
-        )
-        add_data = add_builder.data()
-        raise fossil_exception.FossilAddError(
-            **add_data.to_exception()
-        ) from process_error
+        raise fossil_exception.FossilProcessError(
+            **process_builder.data().to_exception()
+        ) from error
     except subprocess.TimeoutExpired as error:
         timeout_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_TIMEOUT,
@@ -85,25 +71,9 @@ def add_files(files: list[Path]) -> str:
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        timeout_data = timeout_builder.data()
-        timeout_error = fossil_exception.FossilTimeoutError(
-            **timeout_data.to_exception()
-        )
-        add_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_ADD,
-            error_code=ec.GenericError.INVALID_STATE_ERROR,
-            arg=f'files: {[str(f) for f in files]}',
-            info=timeout_error.details[e_data.builder_config().info],
-            extra_details={
-                _.Fossil.ARGS: timeout_error.details[_.Fossil.ARGS],
-                _.Fossil.CMD: timeout_error.details[_.Fossil.CMD],
-                _.Fossil.TIMEOUT: timeout_error.details[_.Fossil.TIMEOUT],
-            },
-        )
-        add_data = add_builder.data()
-        raise fossil_exception.FossilAddError(
-            **add_data.to_exception()
-        ) from timeout_error
+        raise fossil_exception.FossilTimeoutError(
+            **timeout_builder.data().to_exception()
+        ) from error
 
 
 def remove_files(files: list[Path]) -> str:
