@@ -55,9 +55,8 @@ def get_parent(version: str, source: model.FossilRepo) -> str | None:
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        process_data = process_builder.data()
-        process_error = fossil_exception.FossilProcessError(
-            **process_data.to_exception()
+        raise fossil_exception.FossilProcessError(
+            **process_builder.data().to_exception()
         ) from error
     except subprocess.TimeoutExpired as error:
         timeout_builder = fossil_ec.FossilErrorBuilder(
@@ -72,9 +71,8 @@ def get_parent(version: str, source: model.FossilRepo) -> str | None:
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        timeout_data = timeout_builder.data()
-        timeout_error = fossil_exception.FossilTimeoutError(
-            **timeout_data.to_exception()
+        raise fossil_exception.FossilTimeoutError(
+            **timeout_builder.data().to_exception()
         ) from error
 
     raw_parent_hash = info_process.stdout.decode()
@@ -100,4 +98,4 @@ def get_parent(version: str, source: model.FossilRepo) -> str | None:
             extra_details={'raw_output': raw_parent_hash},
         )
         info_data = info_builder.data()
-        raise fossil_exception.FossilInfoError(**info_data.to_exception())
+        raise fossil_exception.FossilOperationError(**info_data.to_exception())
