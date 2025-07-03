@@ -8,6 +8,11 @@ from quarryforge.config.exception_conf import fossil_exception_config as _
 from quarryforge.exception import base_exception
 
 
+__all__: list[str] = [
+    'FossilProcessError', 'FossilTimeoutError', 'FossilOperationError'
+]
+
+
 class FossilProcessError(
     base_exception.FossilError, subprocess.CalledProcessError
 ):
