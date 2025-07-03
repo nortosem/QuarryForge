@@ -59,7 +59,7 @@ def _setup_test_repo_config(
          '--project-desc', 'test description text',
          str(new_repo)
          ],
-        workdir.absolute()
+        workdir
     )
 
 
