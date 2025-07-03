@@ -46,6 +46,9 @@ def get(source: model.FossilRepo) -> str:
             check=True,
             timeout=int(_.Fossil.DEFAULT_TIMEOUT),
         )
+        raw_timeline = timeline.stdout.decode(errors='ignore')
+        end_index = raw_timeline.find(timeline_data().END_MARK)
+        return raw_timeline[:end_index] if end_index != -1 else raw_timeline
     except subprocess.CalledProcessError as error:
         stderr_output = (
             error.stderr.decode(errors='ignore')
@@ -65,7 +68,7 @@ def get(source: model.FossilRepo) -> str:
                 ec.DescMsg.REASON: stderr_output,
             },
         )
-        raise fossil_exception.FossilTimelineError(
+        raise fossil_exception.FossilProcessError(
             **builder.data().to_exception()
         ) from error
     except subprocess.TimeoutExpired as error:
@@ -81,13 +84,9 @@ def get(source: model.FossilRepo) -> str:
                 ec.DescMsg.REASON: "The 'fossil timeline' command timed out.",
             },
         )
-        timeout_data = builder.data()
         raise fossil_exception.FossilTimelineError(
-            **timeout_data.to_exception()
+            **builder.data().to_exception()
         ) from error
-    raw_timeline = timeline.stdout.decode(errors='ignore')
-    end_index = raw_timeline.find(timeline_data().END_MARK)
-    return raw_timeline[:end_index] if end_index != -1 else raw_timeline
 
 
 def parse_timeline(timeline_output: str) -> model.FossilTimeline:
@@ -120,7 +119,7 @@ def parse_timeline(timeline_output: str) -> model.FossilTimeline:
             + ('...' if len(timeline_output) > 100 else ''),
             info='No parsable commit blocks found in timeline output.',
         )
-        raise fossil_exception.FossilTimelineError(
+        raise fossil_exception.FossilOperationError(
             **builder.data().to_exception()
         )
     (
@@ -189,7 +188,7 @@ def parse_timeline(timeline_output: str) -> model.FossilTimeline:
                 changes=commit_data.get(timeline.CHANGES_KEY, []),
             )
             parsed_commits.append(new_commit)
-        except model_exception.FossilCommitError as error:
+        except model_exception.FossilOperationError as error:
             builder = fossil_ec.FossilErrorBuilder(
                 error_context=fossil_ec.FossilErrorPath.FOSSIL_TIMELINE,
                 error_code=ec.GenericError.VALUE_ERROR,
@@ -218,6 +217,6 @@ def parse_timeline(timeline_output: str) -> model.FossilTimeline:
             info='No valid commit data found in timeline output.',
         )
         error_data = builder.data()
-        raise fossil_exception.FossilTimelineError(**error_data.to_exception())
+        raise fossil_exception.FossilOperationError(**error_data.to_exception())
 
     return model.FossilTimeline(commits=parsed_commits)
