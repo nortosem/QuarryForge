@@ -67,23 +67,9 @@ def commit_changes(
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        process_data = process_builder.data()
-        process_error = fossil_exception.FossilProcessError(
-            **process_data.to_exception()
-        )
-        commit_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_COMMIT,
-            error_code=ec.GenericError.EXTERNAL_DEPENDENCY_ERROR,
-            arg=f'commit for {comment[:50]}...',
-            extra_details={
-                ec.DescMsg.DEPENDENCY: process_error.details[_.Fossil.CMD],
-                ec.DescMsg.REASON: process_error.details[_.Fossil.STDERR],
-            },
-        )
-        commit_data = commit_builder.data()
-        raise fossil_exception.FossilCommitError(
-            **commit_data.to_exception()
-        ) from process_error
+        raise fossil_exception.FossilProcessError(
+            **process_builder.data().to_exception()
+        ) from error
     except subprocess.TimeoutExpired as error:
         timeout_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_TIMEOUT,
@@ -98,22 +84,6 @@ def commit_changes(
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        timeout_data = timeout_builder.data()
-        timeout_error = fossil_exception.FossilTimeoutError(
-            **timeout_data.to_exception()
-        )
-        commit_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_COMMIT,
-            error_code=ec.GenericError.INVALID_STATE_ERROR,
-            arg=f'commit for {comment[:50]}...',
-            info=timeout_error.details[e_data.builder_config().info],
-            extra_details={
-                _.Fossil.ARGS: timeout_error.details[_.Fossil.ARGS],
-                _.Fossil.CMD: timeout_error.details[_.Fossil.CMD],
-                _.Fossil.TIMEOUT: timeout_error.details[_.Fossil.TIMEOUT],
-            },
-        )
-        commit_data = commit_builder.data()
-        raise fossil_exception.FossilCommitError(
-            **commit_data.to_exception()
-        ) from timeout_error
+        raise fossil_exception.FossilTimeoutError(
+            **timeout_builder.data().to_exception()
+        ) from error
