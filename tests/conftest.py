@@ -53,7 +53,7 @@ def _setup_test_repo_config(
     _run_fossil_command(
         ['fossil', 'new',
          '--admin-user', user,
-         '--date-override', date, # this is from src timeline data
+         '--date-override', date,
          '--template', str(src_repo),
          '--project-name', str(new_repo),
          '--project-desc', 'test description text',
