@@ -132,6 +132,7 @@ class FossilModule(StrEnum):
     BRANCH = 'Branch'
     ADD = 'Add'
     COMMIT = 'Commit'
+    CONTROL = 'Control'
 
 
 class UtilModule(StrEnum):

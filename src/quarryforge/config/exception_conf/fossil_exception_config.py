@@ -43,7 +43,8 @@ class FossilMessage(StrEnum):
     ADD_USER = 'Could not add the specified file(s) to the Fossil repository.'
     COMMIT_DETAIL = 'during Fossil commit operation.'
     COMMIT_USER = 'Could not commit changes to the Fossil repository.'
-
+    CONTROL_DETAIL = 'during Fossil control operation (e.g., open, close).'
+    CONTROL_USER = 'Could not complete the repository control operation.'
 
 class FossilErrorPath(StrEnum):
     """Defines complete error context paths for Fossil SCM related exceptions.
@@ -85,7 +86,9 @@ class FossilErrorPath(StrEnum):
     FOSSIL_COMMIT = _.get_full_error_code(
         _.BaseErrorPath.FOSSIL, root.FossilModule.COMMIT
     )
-
+    FOSSIL_CONTROL = _.get_full_error_code(
+        _.BaseErrorPath.FOSSIL, root.FossilModule.CONTROL
+    )
 
 class FossilErrorBuilder(_.BaseErrorBuilder):
     """Builder for constructing error data specific to Fossil SCM operations.
@@ -204,6 +207,9 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
                     f'{base_msg} Failure '
                     f'{FossilMessage.COMMIT_DETAIL}{reason_suffix}'
                 )
+            case FossilErrorPath.FOSSIL_CONTROL:
+                return (f'{base_msg} Failure during Fossil control '
+                        f'{FossilMessage.CONTROL_DETAIL}{reason_suffix}')
             case _:
                 if self.error_code in config.GenericError:
                     return super().message()
@@ -245,6 +251,8 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
                 return FossilMessage.ADD_USER
             case FossilErrorPath.FOSSIL_COMMIT:
                 return FossilMessage.COMMIT_USER
+            case FossilErrorapath.FOSSIL_CONTROL:
+                return FossilMessage.CONTROL_USER
             case _:
                 # For generic errors, fall back to the base implementation.
                 if self.error_code in config.GenericError:
