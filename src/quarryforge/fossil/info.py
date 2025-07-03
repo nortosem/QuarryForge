@@ -30,12 +30,9 @@ def get_parent(version: str, source: model.FossilRepo) -> str | None:
             initial commit (no parent).
 
     Raises:
-        fossil_exception.FossilProcessError:
-            If the Fossil command fails.
-        fossil_exception.FossilTimeoutError:
-            If the Fossil command times out.
-        fossil_exception.FossilInfoError:
-            If an issue occurs during info retrieval or parsing.
+        FossilProcessError: If the Fossil command fails.
+        FossilTimeoutError: If the Fossil command times out.
+        FossilInfoError: If parsing the command's output fails.
 
     """
     try:
@@ -61,20 +58,7 @@ def get_parent(version: str, source: model.FossilRepo) -> str | None:
         process_data = process_builder.data()
         process_error = fossil_exception.FossilProcessError(
             **process_data.to_exception()
-        )
-        info_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_INFO,
-            error_code=ec.GenericError.EXTERNAL_DEPENDENCY_ERROR,
-            arg=f'{version} from {str(source)}',
-            extra_details={
-                ec.DescMsg.DEPENDENCY: process_error.details[_.Fossil.CMD],
-                ec.DescMsg.REASON: process_error.details[_.Fossil.STDERR],
-            },
-        )
-        info_data = info_builder.data()
-        raise fossil_exception.FossilInfoError(
-            **info_data.to_exception()
-        ) from process_error
+        ) from error
     except subprocess.TimeoutExpired as error:
         timeout_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_TIMEOUT,
@@ -82,7 +66,6 @@ def get_parent(version: str, source: model.FossilRepo) -> str | None:
             arg=f'{version} from {str(source)}',
             info=str(error.stdout),
             extra_details={
-                _.Fossil.ARGS: error.args,
                 _.Fossil.CMD: error.cmd,
                 _.Fossil.TIMEOUT: error.timeout,
                 _.Fossil.OUTPUT: error.stdout,
@@ -92,22 +75,7 @@ def get_parent(version: str, source: model.FossilRepo) -> str | None:
         timeout_data = timeout_builder.data()
         timeout_error = fossil_exception.FossilTimeoutError(
             **timeout_data.to_exception()
-        )
-        info_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_INFO,
-            error_code=ec.GenericError.INVALID_STATE_ERROR,
-            arg=f'{version} from {str(source)}',
-            info=timeout_error.details[e_data.builder_config().info],
-            extra_details={
-                _.Fossil.ARGS: timeout_error.details[_.Fossil.ARGS],
-                _.Fossil.CMD: timeout_error.details[_.Fossil.CMD],
-                _.Fossil.TIMEOUT: timeout_error.details[_.Fossil.TIMEOUT],
-            },
-        )
-        info_data = info_builder.data()
-        raise fossil_exception.FossilInfoError(
-            **info_data.to_exception()
-        ) from timeout_error
+        ) from error
 
     raw_parent_hash = info_process.stdout.decode()
     initial_commit_re = _.info_data().init_pattern()
