@@ -1,5 +1,6 @@
 """Global fixtures for the quarryforge test suite."""
 
+import logging
 import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -10,20 +11,16 @@ import pytest
 from quarryforge import model
 
 
-TEST_REPO_FILENAME = "test-repo.fossil"
-TEST_WORKDIR_NAME = "test-workdir"
-USER_A = "original-username"
+START_DATE= "2025-04-02 13:10:14" # QF init
+TEST_REPO_FILENAME = "test_repo.fossil"
+TEST_WORKDIR_NAME = "test_workdir"
+USER_A = "local-username"
 USER_B = "github-username"
 
 
 def _run_fossil_command(cmd: list[str], workdir: Path):
     """Helper to run a Fossil command in the correct working directory."""
-    subprocess.run(
-        cmd,
-        cwd=workdir,
-        check=True,
-        capture_output=True,
-    )
+    subprocess.run(cmd, cwd=workdir, check=True, capture_output=True)
 
 
 def _create_test_repo_history(repo_path: Path, workdir: Path):
@@ -39,41 +36,92 @@ def _create_test_repo_history(repo_path: Path, workdir: Path):
         if files_to_add:
             _run_fossil_command(['fossil', 'add', *files_to_add], workdir)
         _run_fossil_command(
-            [
-                'fossil', 'commit',
-                '-m', comment,
-                '--date-override', date,
-                '--user-override', user,
-            ],
+            ['fossil',
+             'commit',
+             '-m', comment,
+             '--date-override',
+             date,
+             '--user-override',
+             user
+             ],
             workdir,
         )
 
+    def _write_safe(path: Path, content: str):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
 
-    (workdir / "README.md").write_text("Initial README.")
-    (workdir / "LICENSE").write_text("MIT License")
-    _commit("Initial commit with project structure.", USER_A, "2024-01-01T10:00:00", ["README.md", "LICENSE"])
+    # --- The Example Repo Commit History --- #
+    _write_safe(workdir / "README.md", "Initial README.")
+    _write_safe(workdir / "LICENSE", "MIT License")
+    _commit(
+        "Initial commit with project structure.",
+        USER_A,
+        "2024-01-01T10:00:00",
+        ["README.md", "LICENSE"]
+    )
 
-    (workdir / "src").mkdir()
-    (workdir / "src/app.py").write_text("print('hello world')")
-    _commit("Add core application logic.", USER_A, "2024-01-02T11:00:00", ["src/app.py"])
+    _write_safe(workdir / "src/app.py", "print('hello world')")
+    _commit(
+        "Add core application logic.",
+        USER_A,
+        "2024-01-02T11:00:00",
+        ["src/app.py"]
+    )
 
-    (workdir / "README.md").write_text("Initial README.\n\nUpdated with more info.")
-    _commit("Update README with usage instructions.", USER_A, "2024-01-03T12:00:00", [])
+    _write_safe(
+        workdir / "README.md",
+        "Initial README.\n\nUpdated with more info."
+    )
+    _commit(
+        "Update README with usage instructions.",
+        USER_A,
+        "2024-01-03T12:00:00", []
+    )
 
-    _run_fossil_command(['fossil', 'branch', 'new', 'feature-branch', 'trunk'], workdir)
-    _run_fossil_command(['fossil', 'update', 'feature-branch'], workdir)
-    (workdir / "src/utils.py").write_text("def helper(): pass")
-    _commit("feat: Add utility functions on feature branch.", USER_B, "2024-01-04T13:00:00", ["src/utils.py"])
+    _run_fossil_command(
+        ['fossil', 'branch', 'new', 'feature-branch', 'trunk'],
+        workdir
+    )
+    _run_fossil_command(
+        ['fossil', 'update', 'feature-branch'],
+        workdir
+    )
+    _write_safe(workdir / "src/utils.py", "def helper(): pass")
+    _commit(
+        "feat: Add utility functions on feature branch.",
+        USER_B,
+        "2024-01-04T13:00:00",
+        ["src/utils.py"]
+    )
 
     _run_fossil_command(['fossil', 'update', 'trunk'], workdir)
-    (workdir / "src/app.py").write_text("print('hello, quarryforge!') # updated")
-    _commit("refactor: Improve performance of app logic.", USER_A, "2024-01-04T14:00:00", [])
+    _write_safe(
+        workdir / "src/app.py",
+        "print('hello, quarryforge!') # updated"
+    )
+    _commit(
+        "refactor: Improve performance of app logic.",
+        USER_A,
+        "2024-01-04T14:00:00",
+        []
+    )
 
     _run_fossil_command(['fossil', 'merge', 'feature-branch'], workdir)
-    _commit("Merge feature-branch into trunk.", USER_A, "2024-01-05T15:00:00", [])
+    _commit(
+        "Merge feature-branch into trunk.",
+        USER_A,
+        "2024-01-05T15:00:00",
+        []
+    )
 
     _run_fossil_command(['fossil', 'rm', 'src/utils.py'], workdir)
-    _commit("refactor: Remove unused utils and tag v1.0.", USER_A, "2024-01-06T16:00:00", [])
+    _commit(
+        "refactor: Remove unused utils and tag v1.0.",
+        USER_A,
+        "2024-01-06T16:00:00",
+        []
+    )
     _run_fossil_command(['fossil', 'tag', 'add', 'v1.0', 'trunk'], workdir)
 
     _run_fossil_command(['fossil', 'close'], workdir)
@@ -90,14 +138,14 @@ def test_fossil_repo(tmp_path_factory) -> model.FossilRepo:
     workdir_path = base_tmp_path / TEST_WORKDIR_NAME
     workdir_path.mkdir()
 
-    print(f"\nCreating test Fossil repository at: {repo_path}")
+    logging.info(f"\nCreating test Fossil repository at: {repo_path}")
     _create_test_repo_history(repo_path, workdir_path)
 
     yield model.FossilRepo(
         file=repo_path, workdir=workdir_path, is_new=False
     )
 
-    print(f"\nTest session finished. Temporary repo at {base_tmp_path} will be removed.")
+    logging.info(f"\nTest session finished. Temporary repo at {base_tmp_path} will be removed.")
 
 
 @pytest.fixture
