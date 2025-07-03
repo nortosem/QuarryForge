@@ -44,6 +44,7 @@ def changes(from_arg: str, to_arg: str, source: model.FossilRepo) -> str:
             check=True,
             timeout=int(_.Fossil.DEFAULT_TIMEOUT),
         )
+        return diff_process.stdout.decode()
     except subprocess.CalledProcessError as error:
         process_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_PROCESS,
@@ -56,23 +57,9 @@ def changes(from_arg: str, to_arg: str, source: model.FossilRepo) -> str:
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        process_data = process_builder.data()
-        process_error = fossil_exception.FossilProcessError(
-            **process_data.to_exception()
-        )
-        diff_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_DIFF,
-            error_code=ec.GenericError.EXTERNAL_DEPENDENCY_ERROR,
-            arg=f'{from_arg} to {to_arg} in {str(source)}',
-            extra_details={
-                ec.DescMsg.DEPENDENCY: process_error.details[_.Fossil.CMD],
-                ec.DescMsg.REASON: process_error.details[_.Fossil.STDERR],
-            },
-        )
-        diff_data = diff_builder.data()
-        raise fossil_exception.FossilDiffError(
-            **diff_data.to_exception()
-        ) from process_error
+        raise fossil_exception.FossilProcessError(
+            **process_builder.data().to_exception()
+        ) from error
     except subprocess.TimeoutExpired as error:
         timeout_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_TIMEOUT,
@@ -87,24 +74,6 @@ def changes(from_arg: str, to_arg: str, source: model.FossilRepo) -> str:
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        timeout_data = timeout_builder.data()
-        timeout_error = fossil_exception.FossilTimeoutError(
-            **timeout_data.to_exception()
-        )
-        diff_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_DIFF,
-            error_code=ec.GenericError.INVALID_STATE_ERROR,
-            arg=f'{from_arg} to {to_arg} in {str(source)}',
-            info=timeout_error.details[e_data.builder_config().info],
-            extra_details={
-                _.Fossil.ARGS: timeout_error.details[_.Fossil.ARGS],
-                _.Fossil.CMD: timeout_error.details[_.Fossil.CMD],
-                _.Fossil.TIMEOUT: timeout_error.details[_.Fossil.TIMEOUT],
-            },
-        )
-        diff_data = diff_builder.data()
-        raise fossil_exception.FossilDiffError(
-            **diff_data.to_exception()
-        ) from timeout_error
-    raw_changes = diff_process.stdout.decode()
-    return raw_changes
+        raise fossil_exception.FossilTimeoutError(
+            **timeout_builder.data().to_exception()
+        ) from error
