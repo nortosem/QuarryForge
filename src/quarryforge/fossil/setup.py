@@ -86,6 +86,7 @@ def new_repo(
             check=True,
             timeout=int(_.Fossil.DEFAULT_TIMEOUT),
         )
+        return init_repo.stdout.decode()
     except subprocess.CalledProcessError as error:
         process_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_PROCESS,
@@ -98,24 +99,9 @@ def new_repo(
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        process_data = process_builder.data()
-        process_error = fossil_exception.FossilProcessError(
-            **process_data.to_exception()
-        )
-        setup_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_SETUP,
-            error_code=ec.GenericError.EXTERNAL_DEPENDENCY_ERROR,
-            arg=str(new_repo),
-            extra_details={
-                ec.DescMsg.DEPENDENCY: process_error.details[_.Fossil.CMD],
-                ec.DescMsg.REASON: process_error.details[_.Fossil.STDERR],
-                _.Fossil.STEP: _.Fossil.INIT,
-            },
-        )
-        setup_data = setup_builder.data()
-        raise fossil_exception.FossilSetupError(
-            **setup_data.to_exception()
-        ) from process_error
+        raise fossil_exception.FossilProcessError(
+            **process_builder.data().to_exception()
+        ) from error
     except subprocess.TimeoutExpired as error:
         timeout_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_TIMEOUT,
@@ -130,28 +116,9 @@ def new_repo(
             },
             info=str(error),
         )
-        timeout_data = timeout_builder.data()
-        timeout_error = fossil_exception.FossilTimeoutError(
-            **timeout_data.to_exception()
-        )
-        setup_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_SETUP,
-            error_code=ec.GenericError.INVALID_STATE_ERROR,
-            arg=str(new_repo),
-            extra_details={
-                _.Fossil.ARGS: timeout_error.details[_.Fossil.ARGS],
-                _.Fossil.CMD: timeout_error.details[_.Fossil.CMD],
-                _.Fossil.TIMEOUT: timeout_error.details[_.Fossil.TIMEOUT],
-                _.Fossil.STEP: _.Fossil.INIT,
-            },
-            info=timeout_error.details[e_data.builder_config().info],
-        )
-        setup_data = setup_builder.data()
-        raise fossil_exception.FossilSetupError(
-            **setup_data.to_exception()
-        ) from timeout_error
-
-    return init_repo.stdout.decode()
+        raise fossil_exception.FossilTimeoutError(
+            **timeout_builder.data().to_exception()
+        ) from error
 
 
 def default_user(username: str, new_repo: model.FossilRepo) -> str:
@@ -181,6 +148,7 @@ def default_user(username: str, new_repo: model.FossilRepo) -> str:
             check=True,
             timeout=int(_.Fossil.DEFAULT_TIMEOUT),
         )
+        return default_user.stdout.decode()
     except subprocess.CalledProcessError as error:
         process_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_PROCESS,
@@ -193,24 +161,9 @@ def default_user(username: str, new_repo: model.FossilRepo) -> str:
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        process_data = process_builder.data()
-        process_error = fossil_exception.FossilProcessError(
-            **process_data.to_exception()
-        )
-        setup_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_SETUP,
-            error_code=ec.GenericError.EXTERNAL_DEPENDENCY_ERROR,
-            arg=str(new_repo),
-            extra_details={
-                ec.DescMsg.DEPENDENCY: process_error.details[_.Fossil.CMD],
-                ec.DescMsg.REASON: process_error.details[_.Fossil.STDERR],
-                _.Fossil.STEP: _.Fossil.USERNAME_SETUP,
-            },
-        )
-        setup_data = setup_builder.data()
-        raise fossil_exception.FossilSetupError(
-            **setup_data.to_exception()
-        ) from process_error
+        raise fossil_exception.FossilProcessError(
+            **process_builder.data().to_exception()
+        ) from error
     except subprocess.TimeoutExpired as error:
         timeout_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_TIMEOUT,
@@ -225,28 +178,9 @@ def default_user(username: str, new_repo: model.FossilRepo) -> str:
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        timeout_data = timeout_builder.data()
-        timeout_error = fossil_exception.FossilTimeoutError(
-            **timeout_data.to_exception()
-        )
-        setup_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_SETUP,
-            error_code=ec.GenericError.INVALID_STATE_ERROR,
-            arg=str(new_repo),
-            info=timeout_error.details[e_data.builder_config().info],
-            extra_details={
-                _.Fossil.ARGS: timeout_error.details[_.Fossil.ARGS],
-                _.Fossil.CMD: timeout_error.details[_.Fossil.CMD],
-                _.Fossil.TIMEOUT: timeout_error.details[_.Fossil.TIMEOUT],
-                _.Fossil.STEP: _.Fossil.USERNAME_SETUP,
-            },
-        )
-        setup_data = setup_builder.data()
-        raise fossil_exception.FossilSetupError(
-            **setup_data.to_exception()
-        ) from timeout_error
-
-    return default_user.stdout.decode()
+        raise fossil_exception.FossilTimeoutError(
+            **timeout_builder.data().to_exception()
+        ) from error
 
 
 def user_contact(username: str, email: str, source: model.FossilRepo) -> str:
@@ -277,6 +211,7 @@ def user_contact(username: str, email: str, source: model.FossilRepo) -> str:
             check=True,
             timeout=int(_.Fossil.DEFAULT_TIMEOUT),
         )
+        return user_contact.stdout.decode()
     except subprocess.CalledProcessError as error:
         process_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_PROCESS,
@@ -289,24 +224,9 @@ def user_contact(username: str, email: str, source: model.FossilRepo) -> str:
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        process_data = process_builder.data()
-        process_error = fossil_exception.FossilProcessError(
-            **process_data.to_exception()
-        )
-        setup_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_SETUP,
-            error_code=ec.GenericError.EXTERNAL_DEPENDENCY_ERROR,
-            arg=str(source),
-            extra_details={
-                ec.DescMsg.DEPENDENCY: process_error.details[_.Fossil.CMD],
-                ec.DescMsg.REASON: process_error.details[_.Fossil.STDERR],
-                _.Fossil.STEP: _.Fossil.USER_CONTACT,
-            },
-        )
-        setup_data = setup_builder.data()
-        raise fossil_exception.FossilSetupError(
-            **setup_data.to_exception()
-        ) from process_error
+        raise fossil_exception.FossilProcessError(
+            **process_builder.data().to_exception()
+        ) from error
     except subprocess.TimeoutExpired as error:
         timeout_builder = fossil_ec.FossilErrorBuilder(
             error_context=fossil_ec.FossilErrorPath.FOSSIL_TIMEOUT,
@@ -321,25 +241,6 @@ def user_contact(username: str, email: str, source: model.FossilRepo) -> str:
                 _.Fossil.STDERR: error.stderr,
             },
         )
-        timeout_data = timeout_builder.data()
-        timeout_error = fossil_exception.FossilTimeoutError(
-            **timeout_data.to_exception()
-        )
-        setup_builder = fossil_ec.FossilErrorBuilder(
-            error_context=fossil_ec.FossilErrorPath.FOSSIL_SETUP,
-            error_code=ec.GenericError.INVALID_STATE_ERROR,
-            arg=str(source),
-            info=timeout_error.details[e_data.builder_config().info],
-            extra_details={
-                _.Fossil.ARGS: timeout_error.details[_.Fossil.ARGS],
-                _.Fossil.CMD: timeout_error.details[_.Fossil.CMD],
-                _.Fossil.TIMEOUT: timeout_error.details[_.Fossil.TIMEOUT],
-                _.Fossil.STEP: _.Fossil.USER_CONTACT,
-            },
-        )
-        setup_data = setup_builder.data()
-        raise fossil_exception.FossilSetupError(
-            **setup_data.to_exception()
-        ) from timeout_error
-
-    return user_contact.stdout.decode()
+        raise fossil_exception.FossilTimeoutError(
+            **timeout_builder.data().to_exception()
+        ) from error
