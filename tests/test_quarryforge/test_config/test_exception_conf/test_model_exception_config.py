@@ -1,4 +1,4 @@
-"""tests/test_config/test_model_exception_config.py"""
+"""Unit tests: quarryforge.config.exception_conf.model_exception_config module."""
 
 import pytest
 
@@ -19,44 +19,36 @@ class TestModelExceptionConfigModule:
         ]
         assert sorted(moec.__all__) == sorted(expected)
 
-    def test_model_error_path_attributes(self):
+    def test_model_error_path_enum(self):
         """Test ModelErrorPath attributes for correct path construction."""
-        base_path = f'{root.PACKAGE.name}.{root.MODULE.model}'
-        assert moec.ModelErrorPath.FOSSIL_COMMIT == (
-            f'{base_path}.{root.MODEL.fossil_commit}'
+        commit_root = bec.get_full_error_code(
+            bec.BaseErrorPath.MODEL, root.Model.FOSSIL_COMMIT
         )
-        assert moec.ModelErrorPath.FOSSIL_REPO == (
-            f'{base_path}.{root.MODEL.fossil_repo}'
+        repo_root = bec.get_full_error_code(
+            bec.BaseErrorPath.MODEL, root.Model.FOSSIL_REPO
         )
-        assert moec.ModelErrorPath.FOSSIL_TIMELINE == (
-            f'{base_path}.{root.MODEL.fossil_timeline}'
+        timeline_root = bec.get_full_error_code(
+            bec.BaseErrorPath.MODEL, root.Model.FOSSIL_TIMELINE
         )
+        assert moec.ModelErrorPath._FOSSIL_COMMIT_ROOT == commit_root
+        assert moec.ModelErrorPath._FOSSIL_REPO_ROOT == repo_root
+        assert moec.ModelErrorPath._FOSSIL_TIMELINE_ROOT == timeline_root
 
-    def test_fossil_repo_path_attributes(self):
-        assert moec.FossilRepoPath.INIT == (
-            f'{moec.ModelErrorPath.FOSSIL_REPO}.__init__'
+        assert moec.ModelErrorPath.FOSSIL_REPO_INIT == f'{repo_root}.__init__'
+        assert moec.ModelErrorPath.FOSSIL_COMMIT_INIT == (
+            f'{commit_root}.__init__'
         )
-
-    def test_fossil_commit_path_attributes(self):
-        assert moec.FossilCommitPath.INIT == (
-            f'{moec.ModelErrorPath.FOSSIL_COMMIT}.__init__'
+        assert moec.ModelErrorPath.FOSSIL_COMMIT_PARSE == (
+            f'{commit_root}.parse'
         )
-        assert moec.FossilCommitPath.PARSE == (
-            f'{moec.ModelErrorPath.FOSSIL_COMMIT}.parse'
+        assert moec.ModelErrorPath.FOSSIL_TIMELINE_INIT == (
+            f'{timeline_root}.__init__'
         )
-        assert moec.FossilCommitPath.VALIDATION == (
-            f'{moec.ModelErrorPath.FOSSIL_COMMIT}.validation'
+        assert moec.ModelErrorPath.FOSSIL_TIMELINE_PARSE == (
+            f'{timeline_root}.parse'
         )
-
-    def test_fossil_timeline_path_attributes(self):
-        assert moec.FossilTimelinePath.INIT == (
-            f'{moec.ModelErrorPath.FOSSIL_TIMELINE}.__init__'
-        )
-        assert moec.FossilTimelinePath.PARSE == (
-            f'{moec.ModelErrorPath.FOSSIL_TIMELINE}.parse'
-        )
-        assert moec.FossilTimelinePath.NO_COMMITS_DATA == (
-            f'{moec.ModelErrorPath.FOSSIL_TIMELINE}.no_commits_data'
+        assert moec.ModelErrorPath.FOSSIL_TIMELINE_NO_COMMITS == (
+            f'{timeline_root}.no_commits_data'
         )
 
 
@@ -67,88 +59,163 @@ class TestFossilRepoErrorBuilder:
         assert issubclass(moec.FossilRepoErrorBuilder, bec.BaseErrorBuilder)
 
     @pytest.mark.parametrize(
-        'error_code, arg, info, expected_message',
+        'error_code, arg, info, extra_details, expected_message',
         [
-            (
-                ec.STRING_ERROR.empty,
+            (   # === StringError cases ===
+                ec.StringError.EMPTY_STRING_ERROR,
                 '',
                 'a non-empty string',
-                (
-                    'Error in `quarryforge.model.FossilRepo.__init__` '
-                    '(Code: EMPTY_STRING_ERROR). String argument is empty or '
-                    'only whitespace. Expected: a non-empty string.'
-                ),
-            ),
-            (
-                ec.PATH_ERROR.nonexistent,
-                '/fake/path',
                 None,
                 (
-                    'Error in `quarryforge.model.FossilRepo.__init__` '
-                    "(Code: PATH_NONEXISTENT_ERROR). Path '/fake/path' is "
-                    'expected to exist, but does not.'
+                    'Error in `ctx.repo` (Code: EMPTY_STRING_ERROR). String '
+                    'argument is empty or only whitespace. Expected: a '
+                    'non-empty string.'
                 ),
             ),
-            (
-                ec.PATH_ERROR.existing,
-                '/real/path',
+            (   # === PathError cases ===
+                ec.StringError.INVALID_CHARS_ERROR,
+                'bad!',
+                '/[a-z]+/',
                 None,
                 (
-                    'Error in `quarryforge.model.FossilRepo.__init__` '
-                    "(Code: PATH_EXISTING_ERROR). Path '/real/path' is "
-                    'expected not to exist (for creation), but already does.'
+                    'Error in `ctx.repo` (Code: INVALID_CHARS_ERROR). '
+                    'String \'bad!\' contains invalid characters or patterns. '
+                    'Expected pattern: /[a-z]+/.'
                 ),
             ),
             (
-                ec.PATH_ERROR.file_error,
+                ec.PathError.NON_PATH_OBJECT_ERROR,
+                123,
+                None,
+                None,
+                'Error in `ctx.repo` (Code: NON_PATH_OBJECT_ERROR). Argument '
+                '123 is not a valid path or  convertible to one.'
+            ),
+            (
+                ec.PathError.INVALID_PATH_STRING_ERROR,
+                'invalid:path',
+                None,
+                None,
+                (
+                    'Error in `ctx.repo` (Code: INVALID_PATH_STRING_ERROR). '
+                    'The provided string \'invalid:path\' cannot be  interpreted '
+                    'as a valid system path.'
+                ),
+            ),
+            (
+                ec.PathError.PATH_RESOLUTION_ERROR,
+                '~/../a/b',
+                None,
+                {'reason': 'Symbolic link loop detected'},
+                (
+                    'Error in `ctx.repo` (Code: PATH_RESOLUTION_ERROR). '
+                    'Path resolution failed for \'~/../a/b\'.  Reason: '
+                    'Symbolic link loop detected.'
+                ),
+            ),
+            (
+                ec.PathError.PATH_NONEXISTENT_ERROR,
+                '/no/such/path',
+                None,
+                None,
+                (
+                    'Error in `ctx.repo` (Code: PATH_NONEXISTENT_ERROR). Path '
+                    '\'/no/such/path\' is expected to exist, but does not.'
+                ),
+            ),
+            (
+                ec.PathError.PATH_EXISTING_ERROR,
+                '/already/exists',
+                None,
+                None,
+                (
+                    'Error in `ctx.repo` (Code: PATH_EXISTING_ERROR). Path '
+                    '\'/already/exists\' is expected not to exist (for '
+                    'creation), but already does.'
+                ),
+            ),
+            (
+                ec.PathError.PATH_NOT_A_FILE_ERROR,
                 '/path/is/dir',
                 None,
-                (
-                    'Error in `quarryforge.model.FossilRepo.__init__` '
-                    "(Code: PATH_NOT_A_FILE_ERROR). Path '/path/is/dir' is "
-                    'expected to be a file, but it is a directory.'
-                ),
-            ),
-            (
-                ec.PATH_ERROR.dir_error,
-                '/path/is/file',
                 None,
                 (
-                    'Error in `quarryforge.model.FossilRepo.__init__` '
-                    '(Code: PATH_NOT_A_DIRECTORY_ERROR). Path '
-                    "'/path/is/file' is expected to be a directory, but it "
-                    'is a file.'
+                    'Error in `ctx.repo` (Code: PATH_NOT_A_FILE_ERROR). Path '
+                    '\'/path/is/dir\' is expected to be a file, but it is a '
+                    'directory.'
                 ),
             ),
             (
-                ec.PATH_ERROR.same_dir,
-                '/same/path',
+                ec.PathError.PATH_NOT_A_DIRECTORY_ERROR,
+                '/path/is/file.txt',
+                None,
                 None,
                 (
-                    'Error in `quarryforge.model.FossilRepo.__init__` '
-                    '(Code: SAME_REPO_DIR_AND_WORK_DIR). Fossil repository'
-                    ' directory matches the working directory.'
+                    'Error in `ctx.repo` (Code: PATH_NOT_A_DIRECTORY_ERROR). '
+                    'Path \'/path/is/file.txt\' is expected to be a directory, '
+                    'but it is a file.'
                 ),
             ),
-            # Fallback to base builder
             (
-                ec.GENERIC_ERROR.value_error,
+                ec.PathError.PATH_NOT_READABLE_ERROR,
+                '/no/read/perms',
+                None,
+                None,
+                (
+                    'Error in `ctx.repo` (Code: PATH_NOT_READABLE_ERROR). Path '
+                    '\'/no/read/perms\' lacks read permissions.'
+                )
+            ),
+            (
+                ec.PathError.PATH_NOT_WRITABLE_ERROR,
+                '/no/write/perms',
+                None,
+                None,
+                (
+                    'Error in `ctx.repo` (Code: PATH_NOT_WRITABLE_ERROR). Path '
+                    '\'/no/write/perms\' lacks write permissions.'
+                ),
+            ),
+            (
+                ec.PathError.PATH_NOT_EXECUTABLE_ERROR,
+                '/no/exec/perms',
+                None,
+                None,
+                (
+                    'Error in `ctx.repo` (Code: PATH_NOT_EXECUTABLE_ERROR). Path '
+                    '\'/no/exec/perms\' lacks execute permissions.'
+                ),
+            ),
+            (
+                ec.PathError.SAME_REPO_DIR_AND_WORK_DIR,
+                None,
+                None,
+                None,
+                (
+                    'Error in `ctx.repo` (Code: SAME_REPO_DIR_AND_WORK_DIR). '
+                    'Fossil repository directory matches the working directory.'
+                ),
+            ),
+            (   # === Fallback to BaseErrorBuilder case ===
+                ec.GenericError.VALUE_ERROR,
                 'bad_value',
                 'good_value',
+                None,
                 (
-                    'Error in `quarryforge.model.FossilRepo.__init__` '
-                    "(Code: VALUE_ERROR). Value 'bad_value' is invalid. "
-                    'Expected value: good_value.'
+                    'Error in `ctx.repo` (Code: VALUE_ERROR). Value '
+                    '\'bad_value\' is invalid. Expected value: good_value.'
                 ),
             ),
         ],
     )
-    def test_message_mcdc(self, error_code, arg, info, expected_message):
+    def test_message_mcdc(self, error_code, arg, info, extra_details, expected_message):
+        """Test the message() method for all defined error codes."""
         builder = moec.FossilRepoErrorBuilder(
-            error_context=moec.FossilRepoPath.INIT,
+            error_context='ctx.repo',
             error_code=error_code,
             arg=arg,
             info=info,
+            extra_details=extra_details,
         )
         assert builder.message() == expected_message
 
@@ -156,19 +223,19 @@ class TestFossilRepoErrorBuilder:
         'error_code, expected_user_message',
         [
             (
-                ec.PATH_ERROR.nonexistent,
+                ec.PathError.PATH_NONEXISTENT_ERROR,
                 'A required file or directory was not found.',
             ),
             (
-                ec.PATH_ERROR.same_dir,
+                ec.PathError.SAME_REPO_DIR_AND_WORK_DIR,
                 (
                     'The fossil repository parent directory is the '
                     'same directory as the workdir.'
                 ),
             ),
-            (ec.STRING_ERROR.empty, 'A required text input was left empty.'),
+            (ec.StringError.EMPTY_STRING_ERROR, 'A required text input was left empty.'),
             (
-                ec.GENERIC_ERROR.configuration_error,
+                ec.GenericError.CONFIGURATION_ERROR,
                 'There is an issue with the configuration.',
             ),  # Fallback
         ],
@@ -186,48 +253,58 @@ class TestFossilCommitErrorBuilder:
     @pytest.mark.parametrize(
         'error_context, error_code, field, arg, info, expected_message',
         [
-            (
-                moec.FossilCommitPath.VALIDATION,
-                ec.STRING_ERROR.invalid_chars,
-                model_config.FOSSIL_COMMIT.uuid,
+            (   # Test case for the specific INVALID_CHARS_ERROR on a UUID field
+                moec.ModelErrorPath.FOSSIL_COMMIT_INIT,
+                ec.StringError.INVALID_CHARS_ERROR,
+                model_config.fossil_commit_config().uuid,
                 'bad-uuid',
-                'a valid string (e.g., 40-char SHA-3 hex)',
+                'a valid string',
                 (
-                    'Error in `quarryforge.model.FossilCommit.validation` '
+                    'Error in `quarryforge.model.FossilCommit.__init__` '
                     "(Code: INVALID_CHARS_ERROR). Commit UUID 'bad-uuid' is "
                     'not a valid format. Expected: a valid string '
                     '(e.g., 40-char SHA-3 hex).'
                 ),
             ),
-            (
-                moec.FossilCommitPath.PARSE,
-                ec.GENERIC_ERROR.type_error,
+            (   # Test case for a generic INVALID_CHARS_ERROR (fallback path)
+                moec.ModelErrorPath.FOSSIL_COMMIT_INIT,
+                ec.StringError.INVALID_CHARS_ERROR,
+                'author',
+                'bad author!',
                 None,
-                'bad data',
-                'a valid string',
                 (
-                    'Error in `quarryforge.model.FossilCommit.parse` '
-                    '(Code: TYPE_ERROR). Failed to parse commit data from '
-                    "'bad data'. Reason: unknown."
+                    'Error in `quarryforge.model.FossilCommit.__init__` (Code: '
+                    'INVALID_CHARS_ERROR). Error code INVALID_CHARS_ERROR '
+                    'unhandled is an unexpected error.'
                 ),
             ),
-            (
-                moec.FossilCommitPath.VALIDATION,
-                ec.GENERIC_ERROR.invalid_state,
+            (   # Test case for VALUE_ERROR during parsing
+                moec.ModelErrorPath.FOSSIL_COMMIT_PARSE,
+                ec.GenericError.VALUE_ERROR,
+                None,
+                'bad data',
+                None,
+                (
+                    'Error in `quarryforge.model.FossilCommit.parse` (Code: '
+                    'VALUE_ERROR). Failed to parse commit data from \'bad '
+                    'data\'. Reason: unknown.'
+                ),
+            ),
+            (   # Test case for INVALID_STATE_ERROR on a specific field
+                moec.ModelErrorPath.FOSSIL_COMMIT_INIT,
+                ec.GenericError.INVALID_STATE_ERROR,
                 'author',
                 'some commit',
                 None,
                 (
-                    'Error in `quarryforge.model.FossilCommit.validation` '
-                    '(Code: INVALID_STATE_ERROR). Required field '
-                    '"author" is missing or empty in commit data for '
-                    "'some commit'."
+                    'Error in `quarryforge.model.FossilCommit.__init__` (Code: '
+                    'INVALID_STATE_ERROR). Required field "author" is missing or '
+                    'empty in commit data for \'some commit\'.'
                 ),
             ),
-            # Fallback
-            (
-                moec.FossilCommitPath.INIT,
-                ec.GENERIC_ERROR.type_error,
+            (   # Fallback
+                moec.ModelErrorPath.FOSSIL_COMMIT_INIT,
+                ec.GenericError.TYPE_ERROR,
                 None,
                 123,
                 'a valid string',
@@ -253,7 +330,7 @@ class TestFossilCommitErrorBuilder:
             error_code=error_code,
             field=field,
             arg=arg,
-            info='a valid string',  # for uuid test
+            info=info
         )
         assert builder.message() == expected_message
 
@@ -261,29 +338,29 @@ class TestFossilCommitErrorBuilder:
         'error_context, error_code, field, expected_user_message',
         [
             (
-                moec.FossilCommitPath.VALIDATION,
-                ec.STRING_ERROR.invalid_chars,
-                model_config.FOSSIL_COMMIT.uuid,
+                moec.ModelErrorPath.FOSSIL_COMMIT_INIT,
+                ec.StringError.INVALID_CHARS_ERROR,
+                model_config.fossil_commit_config().uuid,
                 'The commit identifier (UUID) is in an invalid format.',
             ),
             (
-                moec.FossilCommitPath.PARSE,
-                ec.GENERIC_ERROR.value_error,
+                moec.ModelErrorPath.FOSSIL_COMMIT_PARSE,
+                ec.GenericError.VALUE_ERROR,
                 None,
                 'Could not understand the commit information provided.',
             ),
             (
-                moec.FossilCommitPath.VALIDATION,
-                ec.GENERIC_ERROR.invalid_state,
+                moec.ModelErrorPath.FOSSIL_COMMIT_INIT,
+                ec.GenericError.INVALID_STATE_ERROR,
                 'comment',
                 'A required piece of commit information (comment) was missing.',
             ),
-            (
-                moec.FossilCommitPath.INIT,
-                ec.GENERIC_ERROR.not_implemented_error,
+            (   # Fallback
+                moec.ModelErrorPath.FOSSIL_COMMIT_INIT,
+                ec.GenericError.NOT_IMPLEMENTED_ERROR,
                 None,
                 'This feature is not available.',
-            ),  # Fallback
+            ),
         ],
     )
     def test_user_message_mcdc(
@@ -301,9 +378,9 @@ class TestFossilTimelineErrorBuilder:
     @pytest.mark.parametrize(
         'error_context, error_code, arg, expected_message',
         [
-            (
-                moec.FossilTimelinePath.PARSE,
-                ec.GENERIC_ERROR.value_error,
+            (   # Test case for VALUE_ERROR during parsing
+                moec.ModelErrorPath.FOSSIL_TIMELINE_PARSE,
+                ec.GenericError.VALUE_ERROR,
                 'bad data',
                 (
                     'Error in `quarryforge.model.FossilTimeline.parse` '
@@ -311,9 +388,9 @@ class TestFossilTimelineErrorBuilder:
                     "from 'bad data'. Reason: unknown."
                 ),
             ),
-            (
-                moec.FossilTimelinePath.NO_COMMITS_DATA,
-                ec.GENERIC_ERROR.invalid_state,
+            (   # Test case for NO_COMMITS_DATA
+                moec.ModelErrorPath.FOSSIL_TIMELINE_NO_COMMITS,
+                ec.GenericError.INVALID_STATE_ERROR,
                 'empty output',
                 (
                     'Error in '
@@ -323,10 +400,9 @@ class TestFossilTimelineErrorBuilder:
                     'might be empty or in an unexpected format.'
                 ),
             ),
-            # Fallback
             (
-                moec.FossilTimelinePath.INIT,
-                ec.GENERIC_ERROR.type_error,
+                moec.ModelErrorPath.FOSSIL_TIMELINE_INIT,
+                ec.GenericError.TYPE_ERROR,
                 123,
                 (
                     'Error in `quarryforge.model.FossilTimeline.__init__` '
@@ -348,20 +424,20 @@ class TestFossilTimelineErrorBuilder:
         'error_context, error_code, expected_user_message',
         [
             (
-                moec.FossilTimelinePath.PARSE,
-                ec.GENERIC_ERROR.value_error,
+                moec.ModelErrorPath.FOSSIL_TIMELINE_PARSE,
+                ec.GenericError.VALUE_ERROR,
                 'Could not use the timeline information provided.',
             ),
             (
-                moec.FossilTimelinePath.NO_COMMITS_DATA,
-                ec.GENERIC_ERROR.invalid_state,
-                'No commit history could be found for the repository.',
+                moec.ModelErrorPath.FOSSIL_TIMELINE_PARSE,
+                ec.GenericError.INVALID_STATE_ERROR,
+                'An operation attempted in an invalid application state.',
             ),
             (
-                moec.FossilTimelinePath.INIT,
-                ec.GENERIC_ERROR.not_implemented_error,
-                'This feature is not available.',
-            ),  # Fallback
+                moec.ModelErrorPath.FOSSIL_TIMELINE_NO_COMMITS,
+                ec.GenericError.INVALID_STATE_ERROR,
+                'No commit history could be found for the repository.',
+            ),
         ],
     )
     def test_user_message_mcdc(
