@@ -1,4 +1,4 @@
-"""tests/test_config/test_meta_exception_config.py"""
+"""Unit test quarryforge.config.exception_conf.meta_exception_config module."""
 
 import pytest
 
@@ -20,35 +20,35 @@ class TestMetaExceptionConfigModule:
     """Tests for module-level content in meta_exception_config."""
 
     def test_module_dunder_all(self):
-        """Test the __all__ variable for completeness."""
-        expected_all = ['MetaErrorBuilder']
-        assert sorted(mec.__all__) == sorted(expected_all)
+        """Verify the module's public API."""
+        assert mec.__all__ == ['MetaErrorBuilder']
 
-    def test_meta_error_code_attributes(self):
-        """Test attributes of MetaErrorCode."""
-        assert mec.META_ERROR_CODE.ASSEMBLER_ERROR == ('ASSEMBLER_ERROR')
-        assert mec.META_ERROR_CODE.IMMUTABILITY_VIOLATION == (
-            'IMMUTABILITY_VIOLATION'
-        )
+    def test_MetaErrorCode_enum(self):
+        """Test attributes of MetaErrorCode enum."""
+        assert mec.MetaErrorCode.ASSEMBLER_ERROR == 'ASSEMBLER_ERROR'
+        assert mec.MetaErrorCode.IMMUTABILITY_VIOLATION == (
+            'IMMUTABILITY_VIOLATION')
 
-    def test_meta_error_messages_attributes(self):
-        """Test attributes of MetaErrorMessages."""
-        assert mec.META_MSG.immutable_violation_user == (
-            'Attempted to modify an immutable object.'
-        )
-        assert mec.META_MSG.assembler_error_user == (
+    def test_meta_error_messages_factory(self):
+        """Test the meta_error_message factory and its NamedTuple."""
+        cfg = mec.meta_error_message()
+        assert isinstance(cfg, mec.MetaErrorMessages)
+        assert cfg.immutable_violation_user == (
+            'Attempted to modify an immutable object.')
+        assert cfg.assembler_error_user == (
             'A fatal error occured while assembling an error message.'
         )
-        assert mec.META_MSG.default_meta_user == (
+        assert cfg.default_meta_user == (
             'An error occurred in the meta subpackage.'
         )
 
-    def test_meta_error_path_attributes(self):
+    def test_meta_error_path_enum(self):
         """Test MetaErrorPath attributes for correct path construction."""
-        root_path = f'{root.PACKAGE.name}.{root.SUB_PACKAGE.meta}'
+        root_path = bec.build_path(root.SubPackage.META)
         assert mec.MetaErrorPath.META_ROOT_CONTEXT == root_path
 
-        immutable_path = f'{root_path}.{root.META_MODULE.immutable}'
+        immutable_path = bec.get_full_error_code(
+            root_path, root.MetaModule.IMMUTABLE)
         assert mec.MetaErrorPath.IMMUTABLE_CONTEXT == immutable_path
         assert mec.MetaErrorPath.IMMUTABLE_NAMESPACE == (
             f'{immutable_path}.Namespace'
@@ -57,7 +57,8 @@ class TestMetaExceptionConfigModule:
             f'{immutable_path}.Instance'
         )
 
-        assembler_path = f'{root_path}.{root.META_MODULE.assembler}'
+        assembler_path = bec.get_full_error_code(
+            root_path, root.MetaModule.ASSEMBLER)
         assert mec.MetaErrorPath.ASSEMBLER_CONTEXT == assembler_path
 
 
@@ -72,63 +73,63 @@ class TestMetaErrorBuilder:
         'error_code, error_context, arg, field, info, expected_message',
         [  # === IMMUTABILITY_VIOLATION Tests ===
             (
-                mec.META_ERROR_CODE.IMMUTABILITY_VIOLATION,
+                mec.MetaErrorCode.IMMUTABILITY_VIOLATION,
                 mec.MetaErrorPath.IMMUTABLE_INSTANCE,
                 TestDummyInstance(),
                 'attr1',
                 'set value',
                 (
                     'Error in `quarryforge.meta.immutable.Instance` (Code:'
-                    ' IMMUTABILITY_VIOLATION): Cannot set value on immutable'
+                    ' IMMUTABILITY_VIOLATION). Cannot set value on immutable'
                     ' object "TestDummyInstance". Attempted to modify'
                     ' attribute: attr1.'
                 ),
             ),
             (
-                mec.META_ERROR_CODE.IMMUTABILITY_VIOLATION,
+                mec.MetaErrorCode.IMMUTABILITY_VIOLATION,
                 mec.MetaErrorPath.IMMUTABLE_NAMESPACE,
                 TestDummyClass,
                 'attr2',
                 'delete attribute',
                 (
                     'Error in `quarryforge.meta.immutable.Namespace` (Code:'
-                    ' IMMUTABILITY_VIOLATION): Cannot delete attribute on'
+                    ' IMMUTABILITY_VIOLATION). Cannot delete attribute on'
                     ' immutable object "TestDummyClass". Attempted to modify'
                     ' attribute: attr2.'
                 ),
             ),
             (  # === ASSEMBLER_ERROR Tests ===
-                mec.META_ERROR_CODE.ASSEMBLER_ERROR,
+                mec.MetaErrorCode.ASSEMBLER_ERROR,
                 mec.MetaErrorPath.ASSEMBLER_CONTEXT,
                 None,
                 'field1',
                 'bad data provided',
                 (
                     'Error in `quarryforge.meta.assembler` (Code: '
-                    'ASSEMBLER_ERROR): Error builder assembly failure: bad '
+                    'ASSEMBLER_ERROR). Error builder assembly failure: bad '
                     'data provided. Issue with field: field1.'
                 ),
             ),
             (  # === Fallback to BaseErrorBuilder Tests ===
-                ec.GENERIC_ERROR.type_error,
+                ec.GenericError.TYPE_ERROR,
                 mec.MetaErrorPath.META_ROOT_CONTEXT,
                 123,
                 None,
                 'a string',
                 (
-                    'Error in `quarryforge.meta` (Code: TYPE_ERROR): Expected'
-                    ' type: a string. Got type int with value "123" instead.'
+                    'Error in `quarryforge.meta` (Code: TYPE_ERROR). Expected'
+                    ' type: a string. Got type int with value 123 instead.'
                 ),
             ),
             (
-                ec.GENERIC_ERROR.value_error,
+                ec.GenericError.VALUE_ERROR,
                 mec.MetaErrorPath.ASSEMBLER_CONTEXT,
                 'bad',
                 None,
                 'good',
                 (
-                    'Error in `quarryforge.meta.assembler` (Code: VALUE_ERROR):'
-                    ' Value "\'bad\'" is invalid. Expected value: good.'
+                    'Error in `quarryforge.meta.assembler` (Code: VALUE_ERROR).'
+                    ' Value \'bad\' is invalid. Expected value: good.'
                 ),
             ),
         ],
@@ -156,24 +157,24 @@ class TestMetaErrorBuilder:
         'error_code, expected_message',
         [
             (  # Test specific meta error codes
-                mec.META_ERROR_CODE.IMMUTABILITY_VIOLATION,
-                mec.META_MSG.immutable_violation_user,
+                mec.MetaErrorCode.IMMUTABILITY_VIOLATION,
+                mec.meta_error_message().immutable_violation_user,
             ),
             (
-                mec.META_ERROR_CODE.ASSEMBLER_ERROR,
-                mec.META_MSG.assembler_error_user,
+                mec.MetaErrorCode.ASSEMBLER_ERROR,
+                mec.meta_error_message().assembler_error_user,
             ),
             (  # Test fallback to BaseErrorBuilder for generic codes
-                ec.GENERIC_ERROR.value_error,
+                ec.GenericError.VALUE_ERROR,
                 'An input value is not valid for this operation.',
             ),
             (
-                ec.GENERIC_ERROR.configuration_error,
+                ec.GenericError.CONFIGURATION_ERROR,
                 'There is an issue with the configuration.',
             ),
             (  # Test the final default case for unknown meta-specific codes
                 'UNKNOWN_META_CODE',
-                mec.META_MSG.default_meta_user,
+                mec.meta_error_message().default_meta_user,
             ),
         ],
     )
