@@ -12,7 +12,6 @@ import pytest
 from quarryforge import model
 
 
-MONTH = datetime.now().month
 DATE_NOW = datetime.now().replace(
     year=datetime.now().year-1,
     month=datetime.now().month-3).isoformat().replace('T', ' ')
