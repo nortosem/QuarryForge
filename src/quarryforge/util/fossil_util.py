@@ -144,11 +144,11 @@ def set_user_contact(
     return cmd
 
 
-def open_rebuild(new_repo: model.FossilRepo, workdir: Path) -> list[str]:
+def open_repo(repo: model.FossilRepo, workdir: Path) -> list[str]:
     """Create a command to open a Fossil repository.
 
     Args:
-        new_repo (model.FossilRepo): The Fossil repository file to open.
+        repo (model.FossilRepo): The Fossil repository file to open.
         workdir (Path): The path opened as the working directory .
 
     Returns:
@@ -158,15 +158,15 @@ def open_rebuild(new_repo: model.FossilRepo, workdir: Path) -> list[str]:
     cmd: list[str] = [
         fossil_config.Command.FOSSIL,
         fossil_config.Command.OPEN,
-        str(new_repo),
+        str(repo),
         fossil_config.Command.WORKDIR,
         str(workdir),
     ]
     return cmd
 
 
-def close_rebuild() -> list[str]:
-    """Close the rebuild repository check--out.
+def close_repo() -> list[str]:
+    """Close a fossil repository.
 
     Returns:
         A list of string representing the command.
