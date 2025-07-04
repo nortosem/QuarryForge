@@ -81,7 +81,8 @@ class TestFossilExceptionConfigModule:
         assert fec.FossilErrorPath.FOSSIL_BRANCH == 'quarryforge.fossil.Branch'
         assert fec.FossilErrorPath.FOSSIL_ADD == 'quarryforge.fossil.Add'
         assert fec.FossilErrorPath.FOSSIL_COMMIT == 'quarryforge.fossil.Commit'
-        assert len(fec.FossilErrorPath) == 10
+        assert fec.FossilErrorPath.FOSSIL_CONTROL == 'quarryforge.fossil.Control'
+        assert len(fec.FossilErrorPath) == 11
 
 
 class TestFossilErrorBuilder:
@@ -257,6 +258,17 @@ class TestFossilErrorBuilder:
                     '(Code: COMMIT_FAIL). Failure during Fossil commit '
                     'operation. Reason: check-in failed.'
                 ),
+            ),
+            (   # FOSSIL_CONTROL
+                fec.FossilErrorPath.FOSSIL_CONTROL,
+                'CONTROL_FAIL',
+                {ec.DescMsg.REASON: 'control action failure'},
+                (
+                    'Error in `quarryforge.fossil.Control` '
+                    '(Code: CONTROL_FAIL). Failure during Fossil control '
+                    'operation (e.g., open, close). Reason: control action '
+                    'failure.'
+                )
             ),
             (  # Default case (Fossil specific) - uses generic error code
                 'quarryforge.fossil.Unknown',

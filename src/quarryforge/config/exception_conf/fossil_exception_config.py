@@ -208,7 +208,7 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
                     f'{FossilMessage.COMMIT_DETAIL}{reason_suffix}'
                 )
             case FossilErrorPath.FOSSIL_CONTROL:
-                return (f'{base_msg} Failure during Fossil control '
+                return (f'{base_msg} Failure '
                         f'{FossilMessage.CONTROL_DETAIL}{reason_suffix}')
             case _:
                 if self.error_code in config.GenericError:
@@ -251,7 +251,7 @@ class FossilErrorBuilder(_.BaseErrorBuilder):
                 return FossilMessage.ADD_USER
             case FossilErrorPath.FOSSIL_COMMIT:
                 return FossilMessage.COMMIT_USER
-            case FossilErrorapath.FOSSIL_CONTROL:
+            case FossilErrorPath.FOSSIL_CONTROL:
                 return FossilMessage.CONTROL_USER
             case _:
                 # For generic errors, fall back to the base implementation.
