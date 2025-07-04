@@ -156,11 +156,11 @@ class TestQuarryForgeError:
         )
 
         expected_dict = {
-            ed.ERROR_FIELD.message: str(err),
-            ed.ERROR_FIELD.code: 'E1001',
-            ed.ERROR_FIELD.details: details,
-            ed.ERROR_FIELD.timestamp: FIXED_ISO_FORMAT,
-            ed.ERROR_FIELD.user_message: 'User-friendly message',
+            ed.error_data_config().message: str(err),
+            ed.error_data_config().code: 'E1001',
+            ed.error_data_config().details: details,
+            ed.error_data_config().timestamp: FIXED_ISO_FORMAT,
+            ed.error_data_config().user_message: 'User-friendly message',
         }
 
         assert err.to_dict() == expected_dict
