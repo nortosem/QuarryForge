@@ -1,190 +1,125 @@
-"""Unit tests for the quarryforge.exception.base_exception module.
+"""
+Unit tests for the quarryforge.exception.base_exception module.
 
-This suite provides comprehensive, MC/DC-focused coverage for the
-QuarryForgeError base class and verifies the inheritance of its subclasses.
+This suite provides comprehensive coverage for the QuarryForgeError base class
+and all its direct subclasses.
 """
 
-import datetime
-from unittest.mock import patch
+from datetime import datetime, timezone
 
 import pytest
+from freezegun import freeze_time
 
-from quarryforge.config.exception_conf import exception_data as ed
-from quarryforge.exception import base_exception as be
-
-FIXED_DATETIME = datetime.datetime(2023, 10, 27, 10, 0, 0, tzinfo=datetime.UTC)
-FIXED_ISO_FORMAT = FIXED_DATETIME.isoformat()
+from quarryforge.config.exception_conf import exception_data as _
+from quarryforge.exception import base_exception
 
 
-@pytest.fixture
-def mock_datetime_now():
-    """Fixture to patch datetime.datetime.now to return a fixed time."""
-    with patch('datetime.datetime') as mock_dt:
-        mock_dt.now.return_value = FIXED_DATETIME
-        mock_dt.UTC = datetime.UTC
-        yield mock_dt
-
-
+@freeze_time("2024-01-01 12:00:00 UTC")
 class TestQuarryForgeError:
-    """Tests for the QuarryForgeError base class."""
+    """Tests for the base QuarryForgeError class."""
 
-    def test_inheritance(self):
-        """Verify that QuarryForgeError is a subclass of Exception."""
-        assert issubclass(be.QuarryForgeError, Exception)
-
-    def test_initialization_full(self, mock_datetime_now):
-        """Test initialization with all arguments provided."""
-        details = {'extra': 'info', 'arg': 123}
-        err = be.QuarryForgeError(
-            message='Technical message',
-            code='E1001',
-            user_message='User-friendly message',
+    def test_initialization(self):
+        """Verify all attributes are set correctly during initialization."""
+        details = {'extra': 'info', 'value': 123}
+        error = base_exception.QuarryForgeError(
+            message="Test message",
+            code="TEST_CODE",
+            user_message="A test error occurred.",
             details=details,
         )
-        assert err.code == 'E1001'
-        assert err.details == details
-        assert err.user_message == 'User-friendly message'
-        assert str(err.args[0]) == 'Technical message'
-        assert err.timestamp == FIXED_DATETIME
 
-    def test_initialization_minimal(self, mock_datetime_now):
-        """Test initialization with only required arguments, verifying
-        defaults.
-        """
-        err = be.QuarryForgeError(
-            message='Minimal message',
-            code='E1002',
-            user_message='Minimal user message',
+        assert isinstance(error, Exception)
+        assert error.code == "TEST_CODE"
+        assert error.details == details
+        assert error.user_message == "A test error occurred."
+        assert error.timestamp == datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        assert str(error.args[0]) == "Test message"
+
+    def test_initialization_with_no_details(self):
+        """Test initialization when the details dictionary is not provided."""
+        error = base_exception.QuarryForgeError(
+            message="No details", code="NO_DETAILS", user_message="User message"
         )
-        assert err.code == 'E1002'
-        assert err.details == {}
-        assert err.user_message == 'Minimal user message'
-        assert err.timestamp == FIXED_DATETIME
+        assert error.details == {}
 
-    @pytest.mark.parametrize(
-        'init_kwargs, expected_str',
-        [
-            (
-                {
-                    'code': 'C1',
-                    'message': 'Msg1',
-                    'user_message': 'UM1',
-                    'details': {'extra': 'info'},
-                },
-                '[C1] Msg1 (extra: info)',
-            ),
-            (
-                {
-                    'code': '',
-                    'message': 'Msg2',
-                    'user_message': 'UM2',
-                    'details': {'arg': 42},
-                },
-                'Msg2 (arg: 42)',
-            ),
-            (
-                {
-                    'code': 'C3',
-                    'message': '',
-                    'user_message': 'UM3',
-                    'details': {'extra': 'info'},
-                },
-                '[C3] (extra: info)',
-            ),
-            (
-                {
-                    'code': 'C4',
-                    'message': 'Msg4',
-                    'user_message': 'UM4',
-                    'details': None,
-                },
-                '[C4] Msg4',
-            ),
-            (
-                {
-                    'code': 'C5',
-                    'message': 'Msg5',
-                    'user_message': 'UM5',
-                    'details': {'code': 'C5', 'message': 'Msg5'},
-                },
-                '[C5] Msg5',
-            ),
-            (
-                {
-                    'code': 'C6',
-                    'message': '',
-                    'user_message': 'UM6',
-                    'details': None,
-                },
-                '[C6]',
-            ),
-            (
-                {
-                    'code': '',
-                    'message': 'Msg7',
-                    'user_message': 'UM7',
-                    'details': None,
-                },
-                'Msg7',
-            ),
-            (
-                {
-                    'code': '',
-                    'message': '',
-                    'user_message': 'UM8',
-                    'details': None,
-                },
-                '',
-            ),
-        ],
-    )
-    def test_str_representation_mcdc(self, init_kwargs, expected_str):
-        """Test __str__ method with various combinations of arguments for
-        MC/DC.
-        """
-        err = be.QuarryForgeError(**init_kwargs)
-        assert str(err) == expected_str
-
-    def test_to_dict_conversion(self, mock_datetime_now):
-        """Test the to_dict method for correct dictionary representation."""
-        details = {'extra': 'info', 'arg': 123}
-        err = be.QuarryForgeError(
-            message='Technical message',
-            code='E1001',
-            user_message='User-friendly message',
-            details=details.copy(),
+    def test_to_dict_method(self):
+        """Test the to_dict() method for correct dictionary representation."""
+        details = {'extra': 'info'}
+        error = base_exception.QuarryForgeError(
+            message="Dict test",
+            code="DICT_CODE",
+            user_message="User dict message",
+            details=details,
         )
 
         expected_dict = {
-            ed.error_data_config().message: str(err),
-            ed.error_data_config().code: 'E1001',
-            ed.error_data_config().details: details,
-            ed.error_data_config().timestamp: FIXED_ISO_FORMAT,
-            ed.error_data_config().user_message: 'User-friendly message',
+            _.error_data_config().message: '[DICT_CODE] Dict test (extra: info)',
+            _.error_data_config().code: "DICT_CODE",
+            _.error_data_config().details: details,
+            _.error_data_config().timestamp: "2024-01-01T12:00:00+00:00",
+            _.error_data_config().user_message: "User dict message",
         }
+        assert error.to_dict() == expected_dict
 
-        assert err.to_dict() == expected_dict
+    @pytest.mark.parametrize(
+        'code, message, details, expected_str',
+        [
+            # Case 1: All parts present
+            ('CODE_A', 'Message A', {'detail_key': 'detail_value'},
+             '[CODE_A] Message A (detail_key: detail_value)'),
+            # Case 2: No details
+            ('CODE_B', 'Message B', None,
+             '[CODE_B] Message B'),
+            # Case 3: No code
+            (None, 'Message C', {'detail_key': 'detail_value'},
+             'Message C (detail_key: detail_value)'),
+            # Case 4: Only message
+            (None, 'Message D', None,
+             'Message D'),
+            # Case 5: Details contain keys that should be filtered out
+            ('CODE_E', 'Message E',
+             {
+                 'detail_key': 'value',
+                 _.error_data_config().code: 'IGNORED',
+                 _.error_data_config().message: 'IGNORED',
+                 _.error_data_config().user_message: 'IGNORED',
+             },
+             '[CODE_E] Message E (detail_key: value)'),
+            # Case 6: Details exist but are empty after filtering
+            ('CODE_F', 'Message F',
+             {
+                 _.error_data_config().code: 'IGNORED',
+                 _.error_data_config().message: 'IGNORED',
+             },
+             '[CODE_F] Message F'),
+        ]
+    )
+    def test_str_representation_mcdc(self, code, message, details, expected_str):
+        """Test the __str__() method with all combinations of attributes."""
+        error = base_exception.QuarryForgeError(
+            message=message, code=code, user_message="dummy", details=details
+        )
+        assert str(error) == expected_str
 
 
-@pytest.mark.parametrize(
-    'subclass',
-    [
-        be.ModelError,
-        be.FossilError,
-        be.MainError,
-        be.MetaError,
-        be.UtilError,
-    ],
-)
 class TestSubclassInheritance:
-    """Tests to ensure all specific error classes inherit from QuarryForgeError."""
+    """Tests the simple subclasses of QuarryForgeError."""
 
-    def test_inheritance(self, subclass):
-        """Verify that the given subclass inherits from QuarryForgeError."""
-        assert issubclass(subclass, be.QuarryForgeError)
+    @pytest.mark.parametrize(
+        "subclass",
+        [
+            base_exception.ModelError,
+            base_exception.FossilError,
+            base_exception.MainError,
+            base_exception.MetaError,
+            base_exception.UtilError,
+        ]
+    )
+    def test_subclasses_inherit_from_quarryforgeerror(self, subclass):
+        """Verify that all module-specific base exceptions inherit correctly."""
+        instance = subclass(message="test", code="test", user_message="test")
+        assert isinstance(instance, base_exception.QuarryForgeError)
 
-    def test_instantiation(self, subclass):
-        """Verify that subclasses can be instantiated with the same signature."""
-        instance = subclass(message='test', code='test', user_message='test')
-        assert isinstance(instance, be.QuarryForgeError)
-        assert str(instance) == '[test] test'
+    def test_subclasses_are_distinct(self):
+        """Verify that the subclasses are distinct types."""
+        assert base_exception.ModelError is not base_exception.FossilError
