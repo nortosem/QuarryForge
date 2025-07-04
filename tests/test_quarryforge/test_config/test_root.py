@@ -55,7 +55,7 @@ ENUM_TEST_CASES = [
     ),
     (
         root.FossilModule,
-        8,
+        9,
         [
             ('TIMELINE', 'Timeline'),
             ('SETUP', 'Setup'),
@@ -65,6 +65,7 @@ ENUM_TEST_CASES = [
             ('BRANCH', 'Branch'),
             ('ADD', 'Add'),
             ('COMMIT', 'Commit'),
+            ('CONTROL', 'Control'),
         ],
     ),
     (

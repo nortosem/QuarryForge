@@ -121,6 +121,7 @@ class FossilModule(StrEnum):
         BRANCH (str): Module for Fossil 'branch' related commands.
         ADD (str): Module for the Fossil 'add' command.
         COMMIT (str): Module for the Fossil 'commit' command.
+        CONTROL (str): Module for Fossil scm control commands.
 
     """
 
