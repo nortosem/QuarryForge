@@ -44,6 +44,7 @@ dev = [
   "click",
   "coverage>=7.9",
   "coverage[toml]>=7.5.0",
+  "freezegun>=1.5.2",
   "pytest>=8.0",
   "pytest-mock>=3.14",
   "mypy>=1.16.0",
