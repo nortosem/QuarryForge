@@ -54,7 +54,7 @@ class QuarryForgeError(Exception):
                 information.
 
         """
-        super().__init__(message)
+        Exception.__init__(self, message)
         self.code = code
         self.details = details or {}
         self.timestamp = datetime.datetime.now(datetime.UTC)
