@@ -48,7 +48,7 @@ def _valid_str_value(value: str) -> str:
         ValueError: If the value is an empty string.
 
     """
-    if not value:
+    if not value or value.isspace():
         raise ValueError(
             f'{value!r} {config.DescMsg.MUST_BE}'
             f' {config.DescMsg.A_NON_EMPTY_STRING}'
@@ -155,7 +155,7 @@ class ErrorBuilder(abc.ABC):
             if not isinstance(extra_details, dict):
                 raise TypeError(
                     f'{extra_details!r} {config.DescMsg.MUST_BE}'
-                    f' {config.DescMsg.dictionary}'
+                    f' {config.DescMsg.A_VALID_DICTIONARY}'
                 )
         self.extra_details = extra_details
 
