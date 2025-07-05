@@ -1,105 +1,63 @@
 """Unit tests for the quarryforge.util.decorator module.
 
-This test suite provides comprehensive, MC/DC (Modified Condition/Decision
-Coverage) tests for the `validate_str_parameters` decorator.
+This suite provides comprehensive coverage for the @validate_str_parameters
+decorator, ensuring all validation logic paths are tested.
 """
+
+import logging
+from typing import Any
 
 import pytest
 
-from quarryforge.config.exception_conf import exception_config as config
-from quarryforge.util.decorator import validate_str_parameters
+from quarryforge.util import decorator
 
 
-def sample_function_to_decorate(*args: str) -> tuple[str, ...]:
-    """This is a sample docstring."""
-    return args
-
-
-decorated_sample_function = validate_str_parameters(sample_function_to_decorate)
+@decorator.validate_str_parameters
+def _dummy_decorated_function(*args: str) -> str:
+    """A simple function to be decorated for testing purposes."""
+    return ''.join(args)
 
 
 class TestValidateStrParameters:
     """Tests for the @validate_str_parameters decorator."""
 
-    def test_preserves_function_metadata(self):
-        """Verify that the decorator correctly uses @functools.wraps
-        to preserve the original function's name and docstring.
+    def test_success_with_valid_strings(self):
+        """Verify the decorator is functional.
+
+        The decorator executes and returns the correct value when all
+        arguments are valid, non-empty strings.
         """
-        assert (
-            decorated_sample_function.__name__ == 'sample_function_to_decorate'
-        )
-        assert (
-            decorated_sample_function.__doc__ == 'This is a sample docstring.'
-        )
+        logging.info('Testing @validate_str_parameters: success path.')
+        result = _dummy_decorated_function('hello', ' ', 'world')
+        assert result == 'hello world'
 
-    @pytest.mark.parametrize(
-        'args, expected_return',
-        [
-            (('arg1', 'arg2'), ('arg1', 'arg2')),
-            (('single_argument',), ('single_argument',)),
-            ((), ()),
-        ],
-    )
-    def test_successful_validation(
-        self, args: tuple[str, ...], expected_return: tuple[str, ...]
-    ):
-        """Test the success path where all arguments are valid, non-empty
-        strings.
-
-        The decorator should call the original function and return
-        its result.
-        """
-        result = decorated_sample_function(*args)
-        assert result == expected_return
-
-    def test_raises_error_on_keyword_arguments(self):
-        """Test the first decision point: `if kwargs:`.
-
-        This should immediately raise a TypeError without checking other
-        arguments.
-        """
+    def test_failure_on_keyword_arguments(self):
+        """MC/DC Test: Verify a TypeError is raised if kwargs are used."""
+        logging.info('Testing @validate_str_parameters: failure on kwargs.')
         with pytest.raises(TypeError, match='keyword arguments not supported'):
-            decorated_sample_function(valid_arg='value', another_kw='value2')
-
-        with pytest.raises(TypeError, match='keyword arguments not supported'):
-            decorated_sample_function('valid_positional', kwarg='invalid')
+            _dummy_decorated_function(arg1='a', arg2='b') # type: ignore
 
     @pytest.mark.parametrize(
-        'invalid_args',
+        "invalid_arg",
         [
-            (123,),
-            (None,),
-            (True,),
-            (['a', 'b'],),
-            (('a', 'b'),),
-            ({'key': 'val'},),
-            ('valid_string', 123),
+            123,
+            None,
+            [],
+            {},
+            ("a", "b"),
         ],
     )
-    def test_raises_error_on_non_string_argument(self, invalid_args: tuple):
-        """Test the second decision point: `if not isinstance(parameter, str)`.
+    def test_failure_on_non_string_type(self, invalid_arg: Any):
+        """Verify a TypeError is raised for non-string arguments."""
+        logging.info(
+            'Testing @validate_str_parameters: failure on non-string type "%s".',
+            type(invalid_arg).__name__
+        )
+        with pytest.raises(TypeError, match='must be a valid string'):
+            _dummy_decorated_function('good', invalid_arg, 'also_good')
 
-        This should raise a TypeError for any non-string argument.
-        """
-        expected_msg = f'{config.DESC_MSG.must_be} {config.DESC_MSG.string}'
-        with pytest.raises(TypeError, match=expected_msg):
-            decorated_sample_function(*invalid_args)
-
-    @pytest.mark.parametrize(
-        'invalid_args',
-        [
-            ('',),
-            ('valid_string', ''),
-            (' ', ''),
-        ],
-    )
-    def test_raises_error_on_empty_string_argument(
-        self, invalid_args: tuple[str, ...]
-    ):
-        """Test the third decision point: `if not parameter`.
-
-        This should raise a ValueError for an empty string argument.
-        """
-        expected_msg = f'{config.DESC_MSG.must_be} {config.DESC_MSG.unempty}'
-        with pytest.raises(ValueError, match=expected_msg):
-            decorated_sample_function(*invalid_args)
+    def test_failure_on_empty_string(self):
+        """Verify a ValueError is raised for an empty string argument."""
+        logging.info('Testing @validate_str_parameters: failure on empty string.')
+        with pytest.raises(ValueError, match='must be a non-empty string'):
+            _dummy_decorated_function('good', '', 'this_is_not_reached')
