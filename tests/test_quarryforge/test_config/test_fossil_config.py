@@ -135,7 +135,7 @@ class TestFossilConfig:
         assert fossil.ARGS == 'args'
         assert fossil.CMD == 'cmd'
         assert fossil.OUTPUT == 'output'
-        assert fossil.RETURN_CODE == 'return_code'
+        assert fossil.RETURN_CODE == 'returncode'
         assert fossil.DEFAULT_RETURN_CODE == '1'
         assert fossil.STDERR == 'stderr'
         assert fossil.TIMEOUT == 'timeout'
