@@ -150,15 +150,16 @@ disallow_untyped_decorators = true
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["tests"]
-addopts = "-ra -vv --strict-markers --full-trace --basetemp=dist/tmp"
+addopts = "-ra -vv --strict-markers --basetemp=dist/tmp"
 cache_dir = "dist/.pytest_cache"
 tmp_path_retention_count = 5
 tmp_path_retention_policy = "failed"
+# --- LOGGING CONFIGURATION ---
+log_cli = true
+log_cli_level = "INFO"
 log_auto_indent = true
-log_level = "INFO"
-log_file_level = "INFO"
 log_file = "dist/log/pytest.log"
-
+log_file_level = "INFO"
 
 [tool.coverage.run]
 source = ["quarryforge", "scripts"]
