@@ -1,19 +1,16 @@
 # --- START OF FILE tests/exception/test_model_exception.py ---
 
-"""
-Unit tests for the quarryforge.exception.model_exception module.
+"""Unit tests for the quarryforge.exception.model_exception module.
 
 This suite provides comprehensive coverage for the FossilRepoError,
 FossilCommitError, and FossilTimelineError exception classes.
 """
 
 import logging
-from typing import Type
 
 import pytest
 
 from quarryforge.exception import base_exception, model_exception
-
 
 BASE_ERROR_ARGS = {
     "code": "MODEL_TEST_CODE",
@@ -24,8 +21,7 @@ BASE_ERROR_ARGS = {
 
 
 class TestModelExceptions:
-    """
-    Tests all exception classes within the model_exception module.
+    """Tests all exception classes within the model_exception module.
     """
 
     @pytest.mark.parametrize(
@@ -37,10 +33,9 @@ class TestModelExceptions:
         ],
     )
     def test_exception_instantiation_and_inheritance(
-        self, exception_class: Type[base_exception.ModelError]
+        self, exception_class: type[base_exception.ModelError]
     ) -> None:
-        """
-        Tests initialization, attribute correctness, and inheritance for each
+        """Tests initialization, attribute correctness, and inheritance for each
         model exception class. This single test covers all MC/DC paths for
         these simple classes.
         """
@@ -68,10 +63,9 @@ class TestModelExceptions:
         ],
     )
     def test_exception_is_catchable(
-        self, exception_class: Type[base_exception.ModelError]
+        self, exception_class: type[base_exception.ModelError]
     ) -> None:
-        """
-        Functional test to ensure each exception can be raised and caught
+        """Functional test to ensure each exception can be raised and caught
         by its own type and by its parent types.
         """
         logging.info(

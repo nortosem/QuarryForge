@@ -1,12 +1,11 @@
-"""
-Unit tests for the quarryforge.exception.base_exception module.
+"""Unit tests for the quarryforge.exception.base_exception module.
 
 This suite provides comprehensive coverage for the QuarryForgeError base class
 and all its direct subclasses.
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from freezegun import freeze_time
@@ -34,7 +33,7 @@ class TestQuarryForgeError:
         assert error.code == "TEST_CODE"
         assert error.details == details
         assert error.user_message == "A test error occurred."
-        assert error.timestamp == datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        assert error.timestamp == datetime(2024, 1, 1, 12, 0, 0, tzinfo=UTC)
         assert str(error.args[0]) == "Test message"
 
     def test_initialization_with_no_details(self):

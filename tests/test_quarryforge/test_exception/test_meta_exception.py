@@ -7,13 +7,6 @@ quarryforge.config.exception_conf.meta_exception_config.
 
 import logging
 
-import pytest
-
-from quarryforge.config.exception_conf import (
-    base_exception_config as bec,
-    exception_config as ec,
-    meta_exception_config as mec,
-)
 from quarryforge.exception import base_exception, meta_exception
 
 

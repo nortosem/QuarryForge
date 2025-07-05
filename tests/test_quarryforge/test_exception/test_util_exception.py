@@ -5,7 +5,6 @@ FossilCommitError, and FossilTimelineError exception classes.
 """
 
 import logging
-from typing import Type
 
 import pytest
 
@@ -31,7 +30,7 @@ class TestModelExceptions:
         ],
     )
     def test_exception_instantiation_and_inheritance(
-        self, exception_class: Type[base_exception.ModelError]
+        self, exception_class: type[base_exception.ModelError]
     ) -> None:
         """Tests initialization, attribute correctness, and inheritance for each
         model exception class. This single test covers all MC/DC paths for
@@ -61,7 +60,7 @@ class TestModelExceptions:
         ],
     )
     def test_exception_is_catchable(
-        self, exception_class: Type[base_exception.ModelError]
+        self, exception_class: type[base_exception.ModelError]
     ) -> None:
         """Functional test to ensure each exception can be raised and caught
         by its own type and by its parent types.

@@ -15,7 +15,6 @@ from quarryforge.config import fossil_config as config
 from quarryforge.config.exception_conf import fossil_exception_config as _
 from quarryforge.exception import base_exception, fossil_exception
 
-
 BASE_ERROR_ARGS = {
     "code": "TEST_CODE",
     "message": "Test technical message",
