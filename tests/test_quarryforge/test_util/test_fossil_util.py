@@ -12,7 +12,6 @@ from unittest.mock import MagicMock
 import pytest
 
 from quarryforge.config import fossil_config as fc
-from quarryforge.model import FossilRepo
 from quarryforge.util import fossil_util
 
 

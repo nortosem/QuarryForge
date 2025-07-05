@@ -10,7 +10,6 @@ import pytest
 
 from quarryforge.config import root
 
-
 ENUM_TEST_CASES = [
     (
         root.Package,

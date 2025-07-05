@@ -2,8 +2,6 @@
 
 import re
 
-import pytest
-
 from quarryforge.config import fossil_config
 
 

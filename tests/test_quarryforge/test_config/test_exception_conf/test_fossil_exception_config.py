@@ -10,6 +10,7 @@ from quarryforge.config.exception_conf import fossil_exception_config as fec
 
 class TestFossilExceptionConfigModule:
     """Tests for module-level content in fossil_exception_config."""
+
     def test_module_dunder_all(self):
         """Verify the module's public API."""
         assert sorted(fec.__all__) == sorted(['FossilErrorBuilder'])

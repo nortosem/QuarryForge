@@ -1,16 +1,15 @@
 """Global fixtures for the quarryforge test suite."""
 
-from datetime import datetime
 import logging
 import subprocess
+from datetime import datetime
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 from typing import Any
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from quarryforge import model
-
 
 DATE_NOW = datetime.now().replace(
     year=datetime.now().year-1,
