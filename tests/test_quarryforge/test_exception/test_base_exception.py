@@ -5,6 +5,7 @@ This suite provides comprehensive coverage for the QuarryForgeError base class
 and all its direct subclasses.
 """
 
+import logging
 from datetime import datetime, timezone
 
 import pytest
@@ -20,6 +21,7 @@ class TestQuarryForgeError:
 
     def test_initialization(self):
         """Verify all attributes are set correctly during initialization."""
+        logging.info("Testing QuarryForgeError: standard initialization.")
         details = {'extra': 'info', 'value': 123}
         error = base_exception.QuarryForgeError(
             message="Test message",
@@ -37,6 +39,7 @@ class TestQuarryForgeError:
 
     def test_initialization_with_no_details(self):
         """Test initialization when the details dictionary is not provided."""
+        logging.info("Testing QuarryForgeError: initialization with no details.")
         error = base_exception.QuarryForgeError(
             message="No details", code="NO_DETAILS", user_message="User message"
         )
@@ -44,6 +47,7 @@ class TestQuarryForgeError:
 
     def test_to_dict_method(self):
         """Test the to_dict() method for correct dictionary representation."""
+        logging.info("Testing QuarryForgeError: to_dict() method.")
         details = {'extra': 'info'}
         error = base_exception.QuarryForgeError(
             message="Dict test",
@@ -96,6 +100,10 @@ class TestQuarryForgeError:
     )
     def test_str_representation_mcdc(self, code, message, details, expected_str):
         """Test the __str__() method with all combinations of attributes."""
+        logging.info(
+            "Testing QuarryForgeError: __str__ representation (code=%s).",
+            code
+        )
         error = base_exception.QuarryForgeError(
             message=message, code=code, user_message="dummy", details=details
         )
@@ -117,9 +125,11 @@ class TestSubclassInheritance:
     )
     def test_subclasses_inherit_from_quarryforgeerror(self, subclass):
         """Verify that all module-specific base exceptions inherit correctly."""
+        logging.info("Testing inheritance for subclass: %s", subclass.__name__)
         instance = subclass(message="test", code="test", user_message="test")
         assert isinstance(instance, base_exception.QuarryForgeError)
 
     def test_subclasses_are_distinct(self):
         """Verify that the subclasses are distinct types."""
+        logging.info("Testing distinctness of exception subclasses.")
         assert base_exception.ModelError is not base_exception.FossilError
