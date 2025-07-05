@@ -157,7 +157,7 @@ class Fossil(StrEnum):
     ARGS = 'args'
     CMD = 'cmd'
     OUTPUT = 'output'
-    RETURN_CODE = 'return_code'
+    RETURN_CODE = 'returncode'
     DEFAULT_RETURN_CODE = '1'
     STDERR = 'stderr'
     TIMEOUT = 'timeout'
