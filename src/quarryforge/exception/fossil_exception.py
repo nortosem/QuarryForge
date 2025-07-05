@@ -7,7 +7,6 @@ from quarryforge.config import fossil_config as config
 from quarryforge.config.exception_conf import fossil_exception_config as _
 from quarryforge.exception import base_exception
 
-
 __all__: list[str] = [
     'FossilProcessError', 'FossilTimeoutError', 'FossilOperationError'
 ]
@@ -161,6 +160,7 @@ class FossilOperationError(base_exception.FossilError):
     logic that processes its output encounters an error.
     For example, failing to parse the string returned by `fossil timeline`.
     """
+
     def __init__(
         self,
         code: str,
