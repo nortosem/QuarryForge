@@ -182,8 +182,8 @@ class TestFossilRepoErrorBuilder:
                 None,
                 None,
                 (
-                    'Error in `ctx.repo` (Code: PATH_NOT_EXECUTABLE_ERROR). Path '
-                    '\'/no/exec/perms\' lacks execute permissions.'
+                    'Error in `ctx.repo` (Code: PATH_NOT_EXECUTABLE_ERROR). '
+                    'Path \'/no/exec/perms\' lacks execute permissions.'
                 ),
             ),
             (
@@ -208,7 +208,11 @@ class TestFossilRepoErrorBuilder:
             ),
         ],
     )
-    def test_message_mcdc(self, error_code, arg, info, extra_details, expected_message):
+    def test_message_mcdc(
+        self,
+        error_code, arg, info,
+        extra_details, expected_message
+    ):
         """Test the message() method for all defined error codes."""
         builder = moec.FossilRepoErrorBuilder(
             error_context='ctx.repo',
@@ -233,7 +237,10 @@ class TestFossilRepoErrorBuilder:
                     'same directory as the workdir.'
                 ),
             ),
-            (ec.StringError.EMPTY_STRING_ERROR, 'A required text input was left empty.'),
+            (
+                ec.StringError.EMPTY_STRING_ERROR,
+                'A required text input was left empty.'
+            ),
             (
                 ec.GenericError.CONFIGURATION_ERROR,
                 'There is an issue with the configuration.',
