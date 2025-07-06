@@ -85,7 +85,7 @@ def is_type_path[
     ErrorBuilder: assembler.ErrorBuilder,
 ](
     *,
-    arg: Path | str,
+    arg: Any,
     exception: type[QuarryForgeError],
     error_builder: ErrorBuilder,
 ) -> Path:
@@ -107,6 +107,9 @@ def is_type_path[
             string represenatation of a path.
 
     """
+    if not isinstance(arg, (str, Path)):
+        error_data = error_builder.data()
+        raise exception(**error_data.to_exception())
     if isinstance(arg, str):
         valid_str = is_str_not_empty(
             arg=arg,
@@ -114,10 +117,7 @@ def is_type_path[
             error_builder=error_builder,
         )
         return Path(valid_str)
-    elif isinstance(arg, Path):
-        return arg
-    else:
-        assert_never(arg)
+    return arg
 
 
 def resolve_path_arg[
