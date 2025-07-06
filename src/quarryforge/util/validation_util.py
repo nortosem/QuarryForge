@@ -9,7 +9,7 @@ validation failure, providing detailed error information.
 
 import os
 from pathlib import Path
-from typing import Any, assert_never
+from typing import Any
 
 from quarryforge.config import model_config
 from quarryforge.exception import base_exception

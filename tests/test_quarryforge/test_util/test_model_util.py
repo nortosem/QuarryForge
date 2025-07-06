@@ -6,7 +6,7 @@ functions, `viable_fossil_repo` and `viable_fossil_commit`.
 
 import logging
 from pathlib import Path
-from unittest.mock import ANY, MagicMock, patch
+from unittest.mock import ANY, MagicMock
 
 import pytest
 

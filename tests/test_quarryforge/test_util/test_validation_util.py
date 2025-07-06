@@ -18,6 +18,7 @@ from quarryforge.util import validation_util
 
 class UtilTestException(base_exception.UtilError):
     """Custom exception class for testing the validation_util module."""
+
     def __init__(self, code, message, user_message, details=None):
         super().__init__(
             code=code, message=message,
@@ -27,6 +28,7 @@ class UtilTestException(base_exception.UtilError):
 
 class MockErrorData:
     """Mock of ValidErrorData for testing."""
+
     def __init__(self, code, message, user_message, details):
         self._data = {
             'code': code, 'message': message,
@@ -38,6 +40,7 @@ class MockErrorData:
 
 class MockErrorBuilder(assembler.ErrorBuilder):
     """Mock implementation of the ErrorBuilder ABC for use in tests."""
+
     def code(self) -> str:
         return f'{self.error_context.upper()}_{self.error_code.upper()}'
     def message(self) -> str: return f'Technical error for arg {self.arg!r}'

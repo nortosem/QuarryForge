@@ -85,6 +85,7 @@ class TestAssemblerHelpers:
 
 class ConcreteErrorBuilder(assembler.ErrorBuilder):
     """A minimal, concrete implementation of ErrorBuilder for testing."""
+
     def code(self) -> str:
         return f'{self.error_context}.{self.error_code}'
     def message(self) -> str:
