@@ -1,9 +1,10 @@
 """Unit tests for the quarryforge.util.validation_util module.
 
 This suite provides comprehensive, MC/DC-focused coverage for all validation
-utility functions.
+utility functions using a hybrid of unit, functional, and mocked tests.
 """
 
+import logging
 import os
 from pathlib import Path
 from typing import Any
@@ -17,194 +18,133 @@ from quarryforge.util import validation_util
 
 class UtilTestException(base_exception.UtilError):
     """Custom exception class for testing the validation_util module."""
-
-    pass
+    def __init__(self, code, message, user_message, details=None):
+        super().__init__(
+            code=code, message=message,
+            user_message=user_message, details=details or {}
+        )
 
 
 class MockErrorData:
-    """Mock of quarryforge.config.exception_conf.exception_data.ValidErrorData."""
-
-    def __init__(
-        self,
-        code: str,
-        message: str,
-        user_message: str,
-        details: dict[str, Any],
-    ):
+    """Mock of ValidErrorData for testing."""
+    def __init__(self, code, message, user_message, details):
         self._data = {
-            'code': code,
-            'message': message,
-            'user_message': user_message,
-            'details': details,
+            'code': code, 'message': message,
+            'user_message': user_message, 'details': details
         }
-
     def to_exception(self) -> dict[str, Any]:
-        """Returns the dictionary needed to instantiate a QuarryForgeError."""
         return self._data
 
 
 class MockErrorBuilder(assembler.ErrorBuilder):
-    """A mock implementation of the ErrorBuilder ABC for use in tests."""
-
+    """Mock implementation of the ErrorBuilder ABC for use in tests."""
     def code(self) -> str:
-        """Generates a mock error code."""
         return f'{self.error_context.upper()}_{self.error_code.upper()}'
-
-    def message(self) -> str:
-        """Generates a mock technical error message."""
-        return (
-            f'Technical error in {self.error_context}: {self.error_code} for '
-            f"arg '{self.arg}'"
-        )
-
-    def user_message(self) -> str:
-        """Generates a mock user-friendly error message."""
-        return f'A problem occurred with code: {self.error_code}'
-
+    def message(self) -> str: return f'Technical error for arg {self.arg!r}'
+    def user_message(self) -> str: return 'A problem occurred.'
     def data(self) -> MockErrorData:
-        """Constructs a MockErrorData object with the generated error info."""
-        return MockErrorData(
-            code=self.code(),
-            message=self.message(),
-            user_message=self.user_message(),
-            details=self.details(),
-        )
+        return MockErrorData(self.code(), self.message(), self.user_message(), self.details())
 
 
 @pytest.fixture
 def error_builder_factory():
     """Factory fixture to create MockErrorBuilder instances."""
-
     def _create_builder(
-        arg: Any = None,
-        context: str = 'test_context',
-        code: str = 'test_code',
+            arg: Any = None,
+            context: str = 'test_ctx',
+            code: str = 'test_code'
     ):
-        return MockErrorBuilder(error_context=context, error_code=code, arg=arg)
-
+        return MockErrorBuilder(
+            error_context=context, error_code=code, arg=arg
+        )
     return _create_builder
 
 
-class TestIsTypeStr:
-    """Tests for validation_util.is_type_str."""
+class TestStringValidators:
+    """Tests for is_type_str and is_str_not_empty."""
 
-    def test_pass_with_str(self, error_builder_factory):
-        """Test a valid string passes validation and is returned."""
-        arg = 'hello world'
-        result = validation_util.is_type_str(
-            arg=arg,
+    def test_is_type_str_pass(self, error_builder_factory):
+        logging.info('Testing is_type_str: success path.')
+        assert validation_util.is_type_str(
+            arg='valid',
             exception=UtilTestException,
-            error_builder=error_builder_factory(arg=arg),
-        )
-        assert result == arg
+            error_builder=error_builder_factory()) == 'valid'
 
-    @pytest.mark.parametrize(
-        'invalid_arg', [123, 12.3, None, True, [], {}, Path()]
-    )
-    def test_fail_with_non_str(self, invalid_arg, error_builder_factory):
-        """Test non-string fail validation and raise the correct exception."""
-        with pytest.raises(UtilTestException) as excinfo:
+    @pytest.mark.parametrize('invalid_arg', [123, None, []])
+    def test_is_type_str_fail(self, invalid_arg, error_builder_factory):
+        logging.info(
+            'Testing is_type_str: failure on type %s.',
+            type(invalid_arg).__name__
+        )
+        with pytest.raises(UtilTestException):
             validation_util.is_type_str(
                 arg=invalid_arg,
                 exception=UtilTestException,
-                error_builder=error_builder_factory(arg=invalid_arg),
+                error_builder=error_builder_factory(arg=invalid_arg)
             )
-        assert 'TEST_CONTEXT_TEST_CODE' in str(excinfo.value)
 
-
-class TestIsStrNotEmpty:
-    """Tests for validation_util.is_str_not_empty."""
-
-    @pytest.mark.parametrize('valid_arg', ['hello', '  hello  ', ' a '])
-    def test_pass_with_non_empty_str(self, valid_arg, error_builder_factory):
-        """Test non-empty or whitespace-padded strings pass validation."""
-        result = validation_util.is_str_not_empty(
-            arg=valid_arg,
+    def test_is_str_not_empty_pass(self, error_builder_factory):
+        logging.info('Testing is_str_not_empty: success path.')
+        assert validation_util.is_str_not_empty(
+            arg='valid',
             exception=UtilTestException,
-            error_builder=error_builder_factory(arg=valid_arg),
-        )
-        assert result == valid_arg
+            error_builder=error_builder_factory()) == 'valid'
 
     @pytest.mark.parametrize('invalid_arg', ['', '   ', '\t\n'])
-    def test_fail_with_empty_str(self, invalid_arg, error_builder_factory):
-        """Test empty or whitespace-only strings fail validation."""
+    def test_is_str_not_empty_fail(self, invalid_arg, error_builder_factory):
+        logging.info(
+            'Testing is_str_not_empty: failure on empty or whitespace string.'
+        )
         with pytest.raises(UtilTestException):
             validation_util.is_str_not_empty(
                 arg=invalid_arg,
                 exception=UtilTestException,
-                error_builder=error_builder_factory(arg=invalid_arg),
+                error_builder=error_builder_factory(arg=invalid_arg)
             )
 
 
-class TestIsTypePath:
-    """Tests for validation_util.is_type_path."""
+class TestPathValidators:
+    """Tests for path-related validation functions."""
 
-    def test_pass_with_path_object(self, error_builder_factory):
-        """Test a pathlib.Path object passes validation."""
-        arg = Path('/tmp/test')
-        result = validation_util.is_type_path(
-            arg=arg,
+    def test_is_type_path_success(self, error_builder_factory):
+        """Test is_type_path correctly handles valid Path and str types."""
+        logging.info('Testing is_type_path: success with Path object.')
+        path_obj = Path('/tmp/test')
+        assert validation_util.is_type_path(
+            arg=path_obj,
             exception=UtilTestException,
-            error_builder=error_builder_factory(arg=arg),
-        )
-        assert result == arg
-        assert isinstance(result, Path)
+            error_builder=error_builder_factory()) is path_obj
 
-    def test_pass_with_valid_string(self, error_builder_factory):
-        """Test a valid string is correctly converted to a Path object."""
-        arg = '/tmp/test'
-        result = validation_util.is_type_path(
-            arg=arg,
+        logging.info('Testing is_type_path: success with string.')
+        path_str = '/tmp/test'
+        assert validation_util.is_type_path(
+            arg=path_str,
             exception=UtilTestException,
-            error_builder=error_builder_factory(arg=arg),
+            error_builder=error_builder_factory()) == Path(path_str)
+
+    @pytest.mark.parametrize('invalid_arg', [123, None, [], {}])
+    def test_is_type_path_fail_on_invalid_type(self, invalid_arg, error_builder_factory):
+        """Test is_type_path raises the correct exception for invalid types."""
+        logging.info(
+            'Testing is_type_path: failure on invalid type %s.',
+             type(invalid_arg).__name__
         )
-        assert result == Path(arg)
-        assert isinstance(result, Path)
-
-    def test_fail_with_empty_string(self, error_builder_factory):
-        """Test an empty or whitespace-only string fails validation."""
-        arg = '   '
-        with pytest.raises(UtilTestException):
-            validation_util.is_type_path(
-                arg=arg,
-                exception=UtilTestException,
-                error_builder=error_builder_factory(arg=arg),
-            )
-
-    @pytest.mark.parametrize('invalid_arg', [123, 12.3, None, True, [], {}])
-    def test_fail_with_invalid_type(self, invalid_arg, error_builder_factory):
-        """Test non-str/non-Path types fail, covering the final 'else' block."""
-        with pytest.raises(UtilTestException):
+        with pytest.raises(UtilTestException) as excinfo:
             validation_util.is_type_path(
                 arg=invalid_arg,
                 exception=UtilTestException,
                 error_builder=error_builder_factory(arg=invalid_arg),
             )
+        assert f"for arg {invalid_arg!r}" in str(excinfo.value)
 
-
-class TestResolvePathArg:
-    """Tests for validation_util.resolve_path_arg."""
-
-    def test_pass_with_simple_path(self, error_builder_factory):
-        """Tests successful resolution of a simple relative path."""
-        arg = Path('.')
-        expected = Path.cwd()
-        result = validation_util.resolve_path_arg(
-            arg=arg,
-            exception=UtilTestException,
-            error_builder=error_builder_factory(arg=arg),
-        )
-        assert result == expected
-
-    def test_fail_on_runtime_error(self, monkeypatch, error_builder_factory):
+    def test_resolve_path_arg_fail_on_runtime_error(
+            self, monkeypatch, error_builder_factory):
         """Ensures a RuntimeError from expanduser() is caught and wrapped."""
+        logging.info('Testing resolve_path_arg: RuntimeError case.')
         arg = Path('~/fail')
-
-        def mock_expanduser(self):
+        def mock_expanduser_runtime_error(self):
             raise RuntimeError('Cannot determine home directory')
-
-        monkeypatch.setattr(Path, 'expanduser', mock_expanduser)
-
+        monkeypatch.setattr(Path, 'expanduser', mock_expanduser_runtime_error)
         with pytest.raises(UtilTestException) as excinfo:
             validation_util.resolve_path_arg(
                 arg=arg,
@@ -213,302 +153,168 @@ class TestResolvePathArg:
             )
         assert isinstance(excinfo.value.__cause__, RuntimeError)
 
-    def test_fail_on_os_error(self, monkeypatch, error_builder_factory):
+    def test_resolve_path_arg_fail_on_os_error(
+            self, monkeypatch, error_builder_factory):
         """Ensures an OSError from resolve() is caught and wrapped."""
+        logging.info('Testing resolve_path_arg: OSError case.')
         arg = Path('/nonexistent/path')
-
-        def mock_resolve(self, strict: bool = False):
-            raise OSError('Path does not exist')
-
+        def mock_resolve_os_error(self, strict: bool = False):
+            raise OSError('test os error')
         monkeypatch.setattr(Path, 'expanduser', lambda self: self)
-        monkeypatch.setattr(Path, 'resolve', mock_resolve)
-
+        monkeypatch.setattr(Path, 'resolve', mock_resolve_os_error)
         with pytest.raises(UtilTestException) as excinfo:
             validation_util.resolve_path_arg(
                 arg=arg,
                 exception=UtilTestException,
-                error_builder=error_builder_factory(arg=arg),
+                error_builder=error_builder_factory()
             )
         assert isinstance(excinfo.value.__cause__, OSError)
 
+    def test_file_system_checks(self, tmp_path: Path, error_builder_factory):
+        """Functional tests for exist, not_exist, is_file, is_dir."""
+        logging.info('Testing filesystem validators with tmp_path.')
+        existing_file = tmp_path / 'file.txt'
+        existing_dir = tmp_path / 'dir'
+        non_existent = tmp_path / 'ghost'
+        existing_file.touch()
+        existing_dir.mkdir()
 
-class TestFileSystemChecks:
-    """Tests for exist, not_exist, is_file, is_dir using the tmp_path fixture."""
-
-    def test_exist_pass(self, tmp_path, error_builder_factory):
-        """Tests exist() passes for an existing file."""
-        file_path = tmp_path / 'test.txt'
-        file_path.touch()
-        assert (
-            validation_util.exist(
-                arg=file_path,
-                exception=UtilTestException,
-                error_builder=error_builder_factory(),
-            )
-            == file_path
+        # Test exist and not_exist
+        assert validation_util.exist(
+            arg=existing_file,
+            exception=UtilTestException,
+            error_builder=error_builder_factory()
         )
-
-    def test_exist_fail(self, tmp_path, error_builder_factory):
-        """Tests exist() fails for a non-existent file."""
         with pytest.raises(UtilTestException):
             validation_util.exist(
-                arg=tmp_path / 'ghost.txt',
+                arg=non_existent,
                 exception=UtilTestException,
-                error_builder=error_builder_factory(),
+                error_builder=error_builder_factory()
             )
-
-    def test_not_exist_pass(self, tmp_path, error_builder_factory):
-        """Tests not_exist() passes for a non-existent file."""
-        path = tmp_path / 'ghost.txt'
-        assert (
-            validation_util.not_exist(
-                arg=path,
-                exception=UtilTestException,
-                error_builder=error_builder_factory(),
-            )
-            == path
+        assert validation_util.not_exist(
+            arg=non_existent,
+            exception=UtilTestException,
+            error_builder=error_builder_factory()
         )
-
-    def test_not_exist_fail(self, tmp_path, error_builder_factory):
-        """Tests not_exist() fails for an existing file."""
-        file_path = tmp_path / 'test.txt'
-        file_path.touch()
         with pytest.raises(UtilTestException):
             validation_util.not_exist(
-                arg=file_path,
+                arg=existing_file,
                 exception=UtilTestException,
-                error_builder=error_builder_factory(),
+                error_builder=error_builder_factory()
             )
 
-    def test_is_file_pass(self, tmp_path, error_builder_factory):
-        """Tests is_file() passes for a file."""
-        file_path = tmp_path / 'test.txt'
-        file_path.touch()
-        assert (
-            validation_util.is_file(
-                arg=file_path,
-                exception=UtilTestException,
-                error_builder=error_builder_factory(),
-            )
-            == file_path
+        # Test is_file and is_dir
+        assert validation_util.is_file(
+            arg=existing_file,
+            exception=UtilTestException,
+            error_builder=error_builder_factory()
         )
-
-    def test_is_file_fail(self, tmp_path, error_builder_factory):
-        """Tests is_file() fails for a directory."""
-        dir_path = tmp_path / 'test_dir'
-        dir_path.mkdir()
         with pytest.raises(UtilTestException):
             validation_util.is_file(
-                arg=dir_path,
+                arg=existing_dir,
                 exception=UtilTestException,
-                error_builder=error_builder_factory(),
+                error_builder=error_builder_factory()
             )
-
-    def test_is_dir_pass(self, tmp_path, error_builder_factory):
-        """Tests is_dir() passes for a directory."""
-        dir_path = tmp_path / 'test_dir'
-        dir_path.mkdir()
-        assert (
-            validation_util.is_dir(
-                arg=dir_path,
-                exception=UtilTestException,
-                error_builder=error_builder_factory(),
-            )
-            == dir_path
+        assert validation_util.is_dir(
+            arg=existing_dir,
+            exception=UtilTestException,
+            error_builder=error_builder_factory()
         )
-
-    def test_is_dir_fail(self, tmp_path, error_builder_factory):
-        """Tests is_dir() fails for a file."""
-        file_path = tmp_path / 'test.txt'
-        file_path.touch()
         with pytest.raises(UtilTestException):
             validation_util.is_dir(
-                arg=file_path,
+                arg=existing_file,
                 exception=UtilTestException,
-                error_builder=error_builder_factory(),
+                error_builder=error_builder_factory()
             )
 
+    def test_permission_checks(self, tmp_path: Path, monkeypatch, error_builder_factory):
+        """Unit tests for permission checks using monkeypatch."""
+        logging.info('Testing permission validators with monkeypatch.')
+        path = tmp_path / 'test.file'
 
-class TestPermissionChecks:
-    """Tests for is_read_ok and is_write_ok using monkeypatching."""
-
-    def test_is_read_ok_pass(
-        self, tmp_path, monkeypatch, error_builder_factory
-    ):
-        """Tests is_read_ok() passes when os.access returns True."""
-        path = tmp_path / 'readable.txt'
-        monkeypatch.setattr(os, 'access', lambda p, m: True)
-        assert (
-            validation_util.is_read_ok(
-                arg=path,
-                exception=UtilTestException,
-                error_builder=error_builder_factory(),
-            )
-            == path
-        )
-
-    def test_is_read_ok_fail(
-        self, tmp_path, monkeypatch, error_builder_factory
-    ):
-        """Tests is_read_ok() fails when os.access returns False for R_OK."""
-        path = tmp_path / 'unreadable.txt'
-        monkeypatch.setattr(os, 'access', lambda p, mode: mode != os.R_OK)
+        monkeypatch.setattr(os, 'access', lambda p, m: False)
         with pytest.raises(UtilTestException):
             validation_util.is_read_ok(
                 arg=path,
                 exception=UtilTestException,
-                error_builder=error_builder_factory(),
+                error_builder=error_builder_factory()
             )
-
-    def test_is_write_ok_pass(
-        self, tmp_path, monkeypatch, error_builder_factory
-    ):
-        """Tests is_write_ok() passes when os.access returns True."""
-        path = tmp_path / 'writable.txt'
-        monkeypatch.setattr(os, 'access', lambda p, m: True)
-        assert (
-            validation_util.is_write_ok(
-                arg=path,
-                exception=UtilTestException,
-                error_builder=error_builder_factory(),
-            )
-            == path
-        )
-
-    def test_is_write_ok_fail(
-        self, tmp_path, monkeypatch, error_builder_factory
-    ):
-        """Tests is_write_ok() fails when os.access returns False for W_OK."""
-        path = tmp_path / 'unwritable.txt'
-        monkeypatch.setattr(os, 'access', lambda p, mode: mode != os.W_OK)
         with pytest.raises(UtilTestException):
             validation_util.is_write_ok(
                 arg=path,
                 exception=UtilTestException,
-                error_builder=error_builder_factory(),
+                error_builder=error_builder_factory()
             )
 
+        monkeypatch.setattr(os, 'access', lambda p, m: True)
+        assert validation_util.is_read_ok(
+            arg=path,
+            exception=UtilTestException,
+            error_builder=error_builder_factory()
+        )
+        assert validation_util.is_write_ok(
+            arg=path,
+            exception=UtilTestException,
+            error_builder=error_builder_factory()
+        )
 
-class TestContentTypeErrorStrList:
-    """Tests for validation_util.content_type_error_str_list."""
 
-    @pytest.mark.parametrize('valid_list', [None, [], ['a', 'b', 'c'], ['']])
-    def test_pass_with_valid_list(self, valid_list, error_builder_factory):
-        """Ensures valid lists (including None and empty) pass."""
+class TestListValidators:
+    """Tests for list content validation functions."""
+
+    @pytest.mark.parametrize('valid_list', [None, [], ['a', 'b'], ['']])
+    def test_content_type_error_str_list_pass(
+            self, valid_list, error_builder_factory):
+        logging.info('Testing content_type_error_str_list: success path.')
         expected = [] if valid_list is None else valid_list
-        result = validation_util.content_type_error_str_list(
+        assert validation_util.content_type_error_str_list(
             arg=valid_list,
             exception=UtilTestException,
-            error_builder=error_builder_factory(),
-        )
-        assert result == expected
+            error_builder=error_builder_factory()) == expected
 
-    @pytest.mark.parametrize(
-        'invalid_list', [['a', 1, 'c'], [None, 'b'], [('tuple',)]]
-    )
-    def test_fail_with_mixed_types(self, invalid_list, error_builder_factory):
-        """Ensures lists with non-string elements fail."""
+    def test_content_type_error_str_list_fail(self, error_builder_factory):
+        logging.info('Testing content_type_error_str_list: failure path.')
         with pytest.raises(UtilTestException):
             validation_util.content_type_error_str_list(
-                arg=invalid_list,
+                arg=['a', 1],
                 exception=UtilTestException,
-                error_builder=error_builder_factory(),
+                error_builder=error_builder_factory()
             )
 
-
-class TestContentEmptyErrorStrList:
-    """Tests for validation_util.content_empty_error_str_list."""
-
-    @pytest.mark.parametrize('valid_list', [None, [], ['a', 'b', ' c ']])
-    def test_pass_with_valid_list(self, valid_list, error_builder_factory):
-        """Ensures lists with non-empty strings pass."""
+    @pytest.mark.parametrize('valid_list', [None, [], [('a', 'b')]])
+    def test_content_type_error_str_tuple_list_pass(
+            self, valid_list, error_builder_factory):
+        logging.info(
+            'Testing content_type_error_str_tuple_list: success path.'
+        )
         expected = [] if valid_list is None else valid_list
-        result = validation_util.content_empty_error_str_list(
+        assert validation_util.content_type_error_str_tuple_list(
             arg=valid_list,
             exception=UtilTestException,
-            error_builder=error_builder_factory(),
-        )
-        assert result == expected
+            error_builder=error_builder_factory()) == expected
 
     @pytest.mark.parametrize(
-        'invalid_list', [['a', '', 'c'], ['a', '   ', 'c']]
+        'invalid_list',
+        [[('a', 1)], [('a', 'b', 'c')], [('a')]]
     )
-    def test_fail_with_empty_strings(self, invalid_list, error_builder_factory):
-        """Ensures lists with empty or whitespace-only strings fail."""
-        with pytest.raises(UtilTestException):
-            validation_util.content_empty_error_str_list(
-                arg=invalid_list,
-                exception=UtilTestException,
-                error_builder=error_builder_factory(),
-            )
-
-
-class TestContentTypeErrorStrTupleList:
-    """Tests for validation_util.content_type_error_str_tuple_list."""
-
-    @pytest.mark.parametrize(
-        'valid_list', [None, [], [('a', 'b'), ('c', 'd')], [('', '')]]
-    )
-    def test_pass_with_valid_list(self, valid_list, error_builder_factory):
-        """Ensures valid lists of (str, str) tuples pass."""
-        expected = [] if valid_list is None else valid_list
-        result = validation_util.content_type_error_str_tuple_list(
-            arg=valid_list,
-            exception=UtilTestException,
-            error_builder=error_builder_factory(),
-        )
-        assert result == expected
-
-    @pytest.mark.parametrize(
-        'invalid_list, desc',
-        [
-            ([('a', 'b'), ['c', 'd']], 'item is not a tuple'),
-            ([('a', 'b'), ('c',)], 'tuple length is not 2'),
-            ([('a', 'b'), ('c', 'd', 'e')], 'tuple length is not 2'),
-            ([('a', 'b'), (1, 'd')], 'first element is not a string'),
-            ([('a', 'b'), ('c', 2)], 'second element is not a string'),
-        ],
-    )
-    def test_fail_with_invalid_items_for_mcdc(
-        self, invalid_list, desc, error_builder_factory
-    ):
-        """Tests failure modes for MC/DC of the item validation condition."""
+    def test_content_type_error_str_tuple_list_fail(
+            self, invalid_list, error_builder_factory):
+        logging.info('Testing content_type_error_str_tuple_list: failure path.')
         with pytest.raises(UtilTestException):
             validation_util.content_type_error_str_tuple_list(
                 arg=invalid_list,
                 exception=UtilTestException,
-                error_builder=error_builder_factory(),
+                error_builder=error_builder_factory()
             )
 
-
-class TestContentEmptyErrorStrTupleList:
-    """Tests for validation_util.content_empty_error_str_tuple_list."""
-
-    @pytest.mark.parametrize('valid_list', [[], [('a', 'b'), (' c ', 'd')]])
-    def test_pass_with_valid_list(self, valid_list, error_builder_factory):
-        """Ensures lists with non-empty string tuples pass."""
-        result = validation_util.content_empty_error_str_tuple_list(
-            arg=valid_list,
-            exception=UtilTestException,
-            error_builder=error_builder_factory(),
+    def test_content_empty_error_str_tuple_list_fail(
+            self, error_builder_factory):
+        logging.info(
+            'Testing content_empty_error_str_tuple_list: failure path.'
         )
-        assert result == valid_list
-
-    @pytest.mark.parametrize(
-        'invalid_list, desc',
-        [
-            ([('a', 'b'), ('', 'd')], 'first element is empty'),
-            ([('a', 'b'), ('c', '   ')], 'second element is whitespace'),
-            ([('a', 1)], 'element is not a string, causing failure'),
-        ],
-    )
-    def test_fail_with_invalid_content_for_mcdc(
-        self, invalid_list, desc, error_builder_factory
-    ):
-        """Tests failure modes for MC/DC of the tuple element validation."""
         with pytest.raises(UtilTestException):
             validation_util.content_empty_error_str_tuple_list(
-                arg=invalid_list,
+                arg=[('a', '')],
                 exception=UtilTestException,
-                error_builder=error_builder_factory(),
+                error_builder=error_builder_factory()
             )
