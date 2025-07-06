@@ -1,304 +1,213 @@
-"""Test suite for the core data models in quarryforge.model."""
+"""Unit tests for the quarryforge.util.model_util module.
 
+This suite provides comprehensive coverage for the validation orchestrator
+functions, `viable_fossil_repo` and `viable_fossil_commit`.
+"""
+
+import logging
 from pathlib import Path
+from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 
-from quarryforge.exception import meta_exception, model_exception
-from quarryforge.model import FossilCommit, FossilRepo, FossilTimeline
+from quarryforge.exception import model_exception
+from quarryforge.util import model_util
+
+DUMMY_EXCEPTION_TYPE = model_exception.FossilRepoError
 
 
 @pytest.fixture
-def mock_dependencies(mocker):
-    """Mocks all external dependencies for the model module."""
-    # Mock validation utilities
-    mocker.patch('quarryforge.util.model_util.viable_fossil_repo')
-    mocker.patch('quarryforge.util.model_util.viable_fossil_commit')
+def mock_validation_util(mocker: MagicMock) -> MagicMock:
+    """Mock the entire validation_util module.
 
-    # Mock configuration modules and error builders
-    mocker.patch('quarryforge.model.model_config')
-    mocker.patch('quarryforge.model.meta_config')
-    mocker.patch('quarryforge.model.meta_ec.MetaErrorBuilder')
-    mocker.patch('quarryforge.model.model_ec.FossilTimelineErrorBuilder')
+    This is the core fixture for isolating model_util from its dependencies.
+    """
+    validation_functions_to_mock = [
+        'is_type_str',
+        'is_str_not_empty',
+        'is_type_path',
+        'resolve_path_arg',
+        'exist',
+        'not_exist',
+        'is_file',
+        'is_dir',
+        'is_read_ok',
+        'is_write_ok',
+        'content_type_error_str_list',
+        'content_empty_error_str_list',
+        'content_type_error_str_tuple_list',
+        'content_empty_error_str_tuple_list',
+    ]
+    mock_module = mocker.patch('quarryforge.util.model_util.validation_util')
+    for func_name in validation_functions_to_mock:
+        mock_func = mocker.Mock(side_effect=lambda arg, **kwargs: arg)
+        setattr(mock_module, func_name, mock_func)
+
+    return mock_module
 
 
-@pytest.mark.usefixtures('mock_dependencies')
-class TestFossilRepo:
-    def test_init_success(self, sample_repo_paths):
-        """Tests successful initialization of FossilRepo."""
-        from quarryforge.util import model_util
+class TestViableFossilRepo:
+    """Test for the viable_fossil_repo validation function."""
 
-        repo_paths = sample_repo_paths
-        model_util.viable_fossil_repo.return_value = (
-            repo_paths['file'],
-            repo_paths['workdir'],
+    def test_success_existing_repo(
+            self, mock_validation_util: MagicMock, tmp_path: Path):
+        """Test success path for an existing repo (is_new=False)."""
+        logging.info('Testing viable_fossil_repo: success path for existing repo.')
+        repo_file = tmp_path / 'repo.fossil'
+        workdir = tmp_path / 'work'
+
+        file_out, workdir_out = model_util.viable_fossil_repo(
+            file=repo_file, workdir=workdir, is_new=False,
+            exception=DUMMY_EXCEPTION_TYPE
+        )
+        assert file_out is repo_file
+        assert workdir_out is workdir
+
+        # Assert the correct validation chain was called
+        mock_validation_util.exist.assert_any_call(
+            arg=repo_file,
+            exception=DUMMY_EXCEPTION_TYPE,
+            error_builder=ANY
+        )
+        mock_validation_util.is_file.assert_called_once_with(
+            arg=repo_file,
+            exception=DUMMY_EXCEPTION_TYPE,
+            error_builder=ANY
+        )
+        mock_validation_util.is_read_ok.assert_called_once_with(
+            arg=repo_file,
+            exception=DUMMY_EXCEPTION_TYPE,
+            error_builder=ANY
+        )
+        assert mock_validation_util.not_exist.call_count == 0
+
+    def test_success_new_repo(
+            self, mock_validation_util: MagicMock, tmp_path: Path):
+        """Test success path for a new repo (is_new=True)."""
+        logging.info('Testing viable_fossil_repo: success path for new repo.')
+        repo_file = tmp_path / 'new_repo.fossil'
+        workdir = tmp_path / 'work'
+
+        model_util.viable_fossil_repo(
+            file=repo_file, workdir=workdir,
+            is_new=True, exception=DUMMY_EXCEPTION_TYPE
+        )
+        mock_validation_util.not_exist.assert_called_once_with(
+            arg=repo_file,
+            exception=DUMMY_EXCEPTION_TYPE,
+            error_builder=ANY
+        )
+        mock_validation_util.exist.assert_any_call(
+            arg=repo_file.parent,
+            exception=DUMMY_EXCEPTION_TYPE,
+            error_builder=ANY
+        )
+        mock_validation_util.is_dir.assert_any_call(
+            arg=repo_file.parent,
+            exception=DUMMY_EXCEPTION_TYPE,
+            error_builder=ANY
+        )
+        mock_validation_util.is_write_ok.assert_any_call(
+            arg=repo_file.parent,
+            exception=DUMMY_EXCEPTION_TYPE,
+            error_builder=ANY
         )
 
-        repo = FossilRepo(
-            file=repo_paths['file'], workdir=repo_paths['workdir'], is_new=False
-        )
+    def test_failure_same_directory(
+            self, mock_validation_util: MagicMock, tmp_path: Path):
+        """Test failure when repo parent directory and workdir are the same."""
+        logging.info('Testing viable_fossil_repo: failure on same directory.')
+        workdir = tmp_path
+        repo_file = workdir / "repo.fossil"
 
-        assert repo.file == repo_paths['file']
-        assert repo.workdir == repo_paths['workdir']
-        assert repo.is_new is False
-        model_util.viable_fossil_repo.assert_called_once_with(
-            repo_paths['file'],
-            repo_paths['workdir'],
-            False,
-            model_exception.FossilRepoError,
-        )
-
-    def test_init_failure(self, sample_repo_paths):
-        """Tests that FossilRepo raises an error if validation fails."""
-        from quarryforge.util import model_util
-
-        repo_paths = sample_repo_paths
-        model_util.viable_fossil_repo.side_effect = (
-            model_exception.FossilRepoError('Validation failed')
-        )
-
-        with pytest.raises(
-            model_exception.FossilRepoError, match='Validation failed'
-        ):
-            FossilRepo(
-                file=repo_paths['file'],
-                workdir=repo_paths['workdir'],
+        with pytest.raises(DUMMY_EXCEPTION_TYPE):
+            model_util.viable_fossil_repo(
+                file=repo_file,
+                workdir=workdir,
                 is_new=True,
+                exception=DUMMY_EXCEPTION_TYPE
             )
 
-    def test_immutability(self, sample_repo_paths):
-        """Tests that FossilRepo instances are immutable."""
-        from quarryforge.util import model_util
-
-        repo_paths = sample_repo_paths
-        model_util.viable_fossil_repo.return_value = (
-            repo_paths['file'],
-            repo_paths['workdir'],
+    def test_failure_on_validation_step(
+            self, mock_validation_util: MagicMock, tmp_path: Path):
+        """Test that an exception from validation_util is propagated correctly."""
+        logging.info('Testing viable_fossil_repo: exception propagation.')
+        mock_validation_util.exist.side_effect = DUMMY_EXCEPTION_TYPE(
+            code="FAIL",
+            message="Path does not exist",
+            user_message="user fail",
+            details={}
         )
-        repo = FossilRepo(
-            file=repo_paths['file'], workdir=repo_paths['workdir'], is_new=False
+        with pytest.raises(DUMMY_EXCEPTION_TYPE, match='Path does not exist'):
+            model_util.viable_fossil_repo(
+                file=tmp_path / 'f.fossil',
+                workdir=tmp_path / 'w',
+                is_new=False,
+                exception=DUMMY_EXCEPTION_TYPE
+            )
+
+
+class TestViableFossilCommit:
+    """Tests for the viable_fossil_commit validation function."""
+
+    @pytest.fixture
+    def sample_valid_args(self, sample_commit_data):
+        """Provide a valid dictionary of all arguments for the function."""
+        args = sample_commit_data.copy()
+        args['exception'] = DUMMY_EXCEPTION_TYPE
+        return args
+
+    @pytest.mark.parametrize(
+        'branch, tags, phase, changes',
+        [
+            ('trunk', ['v1'], ['phase1'], [('A', 'f1')]), # All optional args
+            (None, None, None, None),                    # No optional args present
+            ('trunk', None, None, None),                 # Only branch
+            (None, ['v1'], None, None),                  # Only tags
+            (None, None, None, [('A', 'f1')]),           # Only changes
+        ]
+    )
+    def test_success_paths_mcdc(
+        self, mock_validation_util: MagicMock,
+        sample_valid_args, branch, tags, phase, changes
+    ):
+        """Test success paths with all combinations of optional arguments."""
+        logging.info(
+            (
+                'Testing viable_fossil_commit: success path with branch=%s,'
+                ' tags=%s, phase=%s, changes=%s'
+            ),
+            bool(branch), bool(tags), bool(phase), bool(changes)
         )
+        # Update args for the current parameterized test case
+        sample_valid_args.update({
+            'branch': branch, 'tags': tags, 'phase': phase, 'changes': changes
+        })
 
-        with pytest.raises(meta_exception.ImmutableError):
-            repo.file = Path('/new/path')
-        with pytest.raises(meta_exception.ImmutableError):
-            del repo.file
+        result = model_util.viable_fossil_commit(**sample_valid_args)
 
-    def test_str_representation(self, sample_repo_paths):
-        """Tests the __str__ method."""
-        from quarryforge.util import model_util
+        # Assert required fields were validated
+        assert mock_validation_util.is_str_not_empty.call_count >= 4
 
-        repo_paths = sample_repo_paths
-        model_util.viable_fossil_repo.return_value = (
-            repo_paths['file'],
-            repo_paths['workdir'],
+        # Assert optional fields were validated ONLY if they were provided
+        assert (mock_validation_util.is_str_not_empty.call_count == 5) == bool(branch)
+        assert (mock_validation_util.content_type_error_str_list.call_count >= 1) == bool(tags or phase)
+
+        # Verify the returned tuple has the correct values
+        assert result[0] == sample_valid_args['uuid']
+        assert result[4] == branch
+        assert result[5] == tags
+
+    def test_failure_on_required_field(self, mock_validation_util: MagicMock, sample_valid_args):
+        """Test that an exception is raised if a required field is invalid."""
+        logging.info('Testing viable_fossil_commit: failure on required field.')
+        mock_validation_util.is_str_not_empty.side_effect = (
+            DUMMY_EXCEPTION_TYPE(
+                code='FAIL',
+                message='Empty string',
+                user_message='user fail',
+                details={}
+            )
         )
-        repo = FossilRepo(
-            file=repo_paths['file'], workdir=repo_paths['workdir'], is_new=False
-        )
-
-        expected_str = (
-            f'Fossil Repository File: {repo.file}\n'
-            f'Working Directory: {repo.workdir}'
-        )
-        assert str(repo) == expected_str
-
-    def test_repr_representation(self, sample_repo_paths):
-        """Tests the __repr__ method."""
-        from quarryforge.util import model_util
-
-        repo_paths = sample_repo_paths
-        model_util.viable_fossil_repo.return_value = (
-            repo_paths['file'],
-            repo_paths['workdir'],
-        )
-        repo = FossilRepo(
-            file=repo_paths['file'], workdir=repo_paths['workdir'], is_new=False
-        )
-
-        expected_repr = (
-            f'FossilRepo(file={repo.file!r}, '
-            f'is_new={repo.is_new!r}, '
-            f'workdir={repo.workdir!r})'
-        )
-        assert repr(repo) == expected_repr
-
-    def test_equality_and_hash(self, sample_repo_paths):
-        """Tests the __eq__ and __hash__ methods."""
-        from quarryforge.util import model_util
-
-        repo_paths = sample_repo_paths
-        model_util.viable_fossil_repo.return_value = (
-            repo_paths['file'],
-            repo_paths['workdir'],
-        )
-
-        repo1 = FossilRepo(
-            file=repo_paths['file'], workdir=repo_paths['workdir'], is_new=False
-        )
-        repo2 = FossilRepo(
-            file=repo_paths['file'], workdir=repo_paths['workdir'], is_new=False
-        )
-        repo3 = FossilRepo(
-            file=repo_paths['file'], workdir=repo_paths['workdir'], is_new=True
-        )  # Different is_new
-        repo4 = FossilRepo(
-            file=repo_paths['file'], workdir=Path('/different'), is_new=False
-        )  # Different workdir
-
-        assert repo1 == repo2
-        assert repo1 != repo3
-        assert repo1 != repo4
-        assert repo1 != 'not a repo'
-        assert hash(repo1) == hash(repo2)
-        assert hash(repo1) != hash(repo3)
-        assert hash(repo1) != hash(repo4)
-
-
-@pytest.mark.usefixtures('mock_dependencies')
-class TestFossilCommit:
-    def test_init_success_all_args(self, sample_commit_args):
-        """Tests successful initialization with all arguments."""
-        from quarryforge.util import model_util
-
-        model_util.viable_fossil_commit.return_value = tuple(
-            sample_commit_args.values()
-        )
-
-        commit = FossilCommit(**sample_commit_args)
-
-        assert commit.uuid == sample_commit_args['uuid']
-        assert commit.author == sample_commit_args['author']
-        assert commit.branch == sample_commit_args['branch']
-        assert commit.tags == sample_commit_args['tags']
-        assert commit.phase == sample_commit_args['phase']
-        assert commit.changes == sample_commit_args['changes']
-        model_util.viable_fossil_commit.assert_called_once_with(
-            **sample_commit_args, exception=model_exception.FossilCommitError
-        )
-
-    def test_init_success_optional_args_as_none(self, sample_commit_args):
-        """Tests that optional None arguments result in empty lists."""
-        from quarryforge.util import model_util
-
-        args = sample_commit_args.copy()
-        args['tags'] = None
-        args['changes'] = None
-
-        # Simulate validation returning None for optional args
-        validated_args = list(args.values())
-        model_util.viable_fossil_commit.return_value = tuple(validated_args)
-
-        commit = FossilCommit(**args)
-        assert commit.tags == []
-        assert commit.changes == []
-
-    def test_init_failure(self, sample_commit_args):
-        """Tests that FossilCommit raises an error if validation fails."""
-        from quarryforge.util import model_util
-
-        model_util.viable_fossil_commit.side_effect = (
-            model_exception.FossilCommitError('Invalid commit data')
-        )
-
-        with pytest.raises(
-            model_exception.FossilCommitError, match='Invalid commit data'
-        ):
-            FossilCommit(**sample_commit_args)
-
-    def test_get_hash(self, sample_commit):
-        """Tests the get_hash method for correct slicing."""
-        assert sample_commit.get_hash() == sample_commit.uuid[:12]
-
-    def test_immutability(self, sample_commit):
-        """Tests that FossilCommit instances are immutable."""
-        with pytest.raises(meta_exception.ImmutableError):
-            sample_commit.uuid = 'new_uuid'
-        with pytest.raises(meta_exception.ImmutableError):
-            del sample_commit.uuid
-
-    def test_str_representation(self, sample_commit):
-        """Tests the __str__ method for user-friendly output."""
-        expected_str = (
-            f'uuid: {sample_commit.get_hash()}\n'
-            f'date: {sample_commit.date}\n'
-            f'author: {sample_commit.author}\n'
-            f'comment: {sample_commit.comment}'
-        )
-        assert str(sample_commit) == expected_str
-
-    def test_repr_representation(self, sample_commit):
-        """Tests the __repr__ method for developer-friendly output."""
-        # Just check for key elements, as the full repr is complex
-        repr_str = repr(sample_commit)
-        assert 'FossilCommit' in repr_str
-        assert f"uuid='{sample_commit.uuid}'" in repr_str
-        assert f"author='{sample_commit.author}'" in repr_str
-        assert "tags=['v1.0']" in repr_str
-        assert "changes=[('ADDED', 'file.txt')]" in repr_str
-
-
-@pytest.mark.usefixtures('mock_dependencies')
-class TestFossilTimeline:
-    def test_init_success_empty_and_none(self):
-        """Tests initialization with no commits or None."""
-        timeline_none = FossilTimeline(commits=None)
-        timeline_empty = FossilTimeline(commits=[])
-        assert len(timeline_none) == 0
-        assert len(timeline_empty) == 0
-
-    def test_init_success_with_commits(self, sample_commit):
-        """Tests initialization with a list of commits and verifies reversal."""
-        commit1 = sample_commit
-        commit2 = FossilCommit(
-            uuid='b' * 40, date='2023-01-02...', author='t', comment='c'
-        )
-
-        timeline = FossilTimeline(commits=[commit1, commit2])
-        assert len(timeline) == 2
-        assert timeline[0] == commit2
-        assert timeline[1] == commit1
-
-    def test_init_fail_not_a_list(self):
-        """Tests that __init__ raises an error if `commits` is not a list."""
-        with pytest.raises(
-            model_exception.FossilTimelineError, match='must be a list'
-        ):
-            FossilTimeline(commits='not a list')
-
-    def test_init_fail_invalid_item_in_list(self, sample_commit):
-        """Tests that __init__ raises an error if list contains
-        non-FossilCommit items.
-        """
-        with pytest.raises(
-            model_exception.FossilTimelineError,
-            match='must be .*FossilCommit.* instances',
-        ):
-            FossilTimeline(commits=[sample_commit, 'not a commit'])
-
-    def test_add_commit(self, sample_commit):
-        """Tests the add method."""
-        timeline = FossilTimeline()
-        timeline.add(sample_commit)
-        assert len(timeline) == 1
-        assert timeline[0] == sample_commit
-
-    def test_container_protocol(self, sample_commit):
-        """Tests __len__, __getitem__, and __iter__."""
-        commit1 = sample_commit
-        commit2 = FossilCommit(
-            uuid='b' * 40, date='2023-01-02...', author='t', comment='c'
-        )
-        timeline = FossilTimeline(commits=[commit1, commit2])
-
-        assert len(timeline) == 2
-        assert timeline[0] == commit2
-
-        items = [c for c in timeline]
-        assert items == [commit2, commit1]
-
-    def test_repr_and_str_representation(self, sample_commit):
-        """Tests the __repr__ and __str__ methods."""
-        timeline = FossilTimeline(commits=[sample_commit])
-        assert repr(timeline) == 'FossilTimeline(commits=1 commits)'
-        assert str(timeline) == 'Fossil Timeline with 1 commits.'
+        with pytest.raises(DUMMY_EXCEPTION_TYPE, match='Empty string'):
+            model_util.viable_fossil_commit(**sample_valid_args)
